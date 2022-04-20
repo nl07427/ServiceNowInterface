@@ -1,0 +1,18 @@
+# Rules in this file were initially inferred by Visual Studio IntelliCode from the C:\Users\roro\source\repos\ServiceNowInterface codebase based on best match to current usage at 4/20/2022
+# You can modify the rules from these initially generated values to suit your own policies
+# You can learn more about editorconfig here: https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference
+[*.cs]
+
+
+#Formatting - organize using options
+
+#sort System.* using directives alphabetically, and place them before other usings
+dotnet_sort_system_directives_first = true
+insert_final_newline=true
+csharp_preserve_single_line_blocks=false
+csharp_style_var_for_built_in_types=true:silent
+csharp_style_var_when_type_is_apparent=true:silent
+csharp_style_var_elsewhere=true:silent
+
+[*.{cs,vb}]
+dotnet_style_prefer_is_null_check_over_reference_equality_method=true:silent
