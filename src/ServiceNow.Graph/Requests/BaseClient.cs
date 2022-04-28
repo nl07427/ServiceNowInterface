@@ -18,11 +18,11 @@ namespace ServiceNow.Graph.Requests
         /// <summary>
         /// Constructs a new <see cref="BaseClient"/>.
         /// </summary>
-        /// <param name="domain">The domain. For example, bel.service-now.com"</param>
+        /// <param name="domain">The domain. For example, customer.service-now.com"</param>
         /// <param name="authenticationProvider">The <see cref="IAuthenticationProvider"/> for authenticating request messages.</param>
         /// <param name="httpProvider">The <see cref="IHttpProvider"/> for sending requests.</param>
         /// <param name="version"></param>
-        public BaseClient(string domain,
+        protected BaseClient(string domain,
             IAuthenticationProvider authenticationProvider,
             IHttpProvider httpProvider = null, string version = "now")
         {
@@ -41,7 +41,7 @@ namespace ServiceNow.Graph.Requests
         /// <summary>
         /// Constructs a new <see cref="BaseClient"/>.
         /// </summary>
-        /// <param name="domain">The domain of the ServiceNow instance. For example, bel.service-now.com</param>
+        /// <param name="domain">The domain of the ServiceNow instance. For example, customer.service-now.com</param>
         /// <param name="version">The version of the ServiceNow API, for example "now" for the latest endpoint</param>
         /// <param name="httpClient">The custom <see cref="HttpClient"/> to be used for making requests</param>
         public BaseClient(
@@ -65,7 +65,7 @@ namespace ServiceNow.Graph.Requests
         public string Domain
         {
             get => _domain;
-            set
+            private set
             {
                 if (string.IsNullOrEmpty(value))
                 {
@@ -90,7 +90,7 @@ namespace ServiceNow.Graph.Requests
         public string Version
         {
             get => _version;
-            set
+            private set
             {
                 if (string.IsNullOrEmpty(value))
                 {

@@ -20,13 +20,13 @@ namespace ServiceNow.Graph.Authentication
         private readonly string _clientSecret;
         private readonly string _userName;
         private readonly string _userPassword;
-        internal static readonly HttpClient HttpClient = new HttpClient();
-        internal readonly ResponseHandler ResponseHandler;
+        private static readonly HttpClient HttpClient = new HttpClient();
+        private readonly ResponseHandler _responseHandler;
 
         /// <summary>
         /// Creates the ServiceNow hybrid client credential provider
         /// </summary>
-        /// <param name="domain">domain, for example bel.service-now.com</param>
+        /// <param name="domain">domain, for example customer.service-now.com</param>
         /// <param name="clientId">Client id</param>
         /// <param name="clientSecret">Client secret</param>
         /// <param name="userName">user name</param>
@@ -38,7 +38,7 @@ namespace ServiceNow.Graph.Authentication
             _clientSecret = clientSecret;
             _userName = userName;
             _userPassword = userPassword;
-            ResponseHandler = new ResponseHandler(new Serializer(new JsonSerializerSettings
+            _responseHandler = new ResponseHandler(new Serializer(new JsonSerializerSettings
             {
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
                 TypeNameHandling = TypeNameHandling.None,
@@ -70,7 +70,7 @@ namespace ServiceNow.Graph.Authentication
                 try
                 {
                     var response = await HttpClient.SendAsync(req).ConfigureAwait(false);
-                    var authenticationResponse = await ResponseHandler.HandleResponse<AuthenticationResponse>(response).ConfigureAwait(false);
+                    var authenticationResponse = await _responseHandler.HandleResponse<AuthenticationResponse>(response).ConfigureAwait(false);
                     if (response.IsSuccessStatusCode && !string.IsNullOrEmpty(authenticationResponse?.AccessToken))
                     {
                         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(Constants.Headers.Bearer, authenticationResponse.AccessToken);
