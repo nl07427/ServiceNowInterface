@@ -5,57 +5,33 @@ namespace ServiceNow.Graph.Models.Extensions
     public partial class User
     {
         /// <summary>
-        /// Location , reference to cmn_location table
+        /// Can approve amount of
         /// </summary>
-        [JsonProperty(PropertyName = "u_location", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink BelLocation { get; set; }
+        [JsonProperty(PropertyName = "u_approval_threshold", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public double ApprovalThreshold { get; set; }
 
         /// <summary>
-        /// Office, X256
+        /// Division, X40
         /// </summary>
-        [JsonProperty(PropertyName = "u_office", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string Office { get; set; }
+        [JsonProperty(PropertyName = "u_division", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string Division { get; set; }
 
         /// <summary>
-        /// User Sell Force
+        /// Distinguished name, X100
         /// </summary>
-        [JsonProperty(PropertyName = "u_sellforceuser", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public bool? UserSellForce { get; set; }
+        [JsonProperty(PropertyName = "u_dn", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string DistinguishedName { get; set; }
 
         /// <summary>
-        /// Contract End Date
+        /// Last LDAP Update on
         /// </summary>
-        [JsonProperty(PropertyName = "u_contract_end_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string ContractEndDate { get; set; }
+        [JsonProperty(PropertyName = "u_last_ldap_updated", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string LdapUpdated { get; set; }
 
         /// <summary>
-        /// Contract Start Date
+        /// LDAP Id, X100
         /// </summary>
-        [JsonProperty(PropertyName = "u_contract_start_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string ContractStartDate { get; set; }
-
-        /// <summary>
-        /// Employee type, X40
-        /// </summary>
-        [JsonProperty(PropertyName = "u_employee_status", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string EmployeeType { get; set; }
-
-        /// <summary>
-        /// Contract type, X40
-        /// </summary>
-        [JsonProperty(PropertyName = "u_contract_type", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string ContractType { get; set; }
-
-        /// <summary>
-        /// Partner Company
-        /// </summary>
-        [JsonProperty(PropertyName = "u_partner_company", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string PartnerCompany { get; set; }
-
-        /// <summary>
-        /// Job family label (Business Unit)
-        /// </summary>
-        [JsonProperty(PropertyName = "u_job_family_label", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink JobFamilyLabel { get; set;  }
+        [JsonProperty(PropertyName = "u_ldapid", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string LdapId { get; set; }
     }
 }

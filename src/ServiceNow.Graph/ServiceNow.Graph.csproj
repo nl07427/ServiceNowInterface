@@ -90,12 +90,8 @@
     <Compile Include="Models\DepartmentResponse.cs" />
     <Compile Include="Models\DepartmentsCollectionResponse.cs" />
     <Compile Include="Models\Entity.cs" />
-    <Compile Include="Models\Extensions\CatalogItem.cs" />
-    <Compile Include="Models\Extensions\CatalogRequest.cs" />
-    <Compile Include="Models\Extensions\CatalogTask.cs" />
-    <Compile Include="Models\Extensions\Department.cs" />
-    <Compile Include="Models\Extensions\Incident.cs" />
     <Compile Include="Models\Extensions\Location.cs" />
+    <Compile Include="Models\Extensions\UserGroup.cs" />
     <Compile Include="Models\Extensions\User.cs" />
     <Compile Include="Models\GroupHasRole.cs" />
     <Compile Include="Models\GroupHasRoleResponse.cs" />
