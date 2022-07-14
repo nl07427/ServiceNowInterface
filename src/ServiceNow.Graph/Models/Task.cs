@@ -445,7 +445,7 @@ namespace ServiceNow.Graph.Models
         /// ServiceNow journal list type, X4000
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "comments_and_work_notes", Required = Required.Default)]
-        public string CommentsAndWorkNotes { get; }
+        public string CommentsAndWorkNotes { get; set;}
 
         /// <summary>
         /// Due date, datetime
@@ -487,7 +487,7 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "variables", Required = Required.Default)]
         public string Variables { get; set; }
 
-       /// <summary>
+        /// <summary>
         /// Rejection go to task, reference to task table
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "rejection_goto", Required = Required.Default)]
@@ -504,5 +504,40 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "wf_activity", Required = Required.Default)]
         public ReferenceLink WorkflowActivity { get; set; }
+
+        /// <summary>
+        /// Universal request, reference to Task table
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "universal_request", Required = Required.Default)]
+        public ReferenceLink UniversalRequest
+        { get; set; }
+
+        /// <summary>
+        /// Request state, X40
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "request_state", Required = Required.Default)]
+        public string RequestState
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Transfer reason, X40
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "route_reason", Required = Required.Default)]
+        public string RouteReason
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Effective number, X40
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "task_effective_number", Required = Required.Default)]
+        public string TaskEffectiveNumber
+        {
+            get; set;
+        }
+
     }
 }

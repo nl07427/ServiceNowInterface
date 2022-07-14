@@ -86,5 +86,24 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "location", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public ReferenceLink Location { get; set; }
+
+        /// <summary>
+        /// Sys domain
+        /// </summary>
+        [JsonProperty(PropertyName = "sys_domain", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink Domain
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Sys domain
+        /// </summary>
+        [JsonProperty(PropertyName = "sys_domain_path", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string DomainPath
+        {
+            get; set;
+        }
+
     }
 }

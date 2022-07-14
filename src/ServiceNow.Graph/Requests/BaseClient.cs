@@ -12,24 +12,23 @@ namespace ServiceNow.Graph.Requests
     /// </summary>
     public class BaseClient : IBaseClient
     {
-        private string _domain;
-        private string _version;
+        private string _url;
 
         /// <summary>
         /// Constructs a new <see cref="BaseClient"/>.
         /// </summary>
-        /// <param name="domain">The domain. For example, customer.service-now.com"</param>
+        /// <param name="url">The domain. For example, customer.service-now.com"</param>
         /// <param name="authenticationProvider">The <see cref="IAuthenticationProvider"/> for authenticating request messages.</param>
         /// <param name="httpProvider">The <see cref="IHttpProvider"/> for sending requests.</param>
         /// <param name="version"></param>
-        protected BaseClient(string domain,
+        protected BaseClient(string url,
             IAuthenticationProvider authenticationProvider,
-            IHttpProvider httpProvider = null, string version = "now")
+            IHttpProvider httpProvider = null, string version = "")
         {
-            Domain = domain;
+            Url = url;
             Version = version;
             AuthenticationProvider = authenticationProvider;
-            HttpProvider = httpProvider ?? new HttpProvider(domain, version, new Serializer(new JsonSerializerSettings
+            HttpProvider = httpProvider ?? new HttpProvider(url, version, new Serializer(new JsonSerializerSettings
             {
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
                 TypeNameHandling = TypeNameHandling.None,
@@ -41,17 +40,17 @@ namespace ServiceNow.Graph.Requests
         /// <summary>
         /// Constructs a new <see cref="BaseClient"/>.
         /// </summary>
-        /// <param name="domain">The domain of the ServiceNow instance. For example, customer.service-now.com</param>
+        /// <param name="url">The domain of the ServiceNow instance. For example, customer.service-now.com</param>
         /// <param name="version">The version of the ServiceNow API, for example "now" for the latest endpoint</param>
         /// <param name="httpClient">The custom <see cref="HttpClient"/> to be used for making requests</param>
         public BaseClient(
-            string domain,
+            string url,
             string version,
             HttpClient httpClient)
         {
-            Domain = domain;
+            Url = url;
             Version = version;
-            HttpProvider = new SimpleHttpProvider(httpClient, domain, version);
+            HttpProvider = new SimpleHttpProvider(httpClient, url, version);
         }
 
         /// <summary>
@@ -62,9 +61,9 @@ namespace ServiceNow.Graph.Requests
         /// <summary>
         /// Gets or sets the base URL for requests of the client.
         /// </summary>
-        public string Domain
+        public string Url
         {
-            get => _domain;
+            get => _url;
             private set
             {
                 if (string.IsNullOrEmpty(value))
@@ -80,7 +79,7 @@ namespace ServiceNow.Graph.Requests
                         });
                 }
 
-                _domain = value.TrimEnd('/');
+                _url = value.TrimEnd('/');
             }
         }
 
@@ -89,24 +88,20 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         public string Version
         {
-            get => _version;
-            private set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ServiceException(
-                        new Error
-                        {
-                            ErrorDetail = new ErrorDetail
-                            {
-                                Message = ErrorConstants.Codes.InvalidRequest,
-                                DetailedMessage = ErrorConstants.Messages.VersionMissing
-                            }
-                        });
-                }
-
-                _version = value;
-            }
+            get;
+            private set;
+            //    if (string.IsNullOrEmpty(value))
+            //{
+            //    throw new ServiceException(
+            //        new Error
+            //        {
+            //            ErrorDetail = new ErrorDetail
+            //            {
+            //                Message = ErrorConstants.Codes.InvalidRequest,
+            //                DetailedMessage = ErrorConstants.Messages.VersionMissing
+            //            }
+            //        });
+            //}
         }
 
         /// <summary>

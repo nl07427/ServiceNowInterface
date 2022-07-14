@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace ServiceNow.Graph.Models
 {
@@ -8,6 +9,7 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public partial class Location : Entity
     {
+        private DateTimeOffset? _coordinatesRetrievedOn;
         /// <summary>
         /// Constructor
         /// </summary>
@@ -39,6 +41,12 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty("latitude", NullValueHandling = NullValueHandling.Ignore)]
         public string Latitude { get; set; }
+
+        /// <summary>
+        /// Latitude old, string, X40
+        /// </summary>
+        [JsonProperty("latitude_old", NullValueHandling = NullValueHandling.Ignore)]
+        public string LatitudeOld { get; set; }
 
         /// <summary>
         /// Stock room, true/false
@@ -89,6 +97,12 @@ namespace ServiceNow.Graph.Models
         public string Longitude { get; set; }
 
         /// <summary>
+        /// Longitude old, string, X40
+        /// </summary>
+        [JsonProperty("longitude_old", NullValueHandling = NullValueHandling.Ignore)]
+        public string LongitudeOld { get; set; }
+
+        /// <summary>
         /// Zip/Postal code, X40
         /// </summary>
         [JsonProperty("zip", NullValueHandling = NullValueHandling.Ignore)]
@@ -123,5 +137,85 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Primary location, reference to cmn_location, X32
+        /// </summary>
+        [JsonProperty("primary_location", NullValueHandling = NullValueHandling.Ignore)]
+        public ReferenceLink PrimaryLocation
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Managed by group, reference to sys_user_group, X32
+        /// </summary>
+        [JsonProperty("managed_by_group", NullValueHandling = NullValueHandling.Ignore)]
+        public ReferenceLink ManagedByGroup
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Life cycle stage, reference
+        /// </summary>
+        [JsonProperty("life_cycle_stage", NullValueHandling = NullValueHandling.Ignore)]
+        public ReferenceLink LifeCycleStage
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Life cycle stage status, reference
+        /// </summary>
+        [JsonProperty("life_cycle_stage_status", NullValueHandling = NullValueHandling.Ignore)]
+        public ReferenceLink LifeCycleStageStatus
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Duplicate, true/false
+        /// </summary>
+        [JsonProperty("duplicate", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Duplicate
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// City, X40
+        /// </summary>
+        [JsonProperty("cmn_location_source", NullValueHandling = NullValueHandling.Ignore)]
+        public string CmnLocationSource
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// City, X40
+        /// </summary>
+        [JsonProperty("cmn_location_type", NullValueHandling = NullValueHandling.Ignore)]
+        public string CmnLocationType
+        {
+            get; set;
+        }
+        /// <summary>
+        /// Coordinates retrieved on, date.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "coordinates_retrieved_on", Required = Required.Default)]
+        public DateTimeOffset? CoordinatesRetrievedOn
+        {
+            get => _coordinatesRetrievedOn;
+            set
+            {
+                if (value.HasValue)
+                {
+                    _coordinatesRetrievedOn = value.Value + value.Value.Offset;
+                }
+            }
+        }
+
+
     }
 }

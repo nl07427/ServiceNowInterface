@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ServiceNow.Graph.Requests.Options;
 
 namespace ServiceNow.Graph.Requests
@@ -15,6 +16,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="client"></param>
         public UsersCollectionRequestBuilder(string requestUrl, IBaseClient client) : base(requestUrl, client)
         {
+            System.Diagnostics.Debug.WriteLine(requestUrl);
         }
 
         /// <summary>

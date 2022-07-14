@@ -59,12 +59,6 @@ namespace ServiceNow.Graph.Models
         public ReferenceLink Building { get; set; }
 
         /// <summary>
-        /// Web service access only, boolean
-        /// </summary>
-        [JsonProperty(PropertyName = "web_service_access_only", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public bool? WebServiceAccessOnly { get; set; }
-
-        /// <summary>
         /// Notification, integer
         /// </summary>
         [JsonProperty(PropertyName = "notification", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
@@ -139,12 +133,6 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "active", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public bool? Active { get; set; }
-
-        /// <summary>
-        /// Domain path
-        /// </summary>
-        [JsonProperty(PropertyName = "sys_domain_path", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string SysDomainPath { get; set; }
 
         /// <summary>
         /// Reference to ServiceNow 'Cost Center' table
@@ -222,7 +210,7 @@ namespace ServiceNow.Graph.Models
         /// Reference to table 'LDAP Server'
         /// </summary>
         [JsonProperty(PropertyName = "ldap_server", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string LdapServer { get; set; }
+        public ReferenceLink LdapServer { get; set; }
 
         /// <summary>
         /// Mobile phone number
@@ -337,5 +325,15 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "location", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public ReferenceLink Location { get; set; }
+
+        /// <summary>
+        /// Accumulated roles, X4000
+        /// </summary>
+        [JsonProperty(PropertyName = "accumulated_roles", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string AccumulatedRoles
+        {
+            get;
+        }
+
     }
 }

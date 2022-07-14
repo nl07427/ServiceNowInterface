@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace ServiceNow.Graph.Models.Extensions
+namespace ServiceNow.Graph.Models
 {
     public partial class UserGroup
     {

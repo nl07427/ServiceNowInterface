@@ -21,16 +21,6 @@
         IMembershipsCollectionRequestBuilder Memberships { get; }
 
         /// <summary>
-        /// Get the attachments collection request builder
-        /// </summary>
-        IAttachmentsCollectionRequestBuilder Attachments { get; }
-
-        /// <summary>
-        /// Get the profiles collection request builder
-        /// </summary>
-        ILiveProfilesCollectionRequestBuilder Profiles { get; }
-
-        /// <summary>
         /// Get the M:N variable ownership collection request builder
         /// </summary>
         ICatalogItemOptionMtomsCollectionRequestBuilder VariableOwnerships { get; }
@@ -49,11 +39,6 @@
         /// Catalog tasks collection request builder
         /// </summary>
         ICatalogTasksCollectionRequestBuilder CatalogTasks { get; }
-
-        /// <summary>
-        /// Questions collection request builder
-        /// </summary>
-        IQuestionsCollectionRequestBuilder Questions { get; }
 
         /// <summary>
         /// Request items collection request builder
@@ -91,11 +76,6 @@
         IOrderGuidesCollectionRequestBuilder OrderGuides { get; }
 
         /// <summary>
-        /// Order guides collection request builder
-        /// </summary>
-        IIncidentsCollectionRequestBuilder Incidents { get; }
-
-        /// <summary>
         /// Departments collection request builder
         /// </summary>
         IDepartmentsCollectionRequestBuilder Departments { get; }
@@ -109,30 +89,5 @@
         /// Companies collection request builder
         /// </summary>
         ICompaniesCollectionRequestBuilder Companies { get; }
-
-        /// <summary>
-        /// ConfigurationItem collection request builder
-        /// </summary>
-        IConfigurationItemsCollectionRequestBuilder ConfigurationItems { get; }
-
-        /// <summary>
-        /// Roles collection request builder
-        /// </summary>
-        IRolesCollectionRequestBuilder Roles { get; }
-
-        /// <summary>
-        /// RoleHasRoles collection request builder
-        /// </summary>
-        IRoleHasRolesCollectionRequestBuilder RoleHasRoles { get; }
-
-        /// <summary>
-        /// GroupHasRoles collection request builder
-        /// </summary>
-        IGroupHasRolesCollectionRequestBuilder GroupHasRoles { get; }
-
-        /// <summary>
-        /// UserHasRoles collection request builder
-        /// </summary>
-        IUserHasRolesCollectionRequestBuilder UserHasRoles { get; }
     }
 }

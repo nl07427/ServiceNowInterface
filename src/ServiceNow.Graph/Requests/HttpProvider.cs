@@ -29,7 +29,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="domain">Domain name of ServiceNow instance</param>
         /// <param name="version">Version of the API to use, defaults to the latest (now)</param>
         /// <param name="serializer">A serializer for serializing and deserializing JSON objects.</param>
-        public HttpProvider(string domain, string version = "now", ISerializer serializer = null)
+        public HttpProvider(string domain, string version = "", ISerializer serializer = null)
             : this((HttpMessageHandler) null, true,domain, version, serializer)
         {
         }
@@ -47,7 +47,7 @@ namespace ServiceNow.Graph.Requests
         ///     an <see cref="HttpClientHandler"/> to the constructor and enabling automatic redirects this could cause issues with authentication
         ///     over the redirect.
         /// </remarks>
-        public HttpProvider(HttpClientHandler httpClientHandler, bool disposeHandler, string domain, string version = "now",
+        public HttpProvider(HttpClientHandler httpClientHandler, bool disposeHandler, string domain, string version = "",
             ISerializer serializer = null)
             : this((HttpMessageHandler) httpClientHandler, disposeHandler,domain,version, serializer)
         {
@@ -62,7 +62,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="version">Version of the API to use, defaults to the latest (now)</param>
         /// <param name="serializer">A serializer for serializing and deserializing JSON objects.</param>
         public HttpProvider(HttpMessageHandler httpMessageHandler, bool disposeHandler, string domain,
-            string version = "now",
+            string version = "",
             ISerializer serializer = null)
         {
             DisposeHandler = disposeHandler;
@@ -88,7 +88,6 @@ namespace ServiceNow.Graph.Requests
             }
 
             HttpClient.Timeout = new TimeSpan(0, 0,15 ,0,0);
-
             HttpClient.SetFeatureFlag(FeatureFlag.DefaultHttpProvider);
         }
 
@@ -151,7 +150,7 @@ namespace ServiceNow.Graph.Requests
         /// <returns>The <see cref="HttpResponseMessage"/>.</returns>
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
         {
-            return this.SendAsync(request, HttpCompletionOption.ResponseContentRead, CancellationToken.None);
+            return SendAsync(request, HttpCompletionOption.ResponseContentRead, CancellationToken.None);
         }
 
         /// <summary>
@@ -166,7 +165,7 @@ namespace ServiceNow.Graph.Requests
             HttpCompletionOption completionOption,
             CancellationToken cancellationToken)
         {
-            var response = await this.SendRequestAsync(request, completionOption, cancellationToken)
+            var response = await SendRequestAsync(request, completionOption, cancellationToken)
                 .ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode) return response;

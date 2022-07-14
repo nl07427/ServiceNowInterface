@@ -13,9 +13,7 @@ namespace ServiceNow.Graph.Requests
     /// <summary>
     /// An <see cref="IHttpProvider"/> implementation using standard .NET libraries.
     /// </summary>
-#pragma warning disable CA1063 // Implement IDisposable Correctly
     public class SimpleHttpProvider : IHttpProvider
-#pragma warning restore CA1063 // Implement IDisposable Correctly
     {
         internal readonly HttpClient HttpClient;
 
@@ -26,7 +24,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="domain"></param>
         /// <param name="version"></param>
         /// <param name="serializer">A serializer for serializing and deserializing JSON objects.</param>
-        public SimpleHttpProvider(HttpClient httpClient, string domain, string version = "now",
+        public SimpleHttpProvider(HttpClient httpClient, string domain, string version = "",
             ISerializer serializer = null)
         {
             HttpClient = httpClient ?? ServiceNowClientFactory.Create(authenticationProvider: null, domain: domain, version);
@@ -157,9 +155,7 @@ namespace ServiceNow.Graph.Requests
         /// <summary>
         /// Disposes the HttpClient and HttpClientHandler instances.
         /// </summary>
-#pragma warning disable CA1063 // Implement IDisposable Correctly
         public void Dispose()
-#pragma warning restore CA1063 // Implement IDisposable Correctly
         {
             HttpClient?.Dispose();
         }

@@ -12,7 +12,7 @@ namespace ServiceNow.Graph
         /// The base URL format for the REST API endpoint.
         /// The first parameter is the host domain, the second parameter is the API version.
         /// </summary>
-        public const string ApiUrlFormatString = "https://{0}/api/{1}/";
+        public const string ApiUrlFormatString = "{0}/{1}";
 
         /// <summary>
         /// The base URL format for the OAuth authentication.
@@ -90,9 +90,24 @@ namespace ServiceNow.Graph
             public const string FeatureFlag = "FeatureFlag";
 
             /// <summary>
+            /// IBM DataPower client id header name
+            /// </summary>
+            public const string ApiGatewayClientId = "X-IBM-Client-ID";
+
+            /// <summary>
+            /// IBM DataPower client secret header name
+            /// </summary>
+            public const string ApiGatewayClientSecret = "X-IBM-Client-Secret";
+
+            /// <summary>
             /// Client Request Id
             /// </summary>
             public const string ClientRequestId = "client-request-id";
+
+            /// <summary>
+            /// Accept header
+            /// </summary>
+            public const string Accept = "Accept";
         }
 
         /// <summary>

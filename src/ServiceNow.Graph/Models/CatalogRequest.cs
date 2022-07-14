@@ -66,12 +66,6 @@ namespace ServiceNow.Graph.Models
         public ReferenceLink RequestedFor { get; set; }
 
         /// <summary>
-        /// Request state
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "request_state", Required = Required.Default)]
-        public string RequestState { get; set; }
-
-        /// <summary>
         /// Special instructions, X4000
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "special_instructions", Required = Required.Default)]

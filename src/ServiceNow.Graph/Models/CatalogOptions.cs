@@ -38,7 +38,7 @@ namespace ServiceNow.Graph.Models
         /// Sort order
         /// </summary>
         [JsonProperty(PropertyName = "order", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public long? Order { get; set; }
+        public string Order { get; set; }
 
         /// <summary>
         /// Value

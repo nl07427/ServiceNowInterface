@@ -1,14 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
-namespace ServiceNow.Graph.Models.Extensions
+namespace ServiceNow.Graph.Models
 {
     public partial class User
     {
+        private DateTimeOffset? _lastLdapUpdate;
         /// <summary>
         /// Can approve amount of
         /// </summary>
         [JsonProperty(PropertyName = "u_approval_threshold", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public double ApprovalThreshold { get; set; }
+        public string ApprovalThreshold { get; set; }
 
         /// <summary>
         /// Division, X40
@@ -26,7 +28,17 @@ namespace ServiceNow.Graph.Models.Extensions
         /// Last LDAP Update on
         /// </summary>
         [JsonProperty(PropertyName = "u_last_ldap_updated", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string LdapUpdated { get; set; }
+        public DateTimeOffset? LdapUpdated
+        {
+            get => _lastLdapUpdate;
+            set
+            {
+                if (value.HasValue)
+                {
+                    _lastLdapUpdate = value.Value + value.Value.Offset;
+                }
+            }
+        }
 
         /// <summary>
         /// LDAP Id, X100

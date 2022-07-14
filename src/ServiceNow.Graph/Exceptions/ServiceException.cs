@@ -13,7 +13,7 @@ namespace ServiceNow.Graph.Exceptions
         /// <param name="error">The error that triggered the exception.</param>
         /// <param name="innerException">The possible innerException.</param>
         public ServiceException(Error error, Exception innerException = null)
-            : this(error, responseHeaders: null, statusCode: default(System.Net.HttpStatusCode),
+            : this(error, responseHeaders: null, statusCode: default(HttpStatusCode),
                 innerException: innerException)
         {
         }

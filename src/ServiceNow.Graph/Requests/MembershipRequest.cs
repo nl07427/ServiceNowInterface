@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using ServiceNow.Graph.Models;
 using ServiceNow.Graph.Requests.Options;
@@ -99,5 +100,17 @@ namespace ServiceNow.Graph.Requests
         private void InitializeCollectionProperties(UserGroupMembership membershipToInitialize)
         {
         }
+
+        /// <summary>
+        /// Adds the specified select value to the request.
+        /// </summary>
+        /// <param name="value">The select value.</param>
+        /// <returns>The request object to send.</returns>
+        public IMembershipRequest Select(string value)
+        {
+            QueryOptions.Add(new QueryOption("sysparm_fields", WebUtility.UrlEncode(value)));
+            return this;
+        }
+
     }
 }

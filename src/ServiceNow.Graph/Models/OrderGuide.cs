@@ -42,15 +42,15 @@ namespace ServiceNow.Graph.Models
         public string Script { get; set; }
 
         /// <summary>
+        /// Script, X4000
+        /// </summary>
+        [JsonProperty(PropertyName = "validator", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string Validator { get; set; }
+
+        /// <summary>
         /// Two step, bool
         /// </summary>
         [JsonProperty(PropertyName = "two_step", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public bool? TwoStep { get; set; }
-
-        /// <summary>
-        /// Validator, X4000
-        /// </summary>
-        [JsonProperty(PropertyName = "validator", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string Validator { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32407.337
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{63434172-4889-4556-A53A-D8E582727836}"
 EndProject
@@ -19,6 +19,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{CBE8EFEB-AB59-4724-8BB8-E775DB9C380D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{240B4FD1-FD0E-471E-8BBE-7B368BCE993E}"
+	ProjectSection(SolutionItems) = preProject
+		PowerShellConnectorDefinition.xsd = PowerShellConnectorDefinition.xsd
+		ServiceNowPowerShellConnector.ps1 = ServiceNowPowerShellConnector.ps1
+		SnowPowerShellConnector.xml = SnowPowerShellConnector.xml
+		Temp.xml = Temp.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

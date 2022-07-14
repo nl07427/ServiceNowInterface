@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace ServiceNow.Graph.Models.Extensions
+namespace ServiceNow.Graph.Models
 {
     /// <summary>
     /// Extensions of the class Location which references the cmn_location table in ServiceNow

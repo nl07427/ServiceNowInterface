@@ -26,6 +26,25 @@ namespace ServiceNow.Graph.Models
         public string EntitlementScript { get; set; }
 
         /// <summary>
+        /// Access type, X40
+        /// </summary>
+        [JsonProperty(PropertyName = "access_type", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string AccessType { get; set; }
+
+        /// <summary>
+        /// Checked out, X40
+        /// </summary>
+        [JsonProperty(PropertyName = "checked_out", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string CheckedOut { get; set; }
+
+        /// <summary>
+        /// Fulfillment automation level, X40
+        /// </summary>
+        [JsonProperty(PropertyName = "fulfillment_automation_level", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string FulfillmentAutomationLevel
+        { get; set; }
+
+        /// <summary>
         /// Use cart layout, bool
         /// </summary>
         [JsonProperty(PropertyName = "use_sc_layout", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
@@ -366,6 +385,30 @@ namespace ServiceNow.Graph.Models
         public ReferenceLink ScIcItemStaging { get; set; }
 
         /// <summary>
+        /// Associated template, catalog template reference
+        /// </summary>
+        [JsonProperty(PropertyName = "sc_template", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink AssociatedTemplate { get; set; }
+
+        /// <summary>
+        /// Taxonomy topic, Topic reference
+        /// </summary>
+        [JsonProperty(PropertyName = "taxonomy_topic", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink TaxonomyTopic { get; set; }
+
+        /// <summary>
+        /// Owner, sys_user reference
+        /// </summary>
+        [JsonProperty(PropertyName = "owner", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink Owner { get; set; }
+
+        /// <summary>
+        /// Published item, sc_cat_item reference
+        /// </summary>
+        [JsonProperty(PropertyName = "published_ref", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink PublishedItem { get; set; }
+
+        /// <summary>
         /// Billable, true
         /// </summary>
         [JsonProperty(PropertyName = "billable", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
@@ -376,6 +419,19 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "picture", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public string Picture { get; set; }
+
+        /// <summary>
+        /// Template Manager roles, X255
+        /// </summary>
+        [JsonProperty(PropertyName = "template_manager_roles", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string TemplateManagerRoles
+        { get; set; }
+
+        /// <summary>
+        /// State, X40
+        /// </summary>
+        [JsonProperty(PropertyName = "state", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string State { get; set; }
 
         /// <summary>
         /// Display price property, X40

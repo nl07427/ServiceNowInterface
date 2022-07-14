@@ -55,7 +55,7 @@ namespace ServiceNow.Graph.Requests
         public static HttpClient Create(
             IAuthenticationProvider authenticationProvider,
             string domain,
-            string version = "now",
+            string version = "",
             IWebProxy proxy = null,
             HttpMessageHandler finalHandler = null)
         {
@@ -79,7 +79,7 @@ namespace ServiceNow.Graph.Requests
         public static HttpClient Create(
             IEnumerable<DelegatingHandler> handlers,
             string domain,
-            string version = "now",
+            string version = "",
             IWebProxy proxy = null,
             HttpMessageHandler finalHandler = null)
         {
@@ -98,6 +98,7 @@ namespace ServiceNow.Graph.Requests
             var (pipeline, featureFlags) = CreatePipelineWithFeatureFlags(handlers, finalHandler);
             var client = new HttpClient(pipeline);
             client.DefaultRequestHeaders.Add(SdkVersionHeaderName, SdkVersionHeaderValue);
+            client.DefaultRequestHeaders.Add("Accept", "*/*");
             client.SetFeatureFlag(featureFlags);
             client.Timeout = DefaultTimeout;
             client.BaseAddress = DetermineBaseAddress(domain, version);

@@ -16,7 +16,7 @@ namespace ServiceNow.Graph.Requests
         /// <summary>
         /// Gets the domain of the ServiceNow instance.
         /// </summary>
-        string Domain { get; }
+        string Url { get; }
 
         /// <summary>
         /// Gets the version of the ServiceNow api.

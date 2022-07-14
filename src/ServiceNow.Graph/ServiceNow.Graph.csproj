@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Authentication\ApiGatewayCredentialProvider.cs" />
     <Compile Include="Authentication\ClientCredentialProvider.cs" />
     <Compile Include="Authentication\DelegateAuthenticationProvider.cs" />
     <Compile Include="Authentication\IAuthenticationProvider.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Models\DepartmentResponse.cs" />
     <Compile Include="Models\DepartmentsCollectionResponse.cs" />
     <Compile Include="Models\Entity.cs" />
+    <Compile Include="Models\Extensions\CostCenter.cs" />
     <Compile Include="Models\Extensions\Location.cs" />
     <Compile Include="Models\Extensions\UserGroup.cs" />
     <Compile Include="Models\Extensions\User.cs" />

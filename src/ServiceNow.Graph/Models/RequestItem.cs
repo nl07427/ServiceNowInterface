@@ -98,6 +98,12 @@ namespace ServiceNow.Graph.Models
         public string Stage { get; set; }
 
         /// <summary>
+        /// Quantity, int but using string
+        /// </summary>
+        [JsonProperty(PropertyName = "quantity", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string Quantity { get; set; }
+
+        /// <summary>
         /// Estimated delivery timestamp
         /// </summary>
         [JsonProperty(PropertyName = "estimated_delivery", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
@@ -111,6 +117,15 @@ namespace ServiceNow.Graph.Models
                     _estimatedDelivery = value.Value + value.Value.Offset;
                 }
             }
+        }
+
+        /// <summary>
+        /// Request for, reference to User (sys_user) table
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "requested_for", Required = Required.Default)]
+        public ReferenceLink RequestedFor
+        {
+            get; set;
         }
     }
 }
