@@ -643,7 +643,7 @@ function Set-SnowCatalogTask {
 
         [parameter(Mandatory = $false)]
         [string]$WorkNotes,
-
+        
         [parameter(Mandatory = $false)]
         [int]$State,
 
@@ -678,6 +678,9 @@ function Set-SnowCatalogTask {
         [bool]$Active,
 
         [parameter(Mandatory = $false)]
+        [bool]$Knowledge,
+
+        [parameter(Mandatory = $false)]
         [int]$Priority,
 
         [parameter(Mandatory = $false)]
@@ -706,6 +709,9 @@ function Set-SnowCatalogTask {
         $task.Active = $Active
     } 
 
+    if ($parameters.ContainsKey("Knowledge")) {
+        $task.Knowledge = $Knowledge
+    } 
     if ($parameters.ContainsKey("Description")) {
         $task.Description = $Description
     }                 
@@ -842,9 +848,12 @@ function New-SnowCatalogTask {
 
         [parameter(Mandatory = $false)]
         [string]$WorkNotes,
-
+        
         [parameter(Mandatory = $false)]
         [int]$State,
+        
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,
         
         [parameter(Mandatory = $false)]
         [bool]$Active,
@@ -911,6 +920,10 @@ function New-SnowCatalogTask {
 
     if ($parameters.ContainsKey("Active")) {
         $task.Active = $Active
+    } 
+
+    if ($parameters.ContainsKey("Knowledge")) {
+        $task.Knowledge = $Knowledge
     } 
 
     if ($parameters.ContainsKey("Description")) {
@@ -1900,9 +1913,6 @@ function Set-SnowRequestItem {
         [string]$Comments,
 
         [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
-
-        [parameter(Mandatory = $false)]
         [string]$RequestedFor,
 
         [parameter(Mandatory = $false)]
@@ -2041,9 +2051,6 @@ function Set-SnowRequestItem {
     if ($parameters.ContainsKey("Comments")) {
         $requestItem.Comments = $Comments
     } 
-    if ($parameters.ContainsKey("WorkNotes")) {
-        $requestItem.WorkNotes = $WorkNotes
-    }            
     if ($parameters.ContainsKey("Active")) {
         $requestItem.Active = $Active
     } 
@@ -2053,6 +2060,9 @@ function Set-SnowRequestItem {
 
 function New-SnowRequestItem {
     param (
+        [parameter(Mandatory = $true)]
+        [string]$OpenedBy,
+
         [parameter(Mandatory = $true)]
         [string]$CatalogItem,
 
@@ -2073,9 +2083,6 @@ function New-SnowRequestItem {
 
         [parameter(Mandatory = $false)]
         [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
 
         [parameter(Mandatory = $false)]
         [bool]$Active,
@@ -2115,6 +2122,7 @@ function New-SnowRequestItem {
 
         [parameter(Mandatory = $false)]
         [string]$CmdbCi
+        
     )
     
     $requestItemsBuilder = $ServiceNowClient.RequestItems
@@ -2122,6 +2130,7 @@ function New-SnowRequestItem {
     $parameters = $MyInvocation.BoundParameters  
 
 
+    $requestItem.OpenedBy = Get-ReferenceLink $OpenedBy
     $requestItem.RequestedFor = Get-ReferenceLink $RequestedFor
     $requestItem.CatalogItem = Get-ReferenceLink $CatalogItem
     $requestItem.Request = Get-ReferenceLink $Request
@@ -2131,9 +2140,7 @@ function New-SnowRequestItem {
             $requestItem.Price =  $Price
         }
     } 
-    if ($parameters.ContainsKey("WorkNotes")) {
-        $requestItem.WorkNotes = $WorkNotes
-    }        
+
     if ($parameters.ContainsKey("Quantity")) {
         if(-not [string]::IsNullOrEmpty($Quantity)){
             $requestItem.Quantity =  $Quantity
@@ -2220,9 +2227,6 @@ function Set-SnowCatalogRequest {
         [string]$Comments,
 
         [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
-
-        [parameter(Mandatory = $false)]
         [string]$ContactType,
 
         [parameter(Mandatory = $false)]
@@ -2262,6 +2266,9 @@ function Set-SnowCatalogRequest {
         [string]$Price,
 
         [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
+
+        [parameter(Mandatory = $false)]
         [string]$RequestedFor,
 
         [parameter(Mandatory = $false)]
@@ -2287,12 +2294,12 @@ function Set-SnowCatalogRequest {
         $request.Active = $Active
     }
     
+    if ($parameters.ContainsKey("Knowledge")) {
+        $request.Knowledge = $Knowledge
+    }
+
     if ($parameters.ContainsKey("DeliveryAddress")) {
         $request.DeliveryAddress = $DeliveryAddress
-    }
-    
-    if ($parameters.ContainsKey("WorkNotes")) {
-        $request.WorkNotes = $WorkNotes
     }
 
     if ($parameters.ContainsKey("Price")) {
@@ -2434,13 +2441,13 @@ function New-SnowCatalogRequest {
         [string]$Comments,
 
         [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
-
-        [parameter(Mandatory = $false)]
         [string]$ContactType,
 
         [parameter(Mandatory = $false)]
         [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$OpenedBy,
 
         [parameter(Mandatory = $false)]
         [string]$ClosedBy,
@@ -2485,6 +2492,9 @@ function New-SnowCatalogRequest {
         [string]$DeliveryAddress,        
 
         [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
+        
+        [parameter(Mandatory = $false)]
         [string]$SpecialInstructions,
 
         [parameter(Mandatory = $false)]
@@ -2499,12 +2509,12 @@ function New-SnowCatalogRequest {
         $request.Active = $Active
     }
 
+    if ($parameters.ContainsKey("Knowledge")) {
+        $request.Knowledge = $Knowledge
+    }
+
     if ($parameters.ContainsKey("DeliveryAddress")) {
         $request.DeliveryAddress = $DeliveryAddress
-    }
-    
-    if ($parameters.ContainsKey("WorkNotes")) {
-        $request.WorkNotes = $WorkNotes
     }
 
     if ($parameters.ContainsKey("Price")) {
@@ -2607,6 +2617,15 @@ function New-SnowCatalogRequest {
         }
     }
 
+    if ($parameters.ContainsKey("OpenedBy")) {
+        if (-not [string]::IsNullOrEmpty($OpenedBy)) {
+            $request.OpenedBy = Get-ReferenceLink $OpenedBy
+        }
+        else {
+            $request.OpenedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
+        }
+    }
+                                   
     if ($parameters.ContainsKey("State")) {
         $request.State = $State
     }   
@@ -2781,9 +2800,6 @@ function New-SnowIncident {
         [string]$Comments,
 
         [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
-
-        [parameter(Mandatory = $false)]
         [string]$ContactType,
 
         [parameter(Mandatory = $false)]
@@ -2943,9 +2959,6 @@ function Set-SnowIncident {
 
         [parameter(Mandatory = $false)]
         [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
 
         [parameter(Mandatory = $false)]
         [string]$ContactType,
