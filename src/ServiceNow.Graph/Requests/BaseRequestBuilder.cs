@@ -12,8 +12,8 @@
         /// <param name="client">The <see cref="IBaseClient"/> for handling requests.</param>
         public BaseRequestBuilder(string requestUrl, IBaseClient client)
         {
-            this.Client = client;
-            this.RequestUrl = requestUrl;
+            Client = client;
+            RequestUrl = requestUrl;
         }
 
         /// <summary>

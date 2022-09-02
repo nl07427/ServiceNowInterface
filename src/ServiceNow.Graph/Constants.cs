@@ -10,9 +10,17 @@ namespace ServiceNow.Graph
     {
         /// <summary>
         /// The base URL format for the REST API endpoint.
-        /// The first parameter is the host domain, the second parameter is the API version.
+        /// The first parameter is the host domain, the second parameter is the namespace,
+        /// third is the API version, and fourth the API name.
         /// </summary>
-        public const string ApiUrlFormatString = "{0}/{1}";
+        public const string ApiUrlFormatString = "https://{0}/api/{1}/{2}/{3}";
+
+        /// <summary>
+        /// The base URL format for the REST API endpoint.
+        /// The first parameter is the host domain, the second parameter is the namespace,
+        /// third is the API version.
+        /// </summary>
+        public const string ApiUrlFormatWithNoVersionString = "https://{0}/api/{1}/{2}";
 
         /// <summary>
         /// The base URL format for the OAuth authentication.

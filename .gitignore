@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /.vscode/launch.json
 /.vscode/tasks.json
 /Temp.xml
+/tests/ServiceNow.Graph.Test/secrets.json
