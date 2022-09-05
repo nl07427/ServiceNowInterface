@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow cmn_cost_center table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class CostCenter : Entity
+    public class CostCenter : Entity
     {
         private DateTimeOffset? _validFrom;
         private DateTimeOffset? _validTo;

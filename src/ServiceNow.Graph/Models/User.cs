@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow sys_user table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class User : Entity
+    public class User : Entity
     {
         private DateTimeOffset? _lastLoginTime;
         private DateTimeOffset? _lastLogin;

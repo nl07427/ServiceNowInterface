@@ -22,15 +22,10 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="httpClient">Custom http client to be used for making requests</param>
         /// <param name="domain"></param>
-        /// <param name="nameSpace">API namespace, for example the value 'now'</param>
-        /// <param name="apiName">The API name, for example 'table'</param>
-        /// <param name="version"></param>
         /// <param name="serializer">A serializer for serializing and deserializing JSON objects.</param>
-        public SimpleHttpProvider(HttpClient httpClient, string domain, string nameSpace, string apiName, string version = "",
-            ISerializer serializer = null)
+        public SimpleHttpProvider(HttpClient httpClient, string domain, ISerializer serializer = null)
         {
-            HttpClient = httpClient ?? ServiceNowClientFactory.Create(authenticationProvider: null, domain: domain, nameSpace: nameSpace,
-                                                                       apiName: apiName, version: version);
+            HttpClient = httpClient ?? ServiceNowClientFactory.Create(authenticationProvider: null, domain: domain);
             Serializer = serializer ?? new Serializer(new JsonSerializerSettings
             {
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,

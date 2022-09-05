@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow sys_user_has_role table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class UserHasRole : Entity
+    public class UserHasRole : Entity
     {
         /// <summary>
         /// UserHasRole constructor

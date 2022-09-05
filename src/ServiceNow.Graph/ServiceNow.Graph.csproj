@@ -40,7 +40,6 @@
     <Compile Include="Authentication\DelegateAuthenticationProvider.cs" />
     <Compile Include="Authentication\IAuthenticationProvider.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Enums\ApiVersion.cs" />
     <Compile Include="Exceptions\AuthenticationException.cs" />
     <Compile Include="Exceptions\ClientException.cs" />
     <Compile Include="Exceptions\Error.cs" />
@@ -52,8 +51,6 @@
     <Compile Include="Extensions\HttpClientExtensions.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="Extensions\SerializerExtensions.cs" />
-    <Compile Include="Helpers\DescendingLengthComparer.cs" />
-    <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Models\ApplicationFile.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\AttachmentResponse.cs" />
@@ -91,10 +88,6 @@
     <Compile Include="Models\DepartmentResponse.cs" />
     <Compile Include="Models\DepartmentsCollectionResponse.cs" />
     <Compile Include="Models\Entity.cs" />
-    <Compile Include="Models\Extensions\CostCenter.cs" />
-    <Compile Include="Models\Extensions\Location.cs" />
-    <Compile Include="Models\Extensions\UserGroup.cs" />
-    <Compile Include="Models\Extensions\User.cs" />
     <Compile Include="Models\GroupHasRole.cs" />
     <Compile Include="Models\GroupHasRoleResponse.cs" />
     <Compile Include="Models\GroupHasRolesCollectionResponse.cs" />
@@ -473,6 +466,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Enums\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Models\Extensions\" />
     <Folder Include="Requests\Extensions\" />
     <Folder Include="Requests\Helpers\" />
   </ItemGroup>

@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// Representation of ServiceNow sc_request table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class CatalogRequest : Task
+    public class CatalogRequest : Task
     {
         private DateTimeOffset? _requestedForDate;
 

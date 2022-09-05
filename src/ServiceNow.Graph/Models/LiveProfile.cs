@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow live_profile table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class LiveProfile : Entity
+    public class LiveProfile : Entity
     {
         /// <summary>
         /// LiveProfile constructor

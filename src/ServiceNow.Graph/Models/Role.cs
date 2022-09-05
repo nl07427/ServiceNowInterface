@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow sys_user_role table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Role : ApplicationFile
+    public class Role : ApplicationFile
     {
         /// <summary>
         /// Role constructor

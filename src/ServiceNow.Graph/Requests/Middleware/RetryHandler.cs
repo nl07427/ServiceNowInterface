@@ -159,7 +159,7 @@ namespace ServiceNow.Graph.Requests.Middleware
         /// <param name="delayInSeconds"></param>
         /// <param name="cancellationToken">The cancellationToken for the Http request</param>
         /// <returns>The <see cref="Task"/> for delay operation.</returns>
-        internal System.Threading.Tasks.Task Delay(HttpResponseMessage response, int retryCount, int delay,
+        internal Task Delay(HttpResponseMessage response, int retryCount, int delay,
             out double delayInSeconds, CancellationToken cancellationToken)
         {
             HttpHeaders headers = response.Headers;
@@ -180,7 +180,7 @@ namespace ServiceNow.Graph.Requests.Middleware
 
             var delayTimeSpan = TimeSpan.FromSeconds(Math.Min(delayInSeconds, RetryHandlerOption.MaxDelay));
 
-            return System.Threading.Tasks.Task.Delay(delayTimeSpan, cancellationToken);
+            return Task.Delay(delayTimeSpan, cancellationToken);
         }
 
         /// <summary>

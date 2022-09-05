@@ -19,11 +19,6 @@ namespace ServiceNow.Graph.Requests
         string Domain { get; }
 
         /// <summary>
-        /// Gets the version of the ServiceNow api.
-        /// </summary>
-        string Version { get; }
-
-        /// <summary>
         /// Gets the <see cref="IHttpProvider"/> for sending HTTP requests.
         /// </summary>
         IHttpProvider HttpProvider { get; }
@@ -32,16 +27,5 @@ namespace ServiceNow.Graph.Requests
         /// Gets or Sets the <see cref="IAuthenticationProvider"/> for authenticating a single HTTP requests.
         /// </summary>
         Func<IAuthenticationProvider> PerRequestAuthProvider { get; set; }
-
-        /// <summary>
-        /// Gets the namespace of the ServiceNow api.
-        /// </summary>
-        string Namespace { get; }
-
-        /// <summary>
-        /// Gets the API name.
-        /// </summary>
-        string ApiName { get; }
-
     }
 }

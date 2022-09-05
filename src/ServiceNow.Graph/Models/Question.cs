@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow Question entity
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Question : ApplicationFile
+    public class Question : ApplicationFile
     {
         /// <summary>
         /// Default constructor

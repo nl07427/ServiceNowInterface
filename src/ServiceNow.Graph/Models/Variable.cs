@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow Variable table (item_option_new)
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Variable : Question
+    public class Variable : Question
     {
         /// <summary>
         /// Default constructor

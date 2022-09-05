@@ -27,12 +27,9 @@ namespace ServiceNow.Graph.Requests
         /// Constructs a new <see cref="HttpProvider"/>.
         /// </summary>
         /// <param name="domain">Domain name of ServiceNow instance</param>
-        /// <param name="nameSpace">API namespace, for example the value 'now'</param>
-        /// <param name="apiName">The API name, for example 'table'</param>
-        /// <param name="version">Version of the API to use, defaults to the latest (now)</param>
         /// <param name="serializer">A serializer for serializing and deserializing JSON objects.</param>
-        public HttpProvider(string domain, string nameSpace, string apiName, string version = "", ISerializer serializer = null)
-            : this((HttpMessageHandler) null, true,domain, nameSpace, apiName, version, serializer)
+        public HttpProvider(string domain, ISerializer serializer = null)
+            : this((HttpMessageHandler) null, true,domain, serializer)
         {
         }
 
@@ -42,16 +39,14 @@ namespace ServiceNow.Graph.Requests
         /// <param name="httpClientHandler">An HTTP client handler to pass to the <see cref="System.Net.Http.HttpClient"/> for sending requests.</param>
         /// <param name="disposeHandler">Whether or not to dispose the client handler on Dispose().</param>
         /// <param name="domain">Domain name of ServiceNow instance</param>
-        /// <param name="version">Version of the API to use, defaults to the latest (now)</param>
         /// <param name="serializer">A serializer for serializing and deserializing JSON objects.</param>
         /// <remarks>
         ///     By default, HttpProvider disables automatic redirects and handles redirects to preserve authentication headers. If providing
         ///     an <see cref="HttpClientHandler"/> to the constructor and enabling automatic redirects this could cause issues with authentication
         ///     over the redirect.
         /// </remarks>
-        public HttpProvider(HttpClientHandler httpClientHandler, bool disposeHandler, string domain, string nameSpace, string apiName, string version = "",
-            ISerializer serializer = null)
-            : this((HttpMessageHandler) httpClientHandler, disposeHandler, domain,nameSpace, apiName, version, serializer)
+        public HttpProvider(HttpClientHandler httpClientHandler, bool disposeHandler, string domain, ISerializer serializer = null)
+            : this((HttpMessageHandler) httpClientHandler, disposeHandler, domain, serializer)
         {
         }
 
@@ -61,12 +56,8 @@ namespace ServiceNow.Graph.Requests
         /// <param name="httpMessageHandler">An HTTP message handler to pass to the <see cref="System.Net.Http.HttpClient"/> for sending requests.</param>
         /// <param name="disposeHandler">Whether or not to dispose the client handler on Dispose().</param>
         /// <param name="domain">Domain name of ServiceNow instance</param>
-        /// <param name="nameSpace">API namespace, for example the value 'now'</param>
-        /// <param name="apiName">The API name, for example 'table'</param>
-        /// <param name="version">Version of the API to use, defaults to the latest (now)</param>
         /// <param name="serializer">A serializer for serializing and deserializing JSON objects.</param>
         public HttpProvider(HttpMessageHandler httpMessageHandler, bool disposeHandler, string domain,
-            string nameSpace, string apiName, string version = "",
             ISerializer serializer = null)
         {
             DisposeHandler = disposeHandler;
@@ -83,7 +74,7 @@ namespace ServiceNow.Graph.Requests
             if (HttpMessageHandler == null)
             {
                 HttpMessageHandler = ServiceNowClientFactory.GetHttpHandler();
-                HttpClient = ServiceNowClientFactory.Create(authenticationProvider: null, domain, nameSpace, apiName,version,
+                HttpClient = ServiceNowClientFactory.Create(authenticationProvider: null, domain,
                     finalHandler: HttpMessageHandler);
             }
             else

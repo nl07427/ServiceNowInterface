@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow sc_catalog
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class ServiceCatalog : ApplicationFile
+    public class ServiceCatalog : ApplicationFile
     {
         /// <summary>
         /// Default constructor

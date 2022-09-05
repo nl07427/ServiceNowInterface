@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow sys_user_group table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class UserGroup : Entity
+    public class UserGroup : Entity
     {
         /// <summary>
         /// Default constructor for the sys_user_group table. The entity

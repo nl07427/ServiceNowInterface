@@ -5,9 +5,7 @@ namespace ServiceNow.Graph.Exceptions
     /// <summary>
     /// ServiceNow Table API client exception.
     /// </summary>
-#pragma warning disable RCS1194 // Implement exception constructors.
     public class ClientException : ServiceException
-#pragma warning restore RCS1194 // Implement exception constructors.
     {
         /// <summary>
         /// Creates a new client exception.

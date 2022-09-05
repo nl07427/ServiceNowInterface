@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow cmn_department table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Department : Entity
+    public class Department : Entity
     {
         /// <summary>
         /// Default constructor

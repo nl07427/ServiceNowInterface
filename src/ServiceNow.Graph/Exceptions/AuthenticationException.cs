@@ -15,7 +15,7 @@ namespace ServiceNow.Graph.Exceptions
         public AuthenticationException(Error error, Exception innerException = null)
             : base(error?.ToString(), innerException)
         {
-            this.Error = error;
+            Error = error;
         }
 
         /// <summary>

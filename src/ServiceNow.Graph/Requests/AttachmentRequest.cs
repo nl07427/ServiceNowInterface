@@ -102,7 +102,7 @@ namespace ServiceNow.Graph.Requests
             var imageStream = await SendStreamRequestAsync(null, cancellationToken).ConfigureAwait(false);
             if (imageStream == null) return retrievedEntity.Result;
 
-            retrievedEntity.Result.Image = System.Convert.ToBase64String(((MemoryStream)imageStream).ToArray());
+            retrievedEntity.Result.Image = Convert.ToBase64String(((MemoryStream)imageStream).ToArray());
             return retrievedEntity.Result;
         }
 

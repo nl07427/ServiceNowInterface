@@ -48,23 +48,17 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="authenticationProvider">The <see cref="IAuthenticationProvider"/> to authenticate requests.</param>
         /// <param name="domain">Domain of ServiceNow instance</param>
-        /// <param name="apiName">The API name, for example 'table'</param>
-        /// <param name="version">The API version to use.</param>
         /// <param name="proxy">The proxy to be used with created client.</param>
         /// <param name="finalHandler">The last HttpMessageHandler to HTTP calls. The default implementation creates a new instance of <see cref="HttpClientHandler"/> for each HttpClient.</param>
-        /// <param name="nameSpace">API namespace, for example the value 'now'</param>
         /// <returns>An <see cref="HttpClient"/> instance with the configured handlers.</returns>
         public static HttpClient Create(
             IAuthenticationProvider authenticationProvider,
             string domain,
-            string nameSpace, 
-            string apiName, 
-            string version = "",
             IWebProxy proxy = null,
             HttpMessageHandler finalHandler = null)
         {
             var handlers = CreateDefaultHandlers(authenticationProvider);
-            return Create(handlers, domain,nameSpace, apiName, version, proxy, finalHandler);
+            return Create(handlers, domain, proxy, finalHandler);
         }
 
         /// <summary>
@@ -76,18 +70,12 @@ namespace ServiceNow.Graph.Requests
         ///     The handlers are invoked in a top-down fashion. That is, the first entry is invoked first for
         ///     an outbound request message but last for an inbound response message.</param>
         /// <param name="domain"></param>
-        /// <param name="apiName">The API name, for example 'table'</param>
-        /// <param name="version">The API version to use.</param>
         /// <param name="proxy">The proxy to be used with created client.</param>
         /// <param name="finalHandler">The last HttpMessageHandler to HTTP calls.</param>
-        /// <param name="nameSpace">API namespace, for example the value 'now'</param>
         /// <returns>An <see cref="HttpClient"/> instance with the configured handlers.</returns>
         public static HttpClient Create(
             IEnumerable<DelegatingHandler> handlers,
             string domain,
-            string nameSpace, 
-            string apiName, 
-            string version = "",
             IWebProxy proxy = null,
             HttpMessageHandler finalHandler = null)
         {
@@ -109,7 +97,7 @@ namespace ServiceNow.Graph.Requests
             client.DefaultRequestHeaders.Add("Accept", "*/*");
             client.SetFeatureFlag(featureFlags);
             client.Timeout = DefaultTimeout;
-            client.BaseAddress = DetermineBaseAddress(domain, nameSpace, apiName, version);
+            client.BaseAddress = DetermineBaseAddress(domain);
             client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue {NoCache = true, NoStore = true};
             return client;
         }
@@ -235,13 +223,9 @@ namespace ServiceNow.Graph.Requests
             }
         }
 
-        private static Uri DetermineBaseAddress(string domain, string nameSpace, string apiName, string version = "")
+        private static Uri DetermineBaseAddress(string domain)
         {
-            var cloudAddress = string.IsNullOrEmpty(version)
-                ? string.Format(Constants.ApiUrlFormatWithNoVersionString, domain, nameSpace, apiName)
-                : string.Format(Constants.ApiUrlFormatString, domain, nameSpace, version, apiName); 
-                
-            return new Uri(cloudAddress);
+            return new Uri($"https://{domain}/api");
         }
     }
 }

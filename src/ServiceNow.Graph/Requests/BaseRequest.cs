@@ -103,7 +103,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the request.</param>
         /// <param name="completionOption">The <see cref="HttpCompletionOption"/> to pass to the <see cref="IHttpProvider"/> on send.</param>
         /// <returns>The task to await.</returns>
-        public async System.Threading.Tasks.Task SendAsync(
+        public async Task SendAsync(
             object serializableObject,
             CancellationToken cancellationToken,
             HttpCompletionOption completionOption = HttpCompletionOption.ResponseContentRead)
@@ -352,14 +352,14 @@ namespace ServiceNow.Graph.Requests
 
                 if (nextPageLinkString != null)
                 {
-                    foreach (var x in nextPageLinkString?.Split(';'))
+                    foreach (var x in nextPageLinkString.Split(';'))
                     {
                         if (!x.StartsWith("<")) continue;
                         nextPageLinkString = x;
                         break;
                     }
 
-                    nextPageLinkString = nextPageLinkString?.TrimStart('<').TrimEnd('>');
+                    nextPageLinkString = nextPageLinkString.TrimStart('<').TrimEnd('>');
                 }
             }
 
@@ -389,7 +389,7 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="request">The <see cref="HttpRequestMessage"/> representation of the request.</param>
         /// <returns>The task to await.</returns>
-        private async System.Threading.Tasks.Task AuthenticateRequestAsync(HttpRequestMessage request)
+        private async Task AuthenticateRequestAsync(HttpRequestMessage request)
         {
             if (Client.AuthenticationProvider == null)
             {

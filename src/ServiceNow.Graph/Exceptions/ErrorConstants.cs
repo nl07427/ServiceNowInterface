@@ -31,10 +31,6 @@
 
             internal static readonly string DomainMissing = "Domain cannot be null or empty.";
 
-            internal static readonly string NamespaceMissing = "Namespace cannot be null or empty.";
-            
-            internal static readonly string ApiNameMissing = "API name cannot be null or empty.";
-
             internal static readonly string InvalidTypeForDateConverter = "DateConverter can only serialize objects of type Date.";
 
             internal static readonly string InvalidTypeForReferenceLinkConverter = "ReferenceLinkConverter can only serialize objects of type ReferenceLink.";
@@ -60,16 +56,6 @@
             internal static readonly string UnexpectedExceptionResponse = "Unexpected exception returned from the service.";
 
             internal static readonly string MaximumValueExceeded = "{0} exceeds the maximum value of {1}.";
-
-            internal static readonly string NullParameter = "{0} parameter cannot be null.";
-
-            internal static readonly string UnableToDeserializexContent = "Unable to deserialize content.";
-
-            internal static readonly string InvalidDependsOnRequestId = "Corresponding batch request id not found for the specified dependsOn relation.";
-
-            internal static readonly string ExpiredUploadSession = "Upload session expired. Upload cannot resume";
-
-            internal static readonly string NoResponseForUpload = "No Response Received for upload.";
 
             public static readonly string InvalidProxyArgument = "Proxy cannot be set more once. Proxy can only be set on the proxy or defaultHttpHandler argument and not both.";
         }

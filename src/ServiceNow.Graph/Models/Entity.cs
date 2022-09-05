@@ -9,7 +9,7 @@ namespace ServiceNow.Graph.Models
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [JsonConverter(typeof(DerivedTypeConverter))]
-    public partial class Entity
+    public class Entity
     {
         private DateTimeOffset? _updatedOn;
         private DateTimeOffset? _createdOn;

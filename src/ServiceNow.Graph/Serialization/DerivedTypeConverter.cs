@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ServiceNow.Graph.Exceptions;
-using ServiceNow.Graph.Helpers;
 
 namespace ServiceNow.Graph.Serialization
 {
@@ -14,8 +12,6 @@ namespace ServiceNow.Graph.Serialization
     /// </summary>
     public class DerivedTypeConverter : JsonConverter
     {
-        internal static readonly ConcurrentDictionary<string, Type> TypeMappingCache = new ConcurrentDictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-
         /// <summary>
         /// Checks if the given object can be converted. In this instance, all object can be converted.
         /// </summary>
@@ -43,47 +39,12 @@ namespace ServiceNow.Graph.Serialization
         {
             var jObject = JObject.Load(reader);
 
-            var type = jObject.GetValue(Constants.Serialization.ObjectType);
-
-            object instance;
-
-            if (type != null)
-            {
-                var typeString = type.ToString();
-                typeString = $"{Constants.ModelNameSpace}.{StringHelper.ConvertTypeToTitleCase(typeString)}";
-
-                if (DerivedTypeConverter.TypeMappingCache.TryGetValue(typeString, out var instanceType))
-                {
-                    instance = Create(instanceType);
-                }
-                else
-                {
-                    var typeAssembly = objectType.GetTypeInfo().Assembly;
-                    instance = Create(typeString, typeAssembly);
-                }
-
-                // If @odata.type is set but we aren't able to create an instance of it use the method-provided
-                // object type instead. This means unknown types will be deserialized as a parent type.
-                if (instance == null)
-                {
-                    instance = Create(objectType.AssemblyQualifiedName, /* typeAssembly */ null);
-                }
-
-                if (instance != null && instanceType == null)
-                {
-                    // Cache the type mapping resolution if we haven't pulled it from the cache already.
-                    DerivedTypeConverter.TypeMappingCache.TryAdd(typeString, instance.GetType());
-                }
-            }
-            else
-            {
-                instance = Create(objectType.AssemblyQualifiedName, /* typeAssembly */ null);
-            }
+            var instance = Create(objectType.AssemblyQualifiedName, /* typeAssembly */ null);
 
             if (instance == null)
             {
                 throw new ServiceException(
-                    new Error()
+                    new Error
                     {
                         ErrorDetail = new ErrorDetail()
                         {
@@ -115,18 +76,9 @@ namespace ServiceNow.Graph.Serialization
 
         private object Create(string typeString, Assembly typeAssembly)
         {
-            Type type;
+            var type = typeAssembly != null ? typeAssembly.GetType(typeString) : Type.GetType(typeString);
 
-            if (typeAssembly != null)
-            {
-                type = typeAssembly.GetType(typeString);
-            }
-            else
-            {
-                type = Type.GetType(typeString);
-            }
-
-            return this.Create(type);
+            return Create(type);
         }
 
         private object Create(Type type)

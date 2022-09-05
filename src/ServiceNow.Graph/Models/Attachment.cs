@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow sys_attachment table, retrieval through the attachment REST API
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Attachment : Entity
+    public class Attachment : Entity
     {
         /// <summary>
         /// Size in bytes

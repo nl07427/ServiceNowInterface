@@ -9,7 +9,7 @@ namespace ServiceNow.Graph.Models
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [JsonConverter(typeof(DerivedTypeConverter))]
-    public partial class Task : Entity
+    public class Task : Entity
     {
         private DateTimeOffset? _closedAt;
         private DateTimeOffset? _expectedStart;

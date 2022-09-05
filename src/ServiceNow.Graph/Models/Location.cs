@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow cmn_location entity
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Location : Entity
+    public class Location : Entity
     {
         private DateTimeOffset? _coordinatesRetrievedOn;
         /// <summary>

@@ -8,7 +8,7 @@ namespace ServiceNow.Graph.Models
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     [JsonConverter(typeof(DerivedTypeConverter))]
-    public partial class ApplicationFile : Entity
+    public class ApplicationFile : Entity
     {
         /// <summary>
         /// Default constructor

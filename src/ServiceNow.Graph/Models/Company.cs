@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow Company (core_company) entity
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Company : Entity
+    public class Company : Entity
     {
         /// <summary>
         /// Default constructor

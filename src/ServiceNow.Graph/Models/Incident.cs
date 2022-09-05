@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// Representation of ServiceNow incident table
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class Incident : Task
+    public class Incident : Task
     {
         private DateTimeOffset? _reopenedAt;
         private DateTimeOffset? _resolvedAt;

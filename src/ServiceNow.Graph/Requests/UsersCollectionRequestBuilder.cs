@@ -16,7 +16,6 @@ namespace ServiceNow.Graph.Requests
         /// <param name="client"></param>
         public UsersCollectionRequestBuilder(string requestUrl, IBaseClient client) : base(requestUrl, client)
         {
-            System.Diagnostics.Debug.WriteLine(requestUrl);
         }
 
         /// <summary>

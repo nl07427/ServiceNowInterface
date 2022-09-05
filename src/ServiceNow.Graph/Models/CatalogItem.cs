@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// ServiceNow sc_cat_item
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class CatalogItem : ApplicationFile
+    public class CatalogItem : ApplicationFile
     {
         private DateTimeOffset? _deliveryTime;
 

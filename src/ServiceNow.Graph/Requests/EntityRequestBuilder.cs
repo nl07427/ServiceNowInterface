@@ -6,7 +6,7 @@ namespace ServiceNow.Graph.Requests
     /// <summary>
     /// The type EntityRequestBuilder.
     /// </summary>
-    public partial class EntityRequestBuilder : BaseRequestBuilder, IEntityRequestBuilder
+    public class EntityRequestBuilder : BaseRequestBuilder, IEntityRequestBuilder
     {
         /// <summary>
         /// Constructs a new EntityRequestBuilder.
@@ -26,7 +26,7 @@ namespace ServiceNow.Graph.Requests
         /// <returns>The built request.</returns>
         public IEntityRequest Request()
         {
-            return this.Request(null);
+            return Request(null);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace ServiceNow.Graph.Requests
         /// <returns>The built request.</returns>
         public IEntityRequest Request(IEnumerable<Option> options)
         {
-            return new EntityRequest(this.RequestUrl, this.Client, options);
+            return new EntityRequest(RequestUrl, Client, options);
         }
     }
 }

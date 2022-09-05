@@ -12,8 +12,8 @@
         /// <param name="value">The value of the option.</param>
         protected Option(string name, string value)
         {
-            this.Name = name;
-            this.Value = value;
+            Name = name;
+            Value = value;
         }
 
         /// <summary>

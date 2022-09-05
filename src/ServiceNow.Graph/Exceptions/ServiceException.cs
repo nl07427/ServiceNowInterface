@@ -13,7 +13,7 @@ namespace ServiceNow.Graph.Exceptions
         /// <param name="error">The error that triggered the exception.</param>
         /// <param name="innerException">The possible innerException.</param>
         public ServiceException(Error error, Exception innerException = null)
-            : this(error, responseHeaders: null, statusCode: default(HttpStatusCode),
+            : this(error, responseHeaders: null, statusCode: default,
                 innerException: innerException)
         {
         }
@@ -29,9 +29,9 @@ namespace ServiceNow.Graph.Exceptions
             Exception innerException = null)
             : base(error?.ToString(), innerException)
         {
-            this.Error = error;
-            this.ResponseHeaders = responseHeaders;
-            this.StatusCode = statusCode;
+            Error = error;
+            ResponseHeaders = responseHeaders;
+            StatusCode = statusCode;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace ServiceNow.Graph.Exceptions
             Exception innerException = null)
             : this(error, responseHeaders, statusCode, innerException)
         {
-            this.RawResponseBody = rawResponseBody;
+            RawResponseBody = rawResponseBody;
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace ServiceNow.Graph.Exceptions
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"Status Code: {this.StatusCode}{Environment.NewLine}{base.ToString()}";
+            return $"Status Code: {StatusCode}{Environment.NewLine}{base.ToString()}";
         }
     }
 }

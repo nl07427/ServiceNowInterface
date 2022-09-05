@@ -7,7 +7,7 @@ namespace ServiceNow.Graph.Models
     /// Service Catalog Task entity, equal to table sc_task in ServiceNow
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public partial class CatalogTask :Task
+    public class CatalogTask :Task
     {
         /// <summary>
         /// Task constructor
