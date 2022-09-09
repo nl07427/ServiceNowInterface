@@ -1,5 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using ServiceNow.Graph.Models.Helpers;
 
 namespace ServiceNow.Graph.Models
 {
@@ -9,8 +9,6 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class CatalogItem : ApplicationFile
     {
-        private DateTimeOffset? _deliveryTime;
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -72,17 +70,7 @@ namespace ServiceNow.Graph.Models
         /// Delivery time, X40, Duration, example value 2 00:00:00
         /// </summary>
         [JsonProperty(PropertyName = "delivery_time", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? DeliveryTime
-        {
-            get => _deliveryTime;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _deliveryTime = value.Value + value.Value.Offset;
-                }
-            }
-        }
+        public SnowDuration DeliveryTime {get; set; }
 
         /// <summary>
         /// Type, X40

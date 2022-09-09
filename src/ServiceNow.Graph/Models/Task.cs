@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using ServiceNow.Graph.Models.Helpers;
 using ServiceNow.Graph.Serialization;
 
 namespace ServiceNow.Graph.Models
@@ -14,11 +15,9 @@ namespace ServiceNow.Graph.Models
         private DateTimeOffset? _closedAt;
         private DateTimeOffset? _expectedStart;
         private DateTimeOffset? _openedAt;
-        private DateTimeOffset? _businessDuration;
         private DateTimeOffset? _workEnd;
         private DateTimeOffset? _approvalSet;
         private DateTimeOffset? _workStart;
-        private DateTimeOffset? _calendarDuration;
         private DateTimeOffset? _followUp;
         private DateTimeOffset? _activityDue;
         private DateTimeOffset? _slaDue;
@@ -209,17 +208,7 @@ namespace ServiceNow.Graph.Models
         /// ServiceNow duration type, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "business_duration", Required = Required.Default)]
-        public DateTimeOffset? BusinessDuration
-        {
-            get => _businessDuration;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _businessDuration = value.Value + value.Value.Offset;
-                }
-            }
-        }
+        public SnowDuration BusinessDuration { get; set; }
 
         /// <summary>
         /// Reference to the assignment groups of the task
@@ -321,16 +310,10 @@ namespace ServiceNow.Graph.Models
         /// Duration, ServiceNow type Duration (extension of datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "calendar_duration", Required = Required.Default)]
-        public DateTimeOffset? CalendarDuration
+        public SnowDuration CalendarDuration
         {
-            get => _calendarDuration;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _calendarDuration = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>

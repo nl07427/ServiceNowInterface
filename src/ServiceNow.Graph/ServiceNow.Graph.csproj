@@ -91,6 +91,7 @@
     <Compile Include="Models\GroupHasRole.cs" />
     <Compile Include="Models\GroupHasRoleResponse.cs" />
     <Compile Include="Models\GroupHasRolesCollectionResponse.cs" />
+    <Compile Include="Models\Helpers\SnowDuration.cs" />
     <Compile Include="Models\Helpers\Date.cs" />
     <Compile Include="Models\Incident.cs" />
     <Compile Include="Models\IncidentResponse.cs" />
@@ -444,6 +445,7 @@
     <Compile Include="Requests\VariablesCollectionPage.cs" />
     <Compile Include="Requests\VariablesCollectionRequest.cs" />
     <Compile Include="Requests\VariablesCollectionRequestBuilder.cs" />
+    <Compile Include="Serialization\SnowDurationConverter.cs" />
     <Compile Include="Serialization\DateConverter.cs" />
     <Compile Include="Serialization\DerivedTypeConverter.cs" />
     <Compile Include="Serialization\EnumConverter.cs" />

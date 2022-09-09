@@ -32,7 +32,7 @@ namespace ServiceNow.Graph.Serialization
         /// <param name="jsonSerializerSettings">The serializer settings to apply to the serializer.</param>
         public Serializer(JsonSerializerSettings jsonSerializerSettings)
         {
-            this._jsonSerializerSettings = jsonSerializerSettings;
+            _jsonSerializerSettings = jsonSerializerSettings;
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace ServiceNow.Graph.Serialization
                 return stringValue;
             }
 
-            return JsonConvert.SerializeObject(objectToSerialize, this._jsonSerializerSettings);
+            return JsonConvert.SerializeObject(objectToSerialize, _jsonSerializerSettings);
         }
     }
 }

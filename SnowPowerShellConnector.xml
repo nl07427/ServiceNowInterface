@@ -5,9 +5,11 @@
   </PluginAssemblies>
 
   <ConnectionParameters>
-    <ConnectionParameter Name="URL" Description="URL of the ServiceNow instance or API Gateway" />
-    <ConnectionParameter Name="ClientId" Description="ClientId of the API Gateway." />
-    <ConnectionParameter Name="ClientSecret" Description="Client secret of the API Gateway" IsSensibleData="true"/>
+    <ConnectionParameter Name="Domain" Description="Domain name of the ServiceNow instance" />
+    <ConnectionParameter Name="ClientId" Description="ClientId of the OAuth client." />
+    <ConnectionParameter Name="ClientSecret" Description="Client secret of the OAuth client" IsSensibleData="true"/>
+    <ConnectionParameter Name="UserName" Description="Snow integration username" />
+    <ConnectionParameter Name="UserPassword" Description="Snow integration user password" IsSensibleData="true"/>	
     <ConnectionParameter Name="LibraryPath" Description="Absolute path to the ServiceNow.Graph.dll Windows library"/>
     <ConnectionParameter Name="PageSize" Description="The maximum number of results returned per page (default: 1000)"/>
     <ConnectionParameter Name="Task_Filter" Description="Query filter to use for filtering Task table" />
@@ -37,7 +39,7 @@
     param (
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
         [ValidateNotNullOrEmpty()]
-        [String]$URL,
+        [String]$Domain,
 
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
         [ValidateNotNullOrEmpty()]
@@ -55,26 +57,45 @@
                 return $true })]
         [String]$LibraryPath, 
 
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]$UserName, 
+
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [securestring]$UserPassword,		
+		  
         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $false)]
         [Int]$PageSize = 1000
     )
 
     if ($null -eq $Global:ServiceNowClient) {
         # Initialize the client
-        $plainPW = ""
+        $plainClientSecret = ""
         $ptr = [System.IntPtr]::Zero
         try {
             $ptr = [System.IntPtr]::Zero    
             $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($ClientSecret)
-            $plainPW = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptr)
+            $plainClientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptr)
         }
         finally {
             [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptr)
         }
+		  
+        $plainUserPassword = ""
+        $ptrUserPassword = [System.IntPtr]::Zero
+        try {
+            $ptrUserPassword = [System.IntPtr]::Zero    
+            $ptrUserPassword = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($UserPassword)
+            $plainUserPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptrUserPassword)
+        }
+        finally {
+            [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptrUserPassword)
+        }		  
         Add-Type -Path $LibraryPath
-        $authenticationProvider = New-Object -TypeName ServiceNow.Graph.Authentication.ApiGatewayCredentialProvider -ArgumentList $ClientId, $plainPW
+        $authenticationProvider = New-Object -TypeName ServiceNow.Graph.Authentication.ClientCredentialProvider -ArgumentList $Domain, $ClientId, $plainClientSecret, $UserName, $plainUserPassword
         # Last parameter is the version that is mangled in the API Gateway URL
-        $Global:ServiceNowClient = New-Object -TypeName ServiceNow.Graph.Requests.ServiceNowClient -ArgumentList $URL, $authenticationProvider, $null, ""
+        $Global:ServiceNowClient = New-Object -TypeName ServiceNow.Graph.Requests.ServiceNowClient -ArgumentList $Domain, $authenticationProvider, $null
         $Global:PageSize = $PageSize
     }
           ]]>
@@ -101,7 +122,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Users -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
           ]]>
       </CustomCommand>
 
@@ -110,9 +131,6 @@
     param (
         [parameter(Mandatory = $true)]
         [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [string]$ApprovalThreshold,
 
         [parameter(Mandatory = $false)]
         [bool]$Active,            
@@ -220,24 +238,15 @@
         [bool]$EnableMultifactorAuthentication,
 
         [parameter(Mandatory = $false)]
-        [string]$ContractType,
-
-        [parameter(Mandatory = $false)]
-        [string]$Division,
-
-        [parameter(Mandatory = $false)]
         [bool]$LockedOut
 
     )
         
-    $userRequestBuilder = $ServiceNowClient.Users[$Id] 
+    $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
     $userUpdate = New-Object -TypeName ServiceNow.Graph.Models.User
     $parameters = $MyInvocation.BoundParameters  
     $userUpdate.Id = $Id
             
-    if ($parameters.ContainsKey("ApprovalThreshold")) {
-        $userUpdate.ApprovalThreshold = $ApprovalThreshold
-    } 
     if ($parameters.ContainsKey("Active")) {
         $userUpdate.Active = $Active
     }
@@ -246,9 +255,6 @@
     }    
     if ($parameters.ContainsKey("HomePhone")) {
         $userUpdate.HomePhone = $HomePhone
-    }
-    if ($parameters.ContainsKey("ContractType")) {
-        $userUpdate.ContractType = $ContractType
     }
     if ($parameters.ContainsKey("CalendarIntegration")) {
         $userUpdate.CalendarIntegration = $CalendarIntegration
@@ -358,9 +364,6 @@
         <![CDATA[
     param (
         [parameter(Mandatory = $false)]
-        [string]$ApprovalThreshold,
-
-        [parameter(Mandatory = $false)]
         [bool]$Active,            
 
         [parameter(Mandatory = $false)]
@@ -466,19 +469,14 @@
         [bool]$Vip,
 
         [parameter(Mandatory = $false)]
-        [bool]$EnableMultifactorAuthentication,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContractType
+        [bool]$EnableMultifactorAuthentication
     )
         
-    $userRequestBuilder = $ServiceNowClient.Users
+    $userRequestBuilder = $ServiceNowClient.Users()
     $user = New-Object -TypeName ServiceNow.Graph.Models.User
     $parameters = $MyInvocation.BoundParameters  
             
-    if ($parameters.ContainsKey("ApprovalThreshold")) {
-        $user.ApprovalThreshold = $ApprovalThreshold
-    } 
+
     if ($parameters.ContainsKey("Active")) {
         $user.Active = $Active
     }
@@ -596,7 +594,7 @@
         [string]$Id
     )
         
-    $ServiceNowClient.Users[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.Users()[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
             ]]>
       </CustomCommand>
 
@@ -616,7 +614,7 @@
         [String]$OrderBy
     )
     
-        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
           ]]>
       </CustomCommand>
 
@@ -627,7 +625,7 @@
         [string]$Id
     )
     
-    $ServiceNowClient.UserGroups[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.UserGroups()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
             ]]>
       </CustomCommand>
 
@@ -677,7 +675,7 @@
         [string]$CostCenter
     )
     
-    $groupRequestBuilder = $ServiceNowClient.UserGroups
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()
     $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
     $parameters = $MyInvocation.BoundParameters  
 
@@ -797,7 +795,7 @@
         [string]$CostCenter
     )
         
-    $groupRequestBuilder = $ServiceNowClient.UserGroups[$Id] 
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()[$Id] 
     $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
     $parameters = $MyInvocation.BoundParameters  
     $group.Id = $Id
@@ -887,7 +885,7 @@
         [String]$OrderBy
     )
       
-        Get-Entity -CollectionBuilder $ServiceNowClient.ServiceCatalogs -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.ServiceCatalogs() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
       <CustomCommand Name="Get-SnowGroupMembership">
@@ -908,7 +906,7 @@
         
     )
         
-   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
           ]]>
       </CustomCommand>
 
@@ -922,7 +920,7 @@
         [string]$User
     )
     
-    $membershipsRequestBuilder = $ServiceNowClient.Memberships
+    $membershipsRequestBuilder = $ServiceNowClient.Memberships()
     $membership = New-Object -TypeName ServiceNow.Graph.Models.UserGroupMembership
 
 
@@ -940,7 +938,7 @@
         [string]$Id
     )
     
-    $ServiceNowClient.Memberships[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.Memberships()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
             ]]>
       </CustomCommand>
 
@@ -960,7 +958,7 @@
         [String]$OrderBy
     )
         
-    Get-Entity -CollectionBuilder $ServiceNowClient.Tasks -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+    Get-Entity -CollectionBuilder $ServiceNowClient.Tasks() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -978,9 +976,9 @@
     )
         $params = @{sysparm_display_value = 'true'}
         switch ($Table.ToLower()) {
-            "sc_request" { $builder = $ServiceNowClient.CatalogRequests }
-            "sc_req_item" {$builder = $ServiceNowClient.RequestItems}
-            "sc_task" {$builder = $ServiceNowClient.CatalogTasks}
+            "sc_request" { $builder = $ServiceNowClient.CatalogRequests() }
+            "sc_req_item" {$builder = $ServiceNowClient.RequestItems()}
+            "sc_task" {$builder = $ServiceNowClient.CatalogTasks()}
         }
         Get-Entity -CollectionBuilder $builder -Id $Id  -Select $Select  -QueryParams $params
         ]]>
@@ -1002,7 +1000,7 @@
         [String]$OrderBy
     )
 
-        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogRequests -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogRequests() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
           ]]>
       </CustomCommand>
 
@@ -1026,6 +1024,9 @@
 
         [parameter(Mandatory = $false)]
         [string]$Comments,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
 
         [parameter(Mandatory = $false)]
         [string]$ContactType,
@@ -1067,9 +1068,6 @@
         [string]$Price,
 
         [parameter(Mandatory = $false)]
-        [bool]$Knowledge,        
-
-        [parameter(Mandatory = $false)]
         [string]$RequestedFor,
 
         [parameter(Mandatory = $false)]
@@ -1086,7 +1084,7 @@
         
     )
     
-    $requestBuilder = $ServiceNowClient.CatalogRequests[$Id] 
+    $requestBuilder = $ServiceNowClient.CatalogRequests()[$Id] 
     $request = New-Object -TypeName ServiceNow.Graph.Models.CatalogRequest
     $parameters = $MyInvocation.BoundParameters  
     $request.Id = $Id
@@ -1095,12 +1093,12 @@
         $request.Active = $Active
     }
     
-    if ($parameters.ContainsKey("Knowledge")) {
-        $request.Knowledge = $Knowledge
-    }
-
     if ($parameters.ContainsKey("DeliveryAddress")) {
         $request.DeliveryAddress = $DeliveryAddress
+    }
+    
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $request.WorkNotes = $WorkNotes
     }
 
     if ($parameters.ContainsKey("Price")) {
@@ -1227,7 +1225,7 @@
 
       <CustomCommand Name="New-SnowCatalogRequest">
         <![CDATA[
-        param (
+    param (
         [parameter(Mandatory = $false)]
         [bool]$Active,
 
@@ -1244,13 +1242,13 @@
         [string]$Comments,
 
         [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
+
+        [parameter(Mandatory = $false)]
         [string]$ContactType,
 
         [parameter(Mandatory = $false)]
         [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [string]$OpenedBy,
 
         [parameter(Mandatory = $false)]
         [string]$ClosedBy,
@@ -1277,7 +1275,7 @@
         [string]$BusinessService,
 
         [parameter(Mandatory = $false)]
-       [string]$AdditionalAssigneeList,
+        [string]$AdditionalAssigneeList,
 
         [parameter(Mandatory = $false)]
         [string]$ServiceOffering,
@@ -1295,16 +1293,13 @@
         [string]$DeliveryAddress,        
 
         [parameter(Mandatory = $false)]
-        [bool]$Knowledge,        
-        
-        [parameter(Mandatory = $false)]
         [string]$SpecialInstructions,
 
         [parameter(Mandatory = $false)]
         [datetime]$RequestedForDate
     )
     
-    $requestBuilder = $ServiceNowClient.CatalogRequests
+    $requestBuilder = $ServiceNowClient.CatalogRequests()
     $request = New-Object -TypeName ServiceNow.Graph.Models.CatalogRequest
     $parameters = $MyInvocation.BoundParameters  
 
@@ -1312,12 +1307,12 @@
         $request.Active = $Active
     }
 
-    if ($parameters.ContainsKey("Knowledge")) {
-        $request.Knowledge = $Knowledge
-    }
-
     if ($parameters.ContainsKey("DeliveryAddress")) {
         $request.DeliveryAddress = $DeliveryAddress
+    }
+    
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $request.WorkNotes = $WorkNotes
     }
 
     if ($parameters.ContainsKey("Price")) {
@@ -1420,15 +1415,6 @@
         }
     }
 
-    if ($parameters.ContainsKey("OpenedBy")) {
-        if (-not [string]::IsNullOrEmpty($OpenedBy)) {
-            $request.OpenedBy = Get-ReferenceLink $OpenedBy
-        }
-        else {
-            $request.OpenedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }
-                                   
     if ($parameters.ContainsKey("State")) {
         $request.State = $State
     }   
@@ -1466,7 +1452,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Locations -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Locations() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -1485,7 +1471,7 @@
           [parameter(Mandatory = $false)]
           [String]$OrderBy
       )
-      Get-Entity -CollectionBuilder $ServiceNowClient.Variables -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+      Get-Entity -CollectionBuilder $ServiceNowClient.Variables() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -1505,7 +1491,7 @@
         [String]$OrderBy
     )
         
-    Get-Entity -CollectionBuilder $ServiceNowClient.CatalogItems -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+    Get-Entity -CollectionBuilder $ServiceNowClient.CatalogItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
           ]]>
       </CustomCommand>
 
@@ -1605,7 +1591,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogTasks -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy     
+        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogTasks() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy     
           ]]>
       </CustomCommand>
 
@@ -1632,7 +1618,7 @@
 
         [parameter(Mandatory = $false)]
         [string]$WorkNotes,
-        
+
         [parameter(Mandatory = $false)]
         [int]$State,
 
@@ -1667,9 +1653,6 @@
         [bool]$Active,
 
         [parameter(Mandatory = $false)]
-        [bool]$Knowledge,
-
-        [parameter(Mandatory = $false)]
         [int]$Priority,
 
         [parameter(Mandatory = $false)]
@@ -1680,7 +1663,7 @@
 
 )
     
-    $requestBuilder = $ServiceNowClient.CatalogTasks[$Id] 
+    $requestBuilder = $ServiceNowClient.CatalogTasks()[$Id] 
     $task = New-Object -TypeName ServiceNow.Graph.Models.CatalogTask
     $parameters = $MyInvocation.BoundParameters  
     $task.Id = $Id
@@ -1698,9 +1681,6 @@
         $task.Active = $Active
     } 
 
-    if ($parameters.ContainsKey("Knowledge")) {
-        $task.Knowledge = $Knowledge
-    } 
     if ($parameters.ContainsKey("Description")) {
         $task.Description = $Description
     }                 
@@ -1735,7 +1715,7 @@
     if ($parameters.ContainsKey("Location")) {
         if (-not [string]::IsNullOrEmpty($Location)) {
             $task.Location = Get-ReferenceLink $Location
-       }
+        }
         else {
             $task.Location = [ServiceNow.Graph.Models.ReferenceLink]$null
         }
@@ -1839,12 +1819,9 @@
 
         [parameter(Mandatory = $false)]
         [string]$WorkNotes,
-        
+
         [parameter(Mandatory = $false)]
         [int]$State,
-        
-        [parameter(Mandatory = $false)]
-        [bool]$Knowledge,
         
         [parameter(Mandatory = $false)]
         [bool]$Active,
@@ -1887,7 +1864,7 @@
 
 )
     
-    $requestBuilder = $ServiceNowClient.CatalogTasks
+    $requestBuilder = $ServiceNowClient.CatalogTasks()
     $task = New-Object -TypeName ServiceNow.Graph.Models.CatalogTask
     $parameters = $MyInvocation.BoundParameters  
 
@@ -1911,10 +1888,6 @@
 
     if ($parameters.ContainsKey("Active")) {
         $task.Active = $Active
-    } 
-
-    if ($parameters.ContainsKey("Knowledge")) {
-        $task.Knowledge = $Knowledge
     } 
 
     if ($parameters.ContainsKey("Description")) {
@@ -2036,7 +2009,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.RequestItems -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.RequestItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -2072,9 +2045,6 @@
 
         [parameter(Mandatory = $false)]
         [bool]$Active,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Knowledge,
 
         [parameter(Mandatory = $false)]
         [string]$Company,
@@ -2114,7 +2084,7 @@
 
     )
     
-    $requestItemsBuilder = $ServiceNowClient.RequestItems[$Id] 
+    $requestItemsBuilder = $ServiceNowClient.RequestItems()[$Id] 
     $requestItem = New-Object -TypeName ServiceNow.Graph.Models.RequestItem
     $parameters = $MyInvocation.BoundParameters  
     $requestItem.Id = $Id
@@ -2122,9 +2092,6 @@
 
     if ($parameters.ContainsKey("State")) {
         $requestItem.State = $State
-    }
-    if ($parameters.ContainsKey("Knowledge")) {
-        $requestItem.Knowledge = $Knowledge
     }
     if ($parameters.ContainsKey("CloseNotes")) {
         $requestItem.CloseNotes = $CloseNotes
@@ -2218,9 +2185,6 @@
         <![CDATA[
     param (
         [parameter(Mandatory = $true)]
-        [string]$OpenedBy,
-
-        [parameter(Mandatory = $true)]
         [string]$CatalogItem,
 
         [parameter(Mandatory = $true)]
@@ -2281,19 +2245,14 @@
         [int]$Urgency,
 
         [parameter(Mandatory = $false)]
-        [string]$CmdbCi,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Knowledge
-       
+        [string]$CmdbCi
     )
     
-    $requestItemsBuilder = $ServiceNowClient.RequestItems
+    $requestItemsBuilder = $ServiceNowClient.RequestItems()
     $requestItem = New-Object -TypeName ServiceNow.Graph.Models.RequestItem
     $parameters = $MyInvocation.BoundParameters  
 
 
-    $requestItem.OpenedBy = Get-ReferenceLink $OpenedBy
     $requestItem.RequestedFor = Get-ReferenceLink $RequestedFor
     $requestItem.CatalogItem = Get-ReferenceLink $CatalogItem
     $requestItem.Request = Get-ReferenceLink $Request
@@ -2303,9 +2262,6 @@
             $requestItem.Price =  $Price
         }
     } 
-    if ($parameters.ContainsKey("Knowledge")) {
-        $requestItem.Knowledge = $Knowledge
-    }        
     if ($parameters.ContainsKey("WorkNotes")) {
         $requestItem.WorkNotes = $WorkNotes
     }        
@@ -2351,7 +2307,7 @@
     } 
 
     if ($parameters.ContainsKey("Location")) {
-       $requestItem.Location = Get-ReferenceLink $Location
+        $requestItem.Location = Get-ReferenceLink $Location
     } 
 
     if ($parameters.ContainsKey("AssignedTo")) {
@@ -2392,7 +2348,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.CostCenters -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy              
+        Get-Entity -CollectionBuilder $ServiceNowClient.CostCenters() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy              
         ]]>
       </CustomCommand>
 
@@ -2412,7 +2368,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Companies -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Companies() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -2432,7 +2388,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Departments -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Departments() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -2452,7 +2408,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.OrderGuides -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.OrderGuides() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -2471,14 +2427,14 @@
           [parameter(Mandatory = $false)]
           [String]$OrderBy
       )
-      Get-Entity -CollectionBuilder $ServiceNowClient.CatalogOptions -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+      Get-Entity -CollectionBuilder $ServiceNowClient.CatalogOptions() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
       <CustomCommand Name="Get-SnowVariableOwnershipList">
         <![CDATA[
         if(-not $Global:VariableOwnershipList){
-          $Global:VariableOwnershipList = Get-Entity -CollectionBuilder $ServiceNowClient.VariableOwnerships
+          $Global:VariableOwnershipList = Get-Entity -CollectionBuilder $ServiceNowClient.VariableOwnerships()
       }
       return $Global:VariableOwnershipList
         ]]>
@@ -2487,7 +2443,7 @@
       <CustomCommand Name="Get-SnowCatalogOptionList">
         <![CDATA[
         if(-not $Global:CatalogOptionList){
-          $Global:CatalogOptionList =  Get-Entity -CollectionBuilder $ServiceNowClient.CatalogOptions
+          $Global:CatalogOptionList =  Get-Entity -CollectionBuilder $ServiceNowClient.CatalogOptions()
       }
       return $Global:CatalogOptionList
         ]]>
@@ -2509,7 +2465,7 @@
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.VariableOwnerships -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.VariableOwnerships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
 
@@ -2524,7 +2480,7 @@
 
     )
         
-    $variableOwnershipBuilder = $ServiceNowClient.VariableOwnerships
+    $variableOwnershipBuilder = $ServiceNowClient.VariableOwnerships()
     $variableOwnership = New-Object -TypeName ServiceNow.Graph.Models.CatalogItemOptionMtom
             
     $variableOwnership.CatalogItemOption =  Get-ReferenceLink $CatalogItemOption
@@ -2549,7 +2505,7 @@
         [string]$CartItem
     )
         
-    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions[$Id] 
+    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()[$Id] 
     $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
     $parameters = $MyInvocation.BoundParameters  
     $option.Id = $Id
@@ -2596,7 +2552,7 @@
         [string]$Value
     )
         
-    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions
+    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()
     $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
     $parameters = $MyInvocation.BoundParameters  
             
@@ -2643,7 +2599,7 @@
             $queryOption = New-Object -TypeName ServiceNow.Graph.Requests.Options.QueryOption -ArgumentList $queryParam.Key, $queryParam.Value
             $params.Add($queryOption) | Out-Null
         }
-        $userRequestBuilder = $ServiceNowClient.Users[$Id] 
+        $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
         $userUpdate = New-Object -TypeName ServiceNow.Graph.Models.User
         $userUpdate.Id = $Id
         $plainPW = ""
@@ -2669,9 +2625,11 @@
       <Connect>
         <CommandSequence>
           <Item Command="Get-ServiceNowClient" Order="1">
-            <SetParameter Param="URL" Source="ConnectionParameter" Value="URL" />
+            <SetParameter Param="Domain" Source="ConnectionParameter" Value="Domain" />
             <SetParameter Param="ClientId" Source="ConnectionParameter" Value="ClientId" />
             <SetParameter Param="ClientSecret" Source="ConnectionParameter" Value="ClientSecret" ConversionMethod="ToSecureString"/>
+            <SetParameter Param="UserName" Source="ConnectionParameter" Value="UserName" />
+            <SetParameter Param="UserPassword" Source="ConnectionParameter" Value="UserPassword" ConversionMethod="ToSecureString"/>			
             <SetParameter Param="LibraryPath" Source="ConnectionParameter" Value="LibraryPath" />
             <SetParameter Param="PageSize" Source="ConnectionParameter" Value="PageSize" DataType="Int"/>
           </Item>
@@ -2754,7 +2712,7 @@
             <Map ToCommand="New-SnowUser" Parameter="HomePhone" />
           </CommandMappings>
         </Property>
-
+		<!-- 
         <Property Name="Division" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="Division" />
@@ -2768,7 +2726,7 @@
             <Map ToCommand="New-SnowUser" Parameter="Division" />
           </CommandMappings>
         </Property>
-
+		 -->
         <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="UpdatedBy" />
@@ -3255,12 +3213,6 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="DistinguishedName" DataType="String" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="DistinguishedName" />
-          </ReturnBindings>
-        </Property>
-
         <Property Name="TimeFormat" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="TimeFormat" />
@@ -3303,20 +3255,6 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="ApprovalThreshold" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="ApprovalThreshold" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="ApprovalThreshold" />
-            <Map ToCommand="New-SnowUser" Parameter="ApprovalThreshold" />
-          </CommandMappings>
-        </Property>
-
         <Property Name="Vip" DataType="Bool">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="Vip" />
@@ -3344,7 +3282,7 @@
             <Map ToCommand="New-SnowUser" Parameter="EnableMultifactorAuthentication" />
           </CommandMappings>
         </Property>
-
+		<!--
         <Property Name="LdapUpdated" DataType="DateTime" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="LdapUpdated.DateTime"/>
@@ -3356,7 +3294,7 @@
             <Bind CommandResultOf="Get-SnowUser" Path="LdapId" />
           </ReturnBindings>
         </Property>
-
+-->
       </Properties>
 
       <!-- Configuration items for readable types -->
@@ -4197,9 +4135,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="BusinessDuration" DataType="DateTime">
+        <Property Name="BusinessDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowTask" Path="BusinessDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowTask" Path="BusinessDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -4269,9 +4207,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="CalendarDuration" DataType="DateTime">
+        <Property Name="CalendarDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowTask" Path="CalendarDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowTask" Path="CalendarDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -4497,16 +4435,10 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="OpenedBy" DataType="String" AccessConstraint="ReadAndInsertOnly">
+        <Property Name="OpenedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogRequest" Path="OpenedBy.ToString()" />
           </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowCatalogRequest" Method="Insert"/>
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="New-SnowCatalogRequest" Parameter="OpenedBy"/>
-          </CommandMappings>
         </Property>
 
         <Property Name="Parent" DataType="String">
@@ -4541,18 +4473,10 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="Knowledge" DataType="Bool">
+        <Property Name="Knowledge" DataType="Bool" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogRequest" Path="Knowledge" />
           </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowCatalogRequest" Method="Update"/>
-            <ModBy Command="New-SnowCatalogRequest" Method="Insert"/>
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowCatalogRequest" Parameter="Knowledge"/>
-            <Map ToCommand="New-SnowCatalogRequest" Parameter="Knowledge"/>
-          </CommandMappings>
         </Property>
 
         <Property Name="Order" DataType="String">
@@ -4686,9 +4610,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="BusinessDuration" DataType="DateTime">
+        <Property Name="BusinessDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogRequest" Path="BusinessDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowCatalogRequest" Path="BusinessDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -4714,6 +4638,14 @@
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogRequest" Path="WorkNotes" />
           </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowCatalogRequest" Method="Update"/>
+            <ModBy Command="New-SnowCatalogRequest" Method="Insert"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowCatalogRequest" Parameter="WorkNotes"/>
+            <Map ToCommand="New-SnowCatalogRequest" Parameter="WorkNotes"/>
+          </CommandMappings>
         </Property>
 
         <Property Name="ShortDescription" DataType="String">
@@ -4790,9 +4722,9 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="CalendarDuration" DataType="DateTime">
+        <Property Name="CalendarDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogRequest" Path="CalendarDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowCatalogRequest" Path="CalendarDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -5324,12 +5256,6 @@
             <Bind CommandResultOf="Get-SnowLocation" Path="Phone" />
           </ReturnBindings>
         </Property>        
-        
-        <Property Name="LocationType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="LocationType" />
-          </ReturnBindings>
-        </Property>
         
         <Property Name="Duplicate" DataType="Bool">
           <ReturnBindings>
@@ -6035,9 +5961,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="DeliveryTime" DataType="DateTime">
+        <Property Name="DeliveryTime" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DeliveryTime.DateTime" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DeliveryTime.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -6621,18 +6547,10 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="Knowledge" DataType="Bool">
+        <Property Name="Knowledge" DataType="Bool" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogTask" Path="Knowledge" />
           </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowCatalogTask" Method="Update"/>
-            <ModBy Command="New-SnowCatalogTask" Method="Insert"/>
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowCatalogTask" Parameter="Knowledge"/>
-            <Map ToCommand="New-SnowCatalogTask" Parameter="Knowledge"/>
-          </CommandMappings>
         </Property>
 
         <Property Name="Order" DataType="String" AccessConstraint="ReadOnly">
@@ -6754,9 +6672,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="BusinessDuration" DataType="DateTime">
+        <Property Name="BusinessDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogTask" Path="BusinessDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowCatalogTask" Path="BusinessDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -6870,9 +6788,9 @@
         </Property>
 
 
-        <Property Name="CalendarDuration" DataType="DateTime">
+        <Property Name="CalendarDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogTask" Path="CalendarDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowCatalogTask" Path="CalendarDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -7260,12 +7178,6 @@
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRequestItem" Path="OpenedBy.ToString()" />
           </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowRequestItem" Method="Insert"/>
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="New-SnowRequestItem" Parameter="OpenedBy"/>
-          </CommandMappings>
         </Property>
 
         <Property Name="Parent" DataType="String">
@@ -7299,18 +7211,10 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="Knowledge" DataType="Bool">
+        <Property Name="Knowledge" DataType="Bool" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRequestItem" Path="Knowledge" />
           </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowRequestItem" Method="Update"/>
-            <ModBy Command="New-SnowRequestItem" Method="Insert"/>
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowRequestItem" Parameter="Knowledge"/>
-            <Map ToCommand="Set-SnowRequestItem" Parameter="Knowledge"/>
-          </CommandMappings>
         </Property>
 
         <Property Name="Order" DataType="String">
@@ -7424,9 +7328,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="BusinessDuration" DataType="DateTime">
+        <Property Name="BusinessDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRequestItem" Path="BusinessDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowRequestItem" Path="BusinessDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -7528,9 +7432,9 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="CalendarDuration" DataType="DateTime">
+        <Property Name="CalendarDuration" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRequestItem" Path="CalendarDuration.DateTime" />
+            <Bind CommandResultOf="Get-SnowRequestItem" Path="CalendarDuration.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -8024,17 +7928,6 @@
         <Property Name="Location" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCostCenter" Path="Location.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CostCode" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCostCenter" Path="CostCode" />
-          </ReturnBindings>
-        </Property>
-        <Property Name="VentilationLevel" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCostCenter" Path="VentilationLevel" />
           </ReturnBindings>
         </Property>
 
@@ -8567,9 +8460,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="DeliveryTime" DataType="DateTime">
+        <Property Name="DeliveryTime" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DeliveryTime.DateTime" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DeliveryTime.ToString()" />
           </ReturnBindings>
         </Property>
 

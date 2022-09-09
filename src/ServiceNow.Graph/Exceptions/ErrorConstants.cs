@@ -51,6 +51,8 @@
 
             internal static readonly string UnableToDeserializeDate = "Unable to deserialize the returned Date.";
 
+            internal static readonly string UnableToDeserializeDuration = "Unable to deserialize the returned duration.";
+
             internal static readonly string UnexpectedExceptionOnSend = "An error occurred sending the request.";
 
             internal static readonly string UnexpectedExceptionResponse = "Unexpected exception returned from the service.";

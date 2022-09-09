@@ -2,7 +2,7 @@
     param (
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
         [ValidateNotNullOrEmpty()]
-        [String]$URL,
+        [String]$Domain,
 
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
         [ValidateNotNullOrEmpty()]
@@ -20,26 +20,45 @@
                 return $true })]
         [String]$LibraryPath, 
 
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]$UserName, 
+
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [securestring]$UserPassword,		
+		  
         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $false)]
         [Int]$PageSize = 1000
     )
 
     if ($null -eq $Global:ServiceNowClient) {
         # Initialize the client
-        $plainPW = ""
+        $plainClientSecret = ""
         $ptr = [System.IntPtr]::Zero
         try {
             $ptr = [System.IntPtr]::Zero    
             $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($ClientSecret)
-            $plainPW = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptr)
+            $plainClientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptr)
         }
         finally {
             [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptr)
         }
+		  
+        $plainUserPassword = ""
+        $ptrUserPassword = [System.IntPtr]::Zero
+        try {
+            $ptrUserPassword = [System.IntPtr]::Zero    
+            $ptrUserPassword = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($UserPassword)
+            $plainUserPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptrUserPassword)
+        }
+        finally {
+            [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptrUserPassword)
+        }		  
         Add-Type -Path $LibraryPath
-        $authenticationProvider = New-Object -TypeName ServiceNow.Graph.Authentication.ApiGatewayCredentialProvider -ArgumentList $ClientId, $plainPW
+        $authenticationProvider = New-Object -TypeName ServiceNow.Graph.Authentication.ClientCredentialProvider -ArgumentList $Domain, $ClientId, $plainClientSecret, $UserName, $plainUserPassword
         # Last parameter is the version that is mangled in the API Gateway URL
-        $Global:ServiceNowClient = New-Object -TypeName ServiceNow.Graph.Requests.ServiceNowClient -ArgumentList $URL, $authenticationProvider, $null, ""
+        $Global:ServiceNowClient = New-Object -TypeName ServiceNow.Graph.Requests.ServiceNowClient -ArgumentList $Domain, $authenticationProvider, $null
         $Global:PageSize = $PageSize
     }
 }
@@ -62,7 +81,7 @@ function Get-SnowUser {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Users -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }
 
 function Get-SnowGroup {
@@ -80,7 +99,7 @@ function Get-SnowGroup {
         [String]$OrderBy
     )
     
-        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }    
 
 function Get-SnowLiveProfile {
@@ -98,7 +117,7 @@ function Get-SnowLiveProfile {
         [String]$OrderBy
     )
     
-        Get-Entity -CollectionBuilder $ServiceNowClient.Profiles -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Profiles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }    
 
 function Get-SnowGroupMembership {
@@ -107,7 +126,7 @@ function Get-SnowGroupMembership {
         [String]$Id
     )
         
-   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships -Id $Id
+   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id
 
 }        
 function Get-SnowTask {
@@ -125,7 +144,7 @@ function Get-SnowTask {
         [String]$OrderBy
     )
         
-    Get-Entity -CollectionBuilder $ServiceNowClient.Tasks -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+    Get-Entity -CollectionBuilder $ServiceNowClient.Tasks() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }        
 
 function Get-SnowCatalogRequest {
@@ -143,7 +162,7 @@ function Get-SnowCatalogRequest {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogRequests -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy     
+        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogRequests() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy     
 }        
 
 function Get-SnowCatalogTask {
@@ -161,7 +180,7 @@ function Get-SnowCatalogTask {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogTasks -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy     
+        Get-Entity -CollectionBuilder $ServiceNowClient.CatalogTasks() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy     
 }        
 
 function Get-SnowRequestItems {
@@ -179,7 +198,7 @@ function Get-SnowRequestItems {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.RequestItems -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.RequestItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }        
 
 function Get-SnowLocation {
@@ -197,7 +216,7 @@ function Get-SnowLocation {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Locations -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Locations() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }        
 
 function Get-SnowServiceCatalog {
@@ -215,7 +234,7 @@ function Get-SnowServiceCatalog {
         [String]$OrderBy
     )
       
-        Get-Entity -CollectionBuilder $ServiceNowClient.ServiceCatalogs -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.ServiceCatalogs() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }            
 function Get-SnowCatalogOption {
     param (
@@ -232,7 +251,7 @@ function Get-SnowCatalogOption {
         [String]$OrderBy
     )
         
-    Get-Entity -CollectionBuilder $ServiceNowClient.CatalogOptions -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+    Get-Entity -CollectionBuilder $ServiceNowClient.CatalogOptions() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }            
 
 function Get-SnowVariable {
@@ -250,7 +269,7 @@ function Get-SnowVariable {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Variables -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Variables() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                
 
 function Get-SnowCatalogItem {
@@ -268,7 +287,7 @@ function Get-SnowCatalogItem {
         [String]$OrderBy
     )
         
-    Get-Entity -CollectionBuilder $ServiceNowClient.CatalogItems -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+    Get-Entity -CollectionBuilder $ServiceNowClient.CatalogItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }                    
 
 function Get-SnowOrderGuide {
@@ -286,7 +305,7 @@ function Get-SnowOrderGuide {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.OrderGuides -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.OrderGuides() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                    
 
 function Get-SnowVariableOwnership {
@@ -304,7 +323,7 @@ function Get-SnowVariableOwnership {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.VariableOwnerships -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.VariableOwnerships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                        
 
 function Get-SnowIncident {
@@ -322,14 +341,14 @@ function Get-SnowIncident {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Incidents -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Incidents() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                            
 function Get-SnowAttachment {
     param (
         [parameter(Mandatory = $false)]
         [String]$Id
     )
-    $collectionBuilder = $ServiceNowClient.Attachments        
+    $collectionBuilder = $ServiceNowClient.Attachments()        
     $outcome = $null
     if ($Id) {
         $outcome = $collectionBuilder[$Id].Request().GetAsync().GetAwaiter().GetResult()    
@@ -366,7 +385,7 @@ function Get-SnowDepartment {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Departments -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Departments() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                            
 
 function Get-SnowCostCenter {
@@ -384,7 +403,7 @@ function Get-SnowCostCenter {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.CostCenters -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.CostCenters() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                            
 
 function Get-SnowCompany {
@@ -402,7 +421,7 @@ function Get-SnowCompany {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.Companies -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.Companies() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                                
 
 function Get-SnowConfigurationItem {
@@ -420,7 +439,7 @@ function Get-SnowConfigurationItem {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.ConfigurationItems -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.ConfigurationItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }      
 
 function Get-SnowRole {
@@ -438,7 +457,7 @@ function Get-SnowRole {
         [String]$OrderBy
     )
   
-        Get-Entity -CollectionBuilder $ServiceNowClient.Roles -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.Roles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }    
 
 function Get-SnowRoleHasGroup {
@@ -456,7 +475,7 @@ function Get-SnowRoleHasGroup {
         [String]$OrderBy
     )
 
-    Get-Entity -CollectionBuilder $ServiceNowClient.GroupHasRoles -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+    Get-Entity -CollectionBuilder $ServiceNowClient.GroupHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }        
 
 function Get-SnowRoleHasRole {
@@ -474,7 +493,7 @@ function Get-SnowRoleHasRole {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.RoleHasRoles -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.RoleHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }        
 
 function Get-SnowRoleHasUser {
@@ -492,7 +511,7 @@ function Get-SnowRoleHasUser {
         [String]$OrderBy
     )
         
-        Get-Entity -CollectionBuilder $ServiceNowClient.UserHasRoles -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+        Get-Entity -CollectionBuilder $ServiceNowClient.UserHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }        
 
 function Get-SnowJournalFields {
@@ -508,9 +527,9 @@ function Get-SnowJournalFields {
     )
         $params = @{sysparm_display_value = 'true'}
         switch ($Table.ToLower()) {
-            "sc_request" { $builder = $ServiceNowClient.CatalogRequests }
-            "sc_req_item" {$builder = $ServiceNowClient.RequestItems}
-            "sc_task" {$builder = $ServiceNowClient.CatalogTasks}
+            "sc_request" { $builder = $ServiceNowClient.CatalogRequests() }
+            "sc_req_item" {$builder = $ServiceNowClient.RequestItems()}
+            "sc_task" {$builder = $ServiceNowClient.CatalogTasks()}
         }
         Get-Entity -CollectionBuilder $builder -Id $Id  -Select $Select  -QueryParams $params
 }        
@@ -529,7 +548,7 @@ function Set-SnowUserPassword {
             $queryOption = New-Object -TypeName ServiceNow.Graph.Requests.Options.QueryOption -ArgumentList $queryParam.Key, $queryParam.Value
             $params.Add($queryOption) | Out-Null
         }
-        $userRequestBuilder = $ServiceNowClient.Users[$Id] 
+        $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
         $userUpdate = New-Object -TypeName ServiceNow.Graph.Models.User
         $userUpdate.Id = $Id
         $plainPW = ""
@@ -691,7 +710,7 @@ function Set-SnowCatalogTask {
 
 )
     
-    $requestBuilder = $ServiceNowClient.CatalogTasks[$Id] 
+    $requestBuilder = $ServiceNowClient.CatalogTasks()[$Id] 
     $task = New-Object -TypeName ServiceNow.Graph.Models.CatalogTask
     $parameters = $MyInvocation.BoundParameters  
     $task.Id = $Id
@@ -896,7 +915,7 @@ function New-SnowCatalogTask {
 
 )
     
-    $requestBuilder = $ServiceNowClient.CatalogTasks
+    $requestBuilder = $ServiceNowClient.CatalogTasks()
     $task = New-Object -TypeName ServiceNow.Graph.Models.CatalogTask
     $parameters = $MyInvocation.BoundParameters  
 
@@ -1152,7 +1171,7 @@ function Set-SnowUser {
 
     )
         
-    $userRequestBuilder = $ServiceNowClient.Users[$Id] 
+    $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
     $userUpdate = New-Object -TypeName ServiceNow.Graph.Models.User
     $parameters = $MyInvocation.BoundParameters  
     $userUpdate.Id = $Id
@@ -1392,7 +1411,7 @@ function New-SnowUser {
         [string]$ContractType
     )
         
-    $userRequestBuilder = $ServiceNowClient.Users
+    $userRequestBuilder = $ServiceNowClient.Users()
     $user = New-Object -TypeName ServiceNow.Graph.Models.User
     $parameters = $MyInvocation.BoundParameters  
             
@@ -1514,7 +1533,7 @@ function Remove-SnowUser {
         [string]$Id
     )
         
-    $ServiceNowClient.Users[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.Users()[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
 
 function Set-SnowCatalogOption {
@@ -1532,7 +1551,7 @@ function Set-SnowCatalogOption {
         [string]$CartItem
     )
         
-    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions[$Id] 
+    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()[$Id] 
     $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
     $parameters = $MyInvocation.BoundParameters  
     $option.Id = $Id
@@ -1577,7 +1596,7 @@ function New-SnowCatalogOption {
         [string]$Value
     )
         
-    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions
+    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()
     $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
     $parameters = $MyInvocation.BoundParameters  
             
@@ -1618,7 +1637,7 @@ function New-SnowVariableOwnership {
 
     )
         
-    $variableOwnershipBuilder = $ServiceNowClient.VariableOwnerships
+    $variableOwnershipBuilder = $ServiceNowClient.VariableOwnerships()
     $variableOwnership = New-Object -TypeName ServiceNow.Graph.Models.CatalogItemOptionMtom
             
     $variableOwnership.CatalogItemOption =  Get-ReferenceLink $CatalogItemOption
@@ -1674,7 +1693,7 @@ function Set-SnowGroup {
         [string]$CostCenter
     )
         
-    $groupRequestBuilder = $ServiceNowClient.UserGroups[$Id] 
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()[$Id] 
     $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
     $parameters = $MyInvocation.BoundParameters  
     $group.Id = $Id
@@ -1791,7 +1810,7 @@ function New-SnowGroup {
         [string]$CostCenter
     )
     
-    $groupRequestBuilder = $ServiceNowClient.UserGroups
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()
     $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
     $parameters = $MyInvocation.BoundParameters  
 
@@ -1867,7 +1886,7 @@ function Remove-SnowGroup {
         [string]$Id
     )
     
-    $ServiceNowClient.UserGroups[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.UserGroups()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
 
 function New-SnowGroupMembership {
@@ -1895,7 +1914,7 @@ function Remove-SnowGroupMembership {
         [string]$Id
     )
     
-    $ServiceNowClient.Memberships[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.Memberships()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
 
 function Set-SnowRequestItem {
@@ -1965,7 +1984,7 @@ function Set-SnowRequestItem {
 
     )
     
-    $requestItemsBuilder = $ServiceNowClient.RequestItems[$Id] 
+    $requestItemsBuilder = $ServiceNowClient.RequestItems()[$Id] 
     $requestItem = New-Object -TypeName ServiceNow.Graph.Models.RequestItem
     $parameters = $MyInvocation.BoundParameters  
     $requestItem.Id = $Id
@@ -2125,7 +2144,7 @@ function New-SnowRequestItem {
         
     )
     
-    $requestItemsBuilder = $ServiceNowClient.RequestItems
+    $requestItemsBuilder = $ServiceNowClient.RequestItems()
     $requestItem = New-Object -TypeName ServiceNow.Graph.Models.RequestItem
     $parameters = $MyInvocation.BoundParameters  
 
@@ -2285,7 +2304,7 @@ function Set-SnowCatalogRequest {
         
     )
     
-    $requestBuilder = $ServiceNowClient.CatalogRequests[$Id] 
+    $requestBuilder = $ServiceNowClient.CatalogRequests()[$Id] 
     $request = New-Object -TypeName ServiceNow.Graph.Models.CatalogRequest
     $parameters = $MyInvocation.BoundParameters  
     $request.Id = $Id
@@ -2501,7 +2520,7 @@ function New-SnowCatalogRequest {
         [datetime]$RequestedForDate
     )
     
-    $requestBuilder = $ServiceNowClient.CatalogRequests
+    $requestBuilder = $ServiceNowClient.CatalogRequests()
     $request = New-Object -TypeName ServiceNow.Graph.Models.CatalogRequest
     $parameters = $MyInvocation.BoundParameters  
 
@@ -2663,7 +2682,7 @@ function Set-SnowLiveProfile {
     [parameter(Mandatory = $false)]
     [string]$Type
 )
-$profileRequestBuilder = $ServiceNowClient.Profiles[$Id] 
+$profileRequestBuilder = $ServiceNowClient.Profiles()[$Id] 
 $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
 $parameters = $MyInvocation.BoundParameters  
 $liveProfile.Id = $Id
@@ -2712,7 +2731,7 @@ function New-SnowLiveProfile {
         [string]$Type
     )
     
-    $profileRequestBuilder = $ServiceNowClient.Profiles
+    $profileRequestBuilder = $ServiceNowClient.Profiles()
     $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
     $parameters = $MyInvocation.BoundParameters  
     if ($parameters.ContainsKey("Document")) {
@@ -2746,7 +2765,7 @@ function Remove-SnowAttachment {
         [string]$Id
     )
     
-    $ServiceNowClient.Attachments[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.Attachments()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }
 
 function New-SnowAttachment {
@@ -2767,7 +2786,7 @@ function New-SnowAttachment {
         [string]$Image
     )
     
-    $attachmentRequestBuilder = $ServiceNowClient.Attachments
+    $attachmentRequestBuilder = $ServiceNowClient.Attachments()
     $attachment = New-Object -TypeName ServiceNow.Graph.Models.Attachment
 
     $attachment.FileName = $FileName
@@ -2836,7 +2855,7 @@ function New-SnowIncident {
         [string]$OpenedBy
     )
     
-    $incidentBuilder = $ServiceNowClient.Incidents
+    $incidentBuilder = $ServiceNowClient.Incidents()
     $incident = New-Object -TypeName ServiceNow.Graph.Models.Incident
     $parameters = $MyInvocation.BoundParameters  
 
@@ -2998,7 +3017,7 @@ function Set-SnowIncident {
                    
     )
     
-    $incidentBuilder = $ServiceNowClient.Incidents[$Id] 
+    $incidentBuilder = $ServiceNowClient.Incidents()[$Id] 
     $incident = New-Object -TypeName ServiceNow.Graph.Models.Incident
     $parameters = $MyInvocation.BoundParameters  
     $incident.Id = $Id
@@ -3114,7 +3133,7 @@ function New-SnowRoleHasGroup {
         $membership.Inherits = $Inherits
     }
 
-    $ServiceNowClient.GroupHasRoles.Request().AddAsync($membership).GetAwaiter().GetResult()
+    $ServiceNowClient.GroupHasRoles().Request().AddAsync($membership).GetAwaiter().GetResult()
 }         
 
 function Remove-SnowRoleHasGroup {
@@ -3123,7 +3142,7 @@ function Remove-SnowRoleHasGroup {
         [string]$Id
     )
     
-    $ServiceNowClient.GroupHasRoles[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.GroupHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
 
 function New-SnowRoleHasUser {
@@ -3146,7 +3165,7 @@ function New-SnowRoleHasUser {
     if ($parameters.ContainsKey("State")) {
         $membership.State = $State
     }
-    $ServiceNowClient.UserHasRoles.Request().AddAsync($membership).GetAwaiter().GetResult()
+    $ServiceNowClient.UserHasRoles().Request().AddAsync($membership).GetAwaiter().GetResult()
 }         
 
 function Remove-SnowRoleHasUser {
@@ -3155,5 +3174,5 @@ function Remove-SnowRoleHasUser {
         [string]$Id
     )
     
-    $ServiceNowClient.UserHasRoles[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+    $ServiceNowClient.UserHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
