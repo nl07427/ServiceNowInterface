@@ -29,7 +29,7 @@
     <ConnectionParameter Name="Item_Option_New_Filter" Description="Query filter to use for filtering Item_Option_New table" />
     <ConnectionParameter Name="SC_Item_Option_Filter" Description="Query filter to use for filtering SC_Item_Option table" />
     <ConnectionParameter Name="SC_Item_Option_MTOM_Filter" Description="Query filter to use for filtering SC_Item_Option_MTOM table" />
-
+    <ConnectionParameter Name="Business_Unit_Filter" Description="Query filter to use for filtering the business_unit table" />
   </ConnectionParameters>
 
   <Initialization>
@@ -2618,6 +2618,116 @@
             ]]>
       </CustomCommand>
 
+      <CustomCommand Name="Get-SnowBusinessUnit">
+        <![CDATA[
+      param (
+            [parameter(Mandatory = $false)]
+            [String]$Id,
+
+            [parameter(Mandatory = $false)]
+            [String]$Filter,
+
+            [parameter(Mandatory = $false)]
+            [String]$Select,
+
+            [parameter(Mandatory = $false)]
+            [String]$OrderBy
+        )
+            
+            Get-Entity -CollectionBuilder $ServiceNowClient.BusinessUnits() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy                      
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Set-SnowBusinessUnit">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$BuHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent
+    )
+   
+    $businessUnitBuilder = $ServiceNowClient.BusinessUnits()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
+    $bu.Id = $Id
+    if ($parameters.ContainsKey("BuHead") -and $BuHead) {
+        $bu.BuHead = Get-ReferenceLink $BuHead
+    }  else {
+        $bu.BuHead =  [ServiceNow.Graph.Models.ReferenceLink]$null
+    }    
+
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $bu.Company = Get-ReferenceLink $Company
+    }  else {
+        $bu.Company =  [ServiceNow.Graph.Models.ReferenceLink]$null
+    }    
+
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $bu.Parent = Get-ReferenceLink $Parent
+    }  else {
+        $bu.Parent =  [ServiceNow.Graph.Models.ReferenceLink]$null
+    }    
+
+    if ($parameters.ContainsKey("Description")) {
+        $bu.Description = $Description
+    }
+    if ($parameters.ContainsKey("Name")) {
+        $bu.Name = $Name
+    }
+    $businessUnitBuilder.Request().UpdateAsync($bu).GetAwaiter().GetResult()
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowBusinessUnit">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$BuHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
+    $bu.Name = $Name
+    if ($parameters.ContainsKey("BuHead") -and $BuHead) {
+        $bu.BuHead = Get-ReferenceLink $BuHead
+    }    
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $bu.Company = Get-ReferenceLink $Company
+    }        
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $bu.Parent = Get-ReferenceLink $Parent
+    }            
+    if ($parameters.ContainsKey("Description")) {
+        $bu.Description = $Description
+    }
+    $ServiceNowClient.BusinessUnits().Request().AddAsync($bu).GetAwaiter().GetResult()
+            ]]>
+      </CustomCommand>
     </CustomCommands>
     <PredefinedCommands></PredefinedCommands>
     <EnvironmentInitialization>
@@ -9230,5 +9340,164 @@
       </MethodConfiguration>
     </Class>
 
+    <Class Name="BusinessUnit">
+      <Properties>
+        <Property Name="Id" DataType="String" AccessConstraint="ReadOnly" IsMandatory="true" IsUniqueKey="true" IsAutoFill="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="Id.ToString()" />
+            <Bind CommandResultOf="New-SnowBusinessUnit" Path="Id" />
+            <Bind CommandResultOf="Set-SnowBusinessUnit" Path="Id.ToString()" />
+          </ReturnBindings>
+          <CommandMappings>
+            <Map ToCommand="Get-SnowBusinessUnit" Parameter="Id" />
+            <Map ToCommand="Set-SnowBusinessUnit" Parameter="Id" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="WhenUpdated.DateTime"/>
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="WhenCreated" DataType="DateTime">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="WhenCreated.DateTime"/>
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ObjectType" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="ObjectType" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CreatedBy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="CreatedBy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UpdatedBy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="UpdatedBy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysModCount" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="SysModCount" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysTags" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="SysTags" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Name" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="Name" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowBusinessUnit" Method="Insert"/>
+            <ModBy Command="Set-SnowBusinessUnit" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowBusinessUnit" Parameter="Name"/>
+            <Map ToCommand="Set-SnowBusinessUnit" Parameter="Name"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="BusinessUnitHead" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="BuHead.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowBusinessUnit" Method="Insert"/>
+            <ModBy Command="Set-SnowBusinessUnit" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowBusinessUnit" Parameter="BuHead"/>
+            <Map ToCommand="Set-SnowBusinessUnit" Parameter="BuHead"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Company" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="Company.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowBusinessUnit" Method="Insert"/>
+            <ModBy Command="Set-SnowBusinessUnit" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowBusinessUnit" Parameter="Company"/>
+            <Map ToCommand="Set-SnowBusinessUnit" Parameter="Company"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Parent" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="Parent.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowBusinessUnit" Method="Insert"/>
+            <ModBy Command="Set-SnowBusinessUnit" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowBusinessUnit" Parameter="Parent"/>
+            <Map ToCommand="Set-SnowBusinessUnit" Parameter="Parent"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Description" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="Description" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowBusinessUnit" Method="Insert"/>
+            <ModBy Command="Set-SnowBusinessUnit" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowBusinessUnit" Parameter="Description"/>
+            <Map ToCommand="Set-SnowBusinessUnit" Parameter="Description"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="HierarchyLevel" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowBusinessUnit" Path="HierarchyLevel" />
+          </ReturnBindings>
+        </Property>
+
+      </Properties>
+
+      <!-- Configuration items for readable types -->
+      <ReadConfiguration>
+        <ListingCommand Command="Get-SnowBusinessUnit">
+          <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="Business_Unit_Filter"/>
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name"/>
+        </ListingCommand>
+        <CommandSequence>
+          <Item Command="Get-SnowBusinessUnit" Order="1"/>
+        </CommandSequence>
+      </ReadConfiguration>
+
+      <!-- Methods supported by this class -->
+      <MethodConfiguration>
+        <Method Name="Update">
+          <CommandSequence>
+            <Item Command="Set-SnowBusinessUnit" Order="1" Condition="ModificationExists"/>
+          </CommandSequence> 
+        </Method>
+        <Method Name="Insert">
+          <CommandSequence>
+            <Item Command="New-SnowBusinessUnit" Order="1"/>
+          </CommandSequence> 
+        </Method>
+      </MethodConfiguration>
+    </Class>
   </Schema>
 </PowershellConnectorDefinition>

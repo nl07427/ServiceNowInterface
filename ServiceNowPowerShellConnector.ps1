@@ -3176,3 +3176,108 @@ function Remove-SnowRoleHasUser {
     
     $ServiceNowClient.UserHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
+
+function Get-SnowBusinessUnit {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.BusinessUnits() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+} 
+
+function New-SnowBusinessUnit {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$BuHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
+    $bu.Name = $Name
+    if ($parameters.ContainsKey("BuHead") -and $BuHead) {
+        $bu.BuHead = Get-ReferenceLink $BuHead
+    }    
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $bu.Company = Get-ReferenceLink $Company
+    }        
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $bu.Parent = Get-ReferenceLink $Parent
+    }            
+    if ($parameters.ContainsKey("Description")) {
+        $bu.Description = $Description
+    }
+    $ServiceNowClient.BusinessUnits().Request().AddAsync($bu).GetAwaiter().GetResult()
+}         
+
+function Set-SnowBusinessUnit {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$BuHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent
+    )
+   
+    $businessUnitBuilder = $ServiceNowClient.BusinessUnits()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
+    $bu.Id = $Id
+    if ($parameters.ContainsKey("BuHead") -and $BuHead) {
+        $bu.BuHead = Get-ReferenceLink $BuHead
+    }  else {
+        $bu.BuHead =  [ServiceNow.Graph.Models.ReferenceLink]$null
+    }    
+
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $bu.Company = Get-ReferenceLink $Company
+    }  else {
+        $bu.Company =  [ServiceNow.Graph.Models.ReferenceLink]$null
+    }    
+
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $bu.Parent = Get-ReferenceLink $Parent
+    }  else {
+        $bu.Parent =  [ServiceNow.Graph.Models.ReferenceLink]$null
+    }    
+
+    if ($parameters.ContainsKey("Description")) {
+        $bu.Description = $Description
+    }
+    if ($parameters.ContainsKey("Name")) {
+        $bu.Name = $Name
+    }
+    $businessUnitBuilder.Request().UpdateAsync($bu).GetAwaiter().GetResult()
+}         
