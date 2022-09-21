@@ -23,13 +23,6 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
-        /// Gets or sets id.
-        /// Read-only.
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_id", Required = Required.Default)]
-        public string Id { get; set; }
-
-        /// <summary>
         /// Gets or sets sys_class_name (table name).
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_class_name", Required = Required.Default)]
@@ -42,10 +35,26 @@ namespace ServiceNow.Graph.Models
         public string CreatedBy { get; set; }
 
         /// <summary>
-        /// Gets or sets the user id that last updated the record.
+        /// Gets the create timestamp of the record.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_updated_by", Required = Required.Default)]
-        public string UpdatedBy { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_created_on", Required = Required.Default)]
+        public DateTimeOffset? WhenCreated {
+            get => _createdOn;
+            set
+            {
+                if (value.HasValue)
+                {
+                    _createdOn = value.Value + value.Value.Offset;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets id.
+        /// Read-only.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_id", Required = Required.Default)]
+        public string Id { get; set; }
 
         /// <summary>
         /// Count of updates to this record
@@ -60,6 +69,12 @@ namespace ServiceNow.Graph.Models
         public string SysTags { get; set; }
 
         /// <summary>
+        /// Gets or sets the user id that last updated the record.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_updated_by", Required = Required.Default)]
+        public string UpdatedBy { get; set; }
+
+        /// <summary>
         /// Gets the update timestamp of the record.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_updated_on", Required = Required.Default)]
@@ -71,21 +86,6 @@ namespace ServiceNow.Graph.Models
                 if (value.HasValue)
                 {
                     _updatedOn = value.Value + value.Value.Offset;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the create timestamp of the record.
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_created_on", Required = Required.Default)]
-        public DateTimeOffset? WhenCreated {
-            get => _createdOn;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _createdOn = value.Value + value.Value.Offset;
                 }
             }
         }

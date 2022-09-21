@@ -486,7 +486,7 @@ namespace ServiceNow.Graph.Models
         /// Reference to wf_activity table
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "wf_activity", Required = Required.Default)]
-        public ReferenceLink WorkflowActivity { get; set; }
+        public ReferenceLink WfActivity { get; set; }
 
         /// <summary>
         /// Universal request, reference to Task table

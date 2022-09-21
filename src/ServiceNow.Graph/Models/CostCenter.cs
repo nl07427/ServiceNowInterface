@@ -26,22 +26,34 @@ namespace ServiceNow.Graph.Models
         public string AccountNumber { get; set; }
 
         /// <summary>
-        /// Parent cost center
-        /// </summary>
-        [JsonProperty(PropertyName = "parent", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Parent { get; set; }
-
-        /// <summary>
         /// Code, X40
         /// </summary>
         [JsonProperty(PropertyName = "code", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public string Code { get; set; }
 
         /// <summary>
+        /// Location, cmn_location reference
+        /// </summary>
+        [JsonProperty(PropertyName = "location", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink Location { get; set; }
+
+        /// <summary>
         /// Manager, sys_user reference
         /// </summary>
         [JsonProperty(PropertyName = "manager", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public ReferenceLink Manager { get; set; }
+
+        /// <summary>
+        /// Name
+        /// </summary>
+        [JsonProperty(PropertyName = "name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Parent cost center
+        /// </summary>
+        [JsonProperty(PropertyName = "parent", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink Parent { get; set; }
 
         /// <summary>
         /// Valid from, datetime
@@ -76,22 +88,10 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
-        /// Name
-        /// </summary>
-        [JsonProperty(PropertyName = "name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Location, cmn_location reference
-        /// </summary>
-        [JsonProperty(PropertyName = "location", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Location { get; set; }
-
-        /// <summary>
         /// Sys domain
         /// </summary>
         [JsonProperty(PropertyName = "sys_domain", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Domain
+        public ReferenceLink SysDomain
         {
             get; set;
         }
@@ -100,10 +100,9 @@ namespace ServiceNow.Graph.Models
         /// Sys domain
         /// </summary>
         [JsonProperty(PropertyName = "sys_domain_path", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string DomainPath
+        public string SysDomainPath
         {
             get; set;
         }
-
     }
 }

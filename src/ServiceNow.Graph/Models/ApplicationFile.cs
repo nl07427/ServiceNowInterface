@@ -18,10 +18,10 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
-        /// Replace on upgrade (No Longer Used)
+        /// Display name, X255
         /// </summary>
-        [JsonProperty(PropertyName = "sys_replace_on_upgrade", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public bool? SysReplaceOnUpgrade { get; set; }
+        [JsonProperty(PropertyName = "sys_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string SysName { get; set; }
 
         /// <summary>
         /// Reference to sys_package
@@ -30,16 +30,10 @@ namespace ServiceNow.Graph.Models
         public ReferenceLink SysPackage { get; set; }
 
         /// <summary>
-        /// Update name, X250
+        /// Protection policy, X40
         /// </summary>
-        [JsonProperty(PropertyName = "sys_update_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string SysUpdateName { get; set; }
-
-        /// <summary>
-        /// Display name, X255
-        /// </summary>
-        [JsonProperty(PropertyName = "sys_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string SysName { get; set; }
+        [JsonProperty(PropertyName = "sys_policy", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string SysPolicy { get; set; }
 
         /// <summary>
         /// Reference to Application (sys_scope)
@@ -48,15 +42,9 @@ namespace ServiceNow.Graph.Models
         public ReferenceLink SysScope { get; set; }
 
         /// <summary>
-        /// Customer update (No Longer Used)
+        /// Update name, X250
         /// </summary>
-        [JsonProperty(PropertyName = "sys_customer_update", NullValueHandling = NullValueHandling.Ignore,Required = Required.Default)]
-        public bool? SysCustomerUpdate { get; set; }
-
-        /// <summary>
-        /// Protection policy, X40
-        /// </summary>
-        [JsonProperty(PropertyName = "sys_policy", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string SysPolicy { get; set; }
+        [JsonProperty(PropertyName = "sys_update_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string SysUpdateName { get; set; }
     }
 }

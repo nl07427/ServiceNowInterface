@@ -124,5 +124,20 @@
         ///Live profiles collection request builder
         /// </summary>
         ILiveProfilesCollectionRequestBuilder LiveProfiles(string version = "");
+
+        /// <summary>
+        ///CMDB Configuration items, table cmdb_ci
+        /// </summary>
+        IConfigurationItemsCollectionRequestBuilder ConfigurationItems(string version = "");
+
+        /// <summary>
+        ///Contained roles, role contains table: sys_user_role_contains
+        /// </summary>
+        IRoleHasRolesCollectionRequestBuilder RoleHasRoles(string version = "");
+
+        /// <summary>
+        ///Building, cmn_building table
+        /// </summary>
+        IBuildingCollectionRequestBuilder Buildings(string version = "");
     }
 }

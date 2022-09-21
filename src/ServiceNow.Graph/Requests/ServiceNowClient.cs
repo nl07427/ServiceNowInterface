@@ -143,5 +143,29 @@ namespace ServiceNow.Graph.Requests
         {
             return new UsersCollectionRequestBuilder(BuildRequestUrl("now", "table", "sys_user", version)   , this);
         }
+
+        /// <summary>
+        /// Gets the ConfigurationItems Collections request builder
+        /// </summary>
+        public IConfigurationItemsCollectionRequestBuilder ConfigurationItems(string version = "")
+        {
+            return new ConfigurationItemsCollectionRequestBuilder(BuildRequestUrl("now", "table", "cmdb_ci", version)   , this);
+        }
+
+        /// <summary>
+        /// Gets the RoleHasRoles Collections request builder
+        /// </summary>
+        public IRoleHasRolesCollectionRequestBuilder RoleHasRoles(string version = "")
+        {
+            return new RoleHasRolesCollectionRequestBuilder(BuildRequestUrl("now", "table", "sys_user_role_contains", version)   , this);
+        }
+
+        /// <summary>
+        /// Gets the Buildings Collections request builder
+        /// </summary>
+        public IBuildingCollectionRequestBuilder Buildings(string version = "")
+        {
+            return new BuildingCollectionRequestBuilder(BuildRequestUrl("now", "table", "cmn_building", version)   , this);
+        }
     }
 }

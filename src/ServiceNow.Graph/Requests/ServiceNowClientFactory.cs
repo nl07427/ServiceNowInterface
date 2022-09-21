@@ -14,7 +14,7 @@ namespace ServiceNow.Graph.Requests
 {
     /// <summary>
     /// ServiceNowClientFactory class to create the HTTP client
-    /// </summary>
+    /// </summary> 
     public static class ServiceNowClientFactory
     {
         /// <summary>

@@ -1,70 +1,582 @@
-﻿function Get-ServiceNowClient {
+﻿function Get-SnowBusinessUnit {
     param (
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]$Domain,
+        [parameter(Mandatory = $false)]
+        [String]$Id,
 
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]$ClientId, 
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
 
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
-        [ValidateNotNullOrEmpty()]
-        [securestring]$ClientSecret,        
+        [parameter(Mandatory = $false)]
+        [String]$Select,
 
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( { if ( -Not (Test-Path -Path $_) ) {
-                    throw "File $_  does not exist"
-                }
-                return $true })]
-        [String]$LibraryPath, 
-
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
-        [ValidateNotNullOrEmpty()]
-        [String]$UserName, 
-
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
-        [ValidateNotNullOrEmpty()]
-        [securestring]$UserPassword,		
-		  
-        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $false)]
-        [Int]$PageSize = 1000
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
     )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.BusinessUnits() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+} 
 
-    if ($null -eq $Global:ServiceNowClient) {
-        # Initialize the client
-        $plainClientSecret = ""
-        $ptr = [System.IntPtr]::Zero
-        try {
-            $ptr = [System.IntPtr]::Zero    
-            $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($ClientSecret)
-            $plainClientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptr)
-        }
-        finally {
-            [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptr)
-        }
-		  
-        $plainUserPassword = ""
-        $ptrUserPassword = [System.IntPtr]::Zero
-        try {
-            $ptrUserPassword = [System.IntPtr]::Zero    
-            $ptrUserPassword = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($UserPassword)
-            $plainUserPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptrUserPassword)
-        }
-        finally {
-            [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptrUserPassword)
-        }		  
-        Add-Type -Path $LibraryPath
-        $authenticationProvider = New-Object -TypeName ServiceNow.Graph.Authentication.ClientCredentialProvider -ArgumentList $Domain, $ClientId, $plainClientSecret, $UserName, $plainUserPassword
-        # Last parameter is the version that is mangled in the API Gateway URL
-        $Global:ServiceNowClient = New-Object -TypeName ServiceNow.Graph.Requests.ServiceNowClient -ArgumentList $Domain, $authenticationProvider, $null
-        $Global:PageSize = $PageSize
+function New-SnowBusinessUnit {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$BuHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
+    $bu.Name = $Name
+    if ($parameters.ContainsKey("BuHead") -and $BuHead) {
+        $bu.BuHead = Get-ReferenceLink $BuHead
+    }    
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $bu.Company = Get-ReferenceLink $Company
+    }        
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $bu.Parent = Get-ReferenceLink $Parent
+    }            
+    if ($parameters.ContainsKey("Description")) {
+        $bu.Description = $Description
     }
-}
-function Remove-ServiceNowClient {
-    #$Global:ServiceNowClient = $null
-}
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $bu.SysDomain = Get-ReferenceLink $SysDomain
+    }            
+    $ServiceNowClient.BusinessUnits().Request().AddAsync($bu).GetAwaiter().GetResult()
+}         
+
+function Set-SnowBusinessUnit {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$BuHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent
+    )
+   
+    $businessUnitBuilder = $ServiceNowClient.BusinessUnits()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
+    $bu.Id = $Id
+
+    if ($parameters.ContainsKey("BuHead")) {
+        if($BuHead) {
+            $bu.BuHead = Get-ReferenceLink $BuHead
+        } else {
+            $bu.BuHead =  Get-ReferenceLink  ""
+        }
+    }    
+
+    if ($parameters.ContainsKey("Company")) {
+        if($Company) {
+            $bu.Company = Get-ReferenceLink $Company
+        } else {
+            $bu.Company =  Get-ReferenceLink  ""
+        }
+    }        
+
+    if ($parameters.ContainsKey("Parent")) {
+        if($Parent) {
+            $bu.Parent = Get-ReferenceLink $Parent
+        } else {
+            $bu.Parent =  Get-ReferenceLink  ""
+        }
+    }        
+        
+    if ($parameters.ContainsKey("Description")) {
+        $bu.Description = $Description
+    }
+    if ($parameters.ContainsKey("Name")) {
+        $bu.Name = $Name
+    }
+    $businessUnitBuilder.Request().UpdateAsync($bu).GetAwaiter().GetResult()
+}        
+
+function Get-SnowBuilding {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy,
+
+        [parameter(Mandatory = $false)]
+        [String]$Version=""        
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Buildings($Version) -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+} 
+
+function New-SnowBuilding {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notes,
+
+        [parameter(Mandatory = $false)]
+        [int]$Floors
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $building = New-Object -TypeName ServiceNow.Graph.Models.Building
+    $building.Name = $Name
+    if ($parameters.ContainsKey("Contact") -and $Contact) {
+        $building.Contact = Get-ReferenceLink $Contact
+    }    
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $building.Location = Get-ReferenceLink $Location
+    }        
+    if ($parameters.ContainsKey("Notes")) {
+        $building.Notes = $Notes
+    }
+    if ($parameters.ContainsKey("Floors")) {
+        $building.Floors = $Floors
+    }    
+    $ServiceNowClient.Buildings().Request().AddAsync($building).GetAwaiter().GetResult()
+}         
+
+function Set-SnowBuilding {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notes,
+
+        [parameter(Mandatory = $false)]
+        [int]$Floors
+    )
+   
+    $buildingBuilder = $ServiceNowClient.Buildings()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $building = New-Object -TypeName ServiceNow.Graph.Models.Building
+    $building.Id = $Id
+    if ($parameters.ContainsKey("Contact")) {
+        if($Contact) {
+            $building.Contact = Get-ReferenceLink $Contact
+        } else {
+            $building.Contact =  Get-ReferenceLink  ""
+        }
+    }    
+
+    if ($parameters.ContainsKey("Location")) {
+        if($Location) {
+            $building.Location = Get-ReferenceLink $Location
+        } else {
+            $building.Location =  Get-ReferenceLink  ""
+        }
+    }    
+
+    if ($parameters.ContainsKey("Notes")) {
+        $building.Notes = $Notes
+    }
+    if ($parameters.ContainsKey("Floors")) {
+        $building.Floors = $Floors
+    }    
+    if ($parameters.ContainsKey("Name")) {
+        $building.Name = $Name
+    }
+    $buildingBuilder.Request().UpdateAsync($building).GetAwaiter().GetResult()
+}        
+
+function Get-SnowConfigurationItem {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.ConfigurationItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+}      
+
+function Get-SnowCostCenter {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.CostCenters() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+}                            
+
+function New-SnowCostCenter {
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$AccountNumber,
+
+        [parameter(Mandatory = $false)]
+        [string]$Code,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
+
+        [parameter(Mandatory = $false)]
+        [datetime]$ValidFrom,
+
+        [parameter(Mandatory = $false)]
+        [datetime]$ValidTo        
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $costcenter = New-Object -TypeName ServiceNow.Graph.Models.CostCenter
+    $costcenter.Name = $Name
+    if ($parameters.ContainsKey("AccountNumber")) {
+        $costcenter.AccountNumber = $AccountNumber
+    }
+    if ($parameters.ContainsKey("Code")) {
+        $costcenter.Code = $Code
+    }        
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $costcenter.Location = Get-ReferenceLink $Location
+    }    
+    if ($parameters.ContainsKey("Manager") -and $Manager) {
+        $costcenter.Manager = Get-ReferenceLink $Manager
+    }        
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $costcenter.Parent = Get-ReferenceLink $Parent
+    }        
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $costcenter.SysDomain = Get-ReferenceLink $SysDomain
+    }            
+    if ($parameters.ContainsKey("ValidFrom") -and ($ValidFrom -ne [DateTime]::MinValue)) {
+        $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
+    }         
+    if ($parameters.ContainsKey("ValidTo") -and ($ValidTo -ne [DateTime]::MinValue)) {
+        $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
+    }             
+    $ServiceNowClient.CostCenters().Request().AddAsync($costcenter).GetAwaiter().GetResult()
+}         
+
+function Set-SnowCostCenter {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$AccountNumber,
+
+        [parameter(Mandatory = $false)]
+        [string]$Code,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [datetime]$ValidFrom,
+
+        [parameter(Mandatory = $false)]
+        [datetime]$ValidTo        
+    )
+   
+    $costCenterBuilder = $ServiceNowClient.CostCenters()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $costcenter = New-Object -TypeName ServiceNow.Graph.Models.CostCenter
+    $costcenter.Id = $Id
+
+    if ($parameters.ContainsKey("AccountNumber")) {
+        $costcenter.AccountNumber = $AccountNumber
+    }
+    if ($parameters.ContainsKey("Code")) {
+        $costcenter.Code = $Code
+    }        
+    if ($parameters.ContainsKey("Location") ) {
+        if($Location) {
+            $costcenter.Location = Get-ReferenceLink $Location
+        } else {
+            $costcenter.Location = Get-ReferenceLink ""
+        }
+    }    
+    if ($parameters.ContainsKey("Manager") ) {
+        if($Manager) {
+            $costcenter.Manager = Get-ReferenceLink $Manager
+        } else {
+            $costcenter.Manager = Get-ReferenceLink ""
+        }
+    }        
+    if ($parameters.ContainsKey("Name")) {
+        $costcenter.Name = $Name
+    }            
+    if ($parameters.ContainsKey("Parent") ) {
+        if($Parent) {
+            $costcenter.Parent = Get-ReferenceLink $Parent
+        } else {
+            $costcenter.Parent = Get-ReferenceLink ""
+        }
+    }            
+    if ($parameters.ContainsKey("ValidFrom") -and ($ValidFrom -ne [DateTime]::MinValue)) {
+        $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
+    }         
+    if ($parameters.ContainsKey("ValidTo") -and ($ValidTo -ne [DateTime]::MinValue)) {
+        $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
+    }             
+
+    $costCenterBuilder.Request().UpdateAsync($costcenter).GetAwaiter().GetResult()
+}        
+
+function Get-SnowDepartment {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Departments() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+}                            
+
+function New-SnowDepartment {
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$BusinessUnit,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$DeptHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [int]$HeadCount,
+
+        [parameter(Mandatory = $false)]
+        [string]$DepartmentId,
+
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryContact        
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $department = New-Object -TypeName ServiceNow.Graph.Models.Department
+    $department.Name = $Name
+    if ($parameters.ContainsKey("BusinessUnit") -and $BusinessUnit) {
+        $department.BusinessUnit = Get-ReferenceLink $BusinessUnit
+    }        
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $department.Company = Get-ReferenceLink $Company
+    }            
+    if ($parameters.ContainsKey("CostCenter") -and $CostCenter) {
+        $department.CostCenter = Get-ReferenceLink $CostCenter
+    }                
+    if ($parameters.ContainsKey("DeptHead") -and $DeptHead) {
+        $department.DeptHead = Get-ReferenceLink $DeptHead
+    }                    
+    if ($parameters.ContainsKey("Description")) {
+        $department.Description = $Description
+    }
+    if ($parameters.ContainsKey("HeadCount")) {
+        $department.HeadCount = $HeadCount
+    }        
+    if ($parameters.ContainsKey("DepartmentId")) {
+        $department.DepartmentId = $DepartmentId
+    }            
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $department.Parent = Get-ReferenceLink $Parent
+    }    
+    if ($parameters.ContainsKey("PrimaryContact") -and $PrimaryContact) {
+        $department.PrimaryContact = Get-ReferenceLink $PrimaryContact
+    }        
+
+    $ServiceNowClient.Departments().Request().AddAsync($department).GetAwaiter().GetResult()
+}         
+
+function Set-SnowDepartment {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$BusinessUnit,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$DeptHead,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [int]$HeadCount,
+
+        [parameter(Mandatory = $false)]
+        [string]$DepartmentId,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryContact        
+    )
+   
+    $departmentBuilder = $ServiceNowClient.Departments()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $department = New-Object -TypeName ServiceNow.Graph.Models.Department
+    $department.Id = $Id
+
+    if ($parameters.ContainsKey("BusinessUnit")) {
+        if($BusinessUnit){
+            $department.BusinessUnit = Get-ReferenceLink $BusinessUnit
+        } else {
+            $department.BusinessUnit = Get-ReferenceLink ""
+        }
+    }        
+    if ($parameters.ContainsKey("Company")) {
+        if($Company){
+            $department.Company = Get-ReferenceLink $Company
+        } else {
+            $department.Company = Get-ReferenceLink ""
+        }
+    }            
+    if ($parameters.ContainsKey("CostCenter")) {
+        if($CostCenter){
+            $department.CostCenter = Get-ReferenceLink $CostCenter
+        } else {
+            $department.CostCenter = Get-ReferenceLink ""
+        }
+    }                
+    if ($parameters.ContainsKey("DeptHead")) {
+        if($DeptHead){
+            $department.DeptHead = Get-ReferenceLink $DeptHead
+        } else {
+            $department.DeptHead = Get-ReferenceLink ""
+        }
+    }                    
+    if ($parameters.ContainsKey("Description")) {
+        $department.Description = $Description
+    }
+    if ($parameters.ContainsKey("HeadCount")) {
+        $department.HeadCount = $HeadCount
+    }        
+    if ($parameters.ContainsKey("DepartmentId")) {
+        $department.DepartmentId = $DepartmentId
+    }            
+    if ($parameters.ContainsKey("Name")) {
+        $department.Name = $Name
+    }              
+    if ($parameters.ContainsKey("Parent")) {
+        if($Parent){
+            $department.Parent = Get-ReferenceLink $Parent
+        } else {
+            $department.Parent = Get-ReferenceLink ""
+        }
+    }              
+    if ($parameters.ContainsKey("PrimaryContact")) {
+        if($PrimaryContact){
+            $department.PrimaryContact = Get-ReferenceLink $PrimaryContact
+        } else {
+            $department.PrimaryContact = Get-ReferenceLink ""
+        }
+    }             
+
+    $departmentBuilder.Request().UpdateAsync($department).GetAwaiter().GetResult()
+}        
 
 function Get-SnowUser {
     param (
@@ -117,17 +629,27 @@ function Get-SnowLiveProfile {
         [String]$OrderBy
     )
     
-        Get-Entity -CollectionBuilder $ServiceNowClient.Profiles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+        Get-Entity -CollectionBuilder $ServiceNowClient.LiveProfiles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }    
 
 function Get-SnowGroupMembership {
     param (
         [parameter(Mandatory = $false)]
-        [String]$Id
+        [String]$Id,
+        
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+        
+        
     )
         
-   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id
-
+   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }        
 function Get-SnowTask {
     param (
@@ -346,7 +868,11 @@ function Get-SnowIncident {
 function Get-SnowAttachment {
     param (
         [parameter(Mandatory = $false)]
-        [String]$Id
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter=""        
+
     )
     $collectionBuilder = $ServiceNowClient.Attachments()        
     $outcome = $null
@@ -354,7 +880,7 @@ function Get-SnowAttachment {
         $outcome = $collectionBuilder[$Id].Request().GetAsync().GetAwaiter().GetResult()    
     }
     else {
-        $page = $collectionBuilder.Request().Filter("table_name=ZZ_YYlive_profile").Top($Global:PageSize).GetAsync().GetAwaiter().GetResult()
+        $page = $collectionBuilder.Request().Filter($Filter).Top($Global:PageSize).GetAsync().GetAwaiter().GetResult()
         if ($page -and $page.CurrentPage) {
             $outcome = [System.Collections.Generic.List[ServiceNow.Graph.Models.Attachment]]$page.CurrentPage
             $nextPageRequest = $page.NextPageRequest
@@ -370,41 +896,7 @@ function Get-SnowAttachment {
       $outcome
 }    
 
-function Get-SnowDepartment {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
 
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Departments() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-}                            
-
-function Get-SnowCostCenter {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.CostCenters() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-}                            
 
 function Get-SnowCompany {
     param (
@@ -423,24 +915,6 @@ function Get-SnowCompany {
         
         Get-Entity -CollectionBuilder $ServiceNowClient.Companies() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }                                
-
-function Get-SnowConfigurationItem {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.ConfigurationItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-}      
 
 function Get-SnowRole {
     param (
@@ -530,6 +1004,7 @@ function Get-SnowJournalFields {
             "sc_request" { $builder = $ServiceNowClient.CatalogRequests() }
             "sc_req_item" {$builder = $ServiceNowClient.RequestItems()}
             "sc_task" {$builder = $ServiceNowClient.CatalogTasks()}
+            "incident" {$builder = $ServiceNowClient.Incidents()}
         }
         Get-Entity -CollectionBuilder $builder -Id $Id  -Select $Select  -QueryParams $params
 }        
@@ -2682,7 +3157,7 @@ function Set-SnowLiveProfile {
     [parameter(Mandatory = $false)]
     [string]$Type
 )
-$profileRequestBuilder = $ServiceNowClient.Profiles()[$Id] 
+$profileRequestBuilder = $ServiceNowClient.LiveProfiles()[$Id] 
 $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
 $parameters = $MyInvocation.BoundParameters  
 $liveProfile.Id = $Id
@@ -2731,7 +3206,7 @@ function New-SnowLiveProfile {
         [string]$Type
     )
     
-    $profileRequestBuilder = $ServiceNowClient.Profiles()
+    $profileRequestBuilder = $ServiceNowClient.LiveProfiles()
     $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
     $parameters = $MyInvocation.BoundParameters  
     if ($parameters.ContainsKey("Document")) {
@@ -2800,158 +3275,283 @@ function New-SnowAttachment {
 
 function New-SnowIncident {
     param (
-        [parameter(Mandatory = $false)]
-        [bool]$Active,
-
         [parameter(Mandatory = $true)]
-        [string]$Caller,
-
-        [parameter(Mandatory = $false)]
-        [string]$AssignedTo,
+        [string]$CallerId,
 
         [parameter(Mandatory = $true)]
         [string]$AssignmentGroup,
-
-        [parameter(Mandatory = $false)]
-        [string]$CloseNotes,
-
-        [parameter(Mandatory = $false)]
-        [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContactType,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [int]$State,
-
-        [parameter(Mandatory = $false)]
-        [int]$IncidentState,
-
-        [parameter(Mandatory = $false)]
-        [int]$Urgency,
-
-        [parameter(Mandatory = $false)]
-        [int]$Impact,
 
         [parameter(Mandatory = $true)]
         [string]$ShortDescription,
 
         [parameter(Mandatory = $true)]
+        [string]$Category,
+        
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Active,
+
+        [parameter(Mandatory = $false)]
+        [datetime]$ActivityDue,        
+
+        [parameter(Mandatory = $false)]
+        [string]$AdditionalAssigneeList,
+
+        [parameter(Mandatory = $false)]
+        [string]$Approval,
+
+        [parameter(Mandatory = $false)]
+        [string]$AssignedTo,
+
+        [parameter(Mandatory = $false)]
+        [string]$BusinessImpact,
+
+        [parameter(Mandatory = $false)]
+        [string]$BusinessService,
+
+        [parameter(Mandatory = $false)]
+        [string]$Cause,
+
+        [parameter(Mandatory = $false)]
+        [string]$CausedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$CloseCode,
+
+        [parameter(Mandatory = $false)]
+        [string]$CloseNotes,
+
+        [parameter(Mandatory = $false)]
         [string]$CmdbCi,
+
+        [parameter(Mandatory = $false)]
+        [string]$Comments,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$ContactType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contract,
 
         [parameter(Mandatory = $false)]
         [string]$Description,
 
-        [parameter(Mandatory = $true)]
-        [string]$Category,
-        
-        [parameter(Mandatory = $true)]
-        [string]$SubCategory,
+        [parameter(Mandatory = $false)]
+        [datetime]$DueDate,        
+
+        [parameter(Mandatory = $false)]
+        [datetime]$ExpectedStart,        
+
+        [parameter(Mandatory = $false)]
+        [datetime]$FollowUp,        
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
+
+        [parameter(Mandatory = $false)]
+        [int]$Impact,
+
+        [parameter(Mandatory = $false)]
+        [int]$IncidentState,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [int]$Notify,
+
+        [parameter(Mandatory = $false)]
+        [string]$OpenedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$OriginId,
         
         [parameter(Mandatory = $false)]
-        [string]$OpenedBy
+        [string]$OriginTable,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ParentIncident,
+
+        [parameter(Mandatory = $false)]
+        [int]$Priority,
+
+        [parameter(Mandatory = $false)]
+        [string]$ProblemId,
+
+        [parameter(Mandatory = $false)]
+        [string]$Rfc,
+
+        [parameter(Mandatory = $false)]
+        [string]$ServiceOffering,
+
+        [parameter(Mandatory = $false)]
+        [int]$Severity,
+
+        [parameter(Mandatory = $false)]
+        [int]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$SubCategory,
+
+        [parameter(Mandatory = $false)]
+        [int]$Urgency,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes
+       
+
     )
     
     $incidentBuilder = $ServiceNowClient.Incidents()
     $incident = New-Object -TypeName ServiceNow.Graph.Models.Incident
     $parameters = $MyInvocation.BoundParameters  
 
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $incident.SysDomain = Get-ReferenceLink $SysDomain
+    }              
     if ($parameters.ContainsKey("Active")) {
         $incident.Active = $Active
     }
-    if ($parameters.ContainsKey("CloseNotes")) {
-        $incident.CloseNotes = $CloseNotes
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $incident.Description = $Description
-    }         
+    if ($parameters.ContainsKey("ActivityDue") -and ($ActivityDue -ne [DateTime]::MinValue)) {
+        $incident.ActivityDue = $ActivityDue.ToString("yyyy-MM-dd HH:mm:ss")
+    }     
+    if ($parameters.ContainsKey("AdditionalAssigneeList")) {
+        $incident.AdditionalAssigneeList = $AdditionalAssigneeList
+    }    
+    if ($parameters.ContainsKey("Approval")) {
+        $incident.Approval = $Approval
+    }        
+    if ($parameters.ContainsKey("AssignedTo") -and $AssignedTo) {
+        $incident.AssignedTo = Get-ReferenceLink $AssignedTo
+    }          
+    if ($parameters.ContainsKey("AssignmentGroup")) {
+        $incident.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
+    }     
+    if ($parameters.ContainsKey("BusinessImpact")) {
+        $incident.BusinessImpact = $BusinessImpact
+    }          
+    if ($parameters.ContainsKey("BusinessService") -and $BusinessService) {
+        $incident.BusinessService = Get-ReferenceLink $BusinessService
+    }                
+    if ($parameters.ContainsKey("CallerId") ) {
+        $incident.CallerId = Get-ReferenceLink $CallerId
+    }       
     if ($parameters.ContainsKey("Category")) {
         $incident.Category = $Category
     }         
-    if ($parameters.ContainsKey("SubCategory")) {
-        $incident.SubCategory = $SubCategory
-    }         
-
-    if ($parameters.ContainsKey("AssignedTo")) {
-        if (-not [string]::IsNullOrEmpty($AssignedTo)) {
-            $incident.AssignedTo = Get-ReferenceLink $AssignedTo
-        }
-        else {
-            $incident.AssignedTo = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("Cause")) {
+        $incident.Cause = $Cause
     }          
-
-    if ($parameters.ContainsKey("OpenedBy")) {
-        if (-not [string]::IsNullOrEmpty($OpenedBy)) {
-            $incident.OpenedBy = Get-ReferenceLink $OpenedBy
-        }
-        else {
-            $incident.OpenedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("CausedBy") -and $CausedBy) {
+        $incident.CausedBy = Get-ReferenceLink $CausedBy
     }          
-
-    if ($parameters.ContainsKey("Caller")) {
-        if (-not [string]::IsNullOrEmpty($Caller)) {
-            $incident.Caller = Get-ReferenceLink $Caller
-        }
-        else {
-            $incident.Caller = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("CloseCode")) {
+        $incident.CloseCode = $CloseCode
+    }                     
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $incident.CloseNotes = $CloseNotes
+    }    
+    if ($parameters.ContainsKey("CmdbCi") -and $CmdbCi) {
+        $incident.CmdbCi = Get-ReferenceLink $CmdbCi
     }          
-            
-    if ($parameters.ContainsKey("AssignmentGroup")) {
-        if (-not [string]::IsNullOrEmpty($AssignmentGroup)) {
-            $incident.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
-        }
-        else {
-            $incident.AssignmentGroup = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-          
     if ($parameters.ContainsKey("Comments")) {
         $incident.Comments = $Comments
     }
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $incident.Company = Get-ReferenceLink $Company
+    }              
     if ($parameters.ContainsKey("ContactType")) {
         $incident.ContactType = $ContactType
-    }    
-              
-    if ($parameters.ContainsKey("Location")) {
-        if (-not [string]::IsNullOrEmpty($Location)) {
-            $incident.Location = Get-ReferenceLink $Location
-        }
-        else {
-            $incident.Location = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
     }
-
-    if ($parameters.ContainsKey("State")) {
-        $incident.State = $State
-    }   
+    if ($parameters.ContainsKey("Contract") -and $Contract) {
+        $incident.Contract = Get-ReferenceLink $Contract
+    }                      
+    if ($parameters.ContainsKey("Description")) {
+        $incident.Description = $Description
+    } 
+    if ($parameters.ContainsKey("DueDate") -and ($DueDate -ne [DateTime]::MinValue)) {
+        $incident.DueDate = $DueDate.ToString("yyyy-MM-dd HH:mm:ss")
+    } 
+    if ($parameters.ContainsKey("ExpectedStart") -and ($ExpectedStart -ne [DateTime]::MinValue)) {
+        $incident.ExpectedStart = $ExpectedStart.ToString("yyyy-MM-dd HH:mm:ss")
+    } 
+    if ($parameters.ContainsKey("FollowUp") -and ($FollowUp -ne [DateTime]::MinValue)) {
+        $incident.FollowUp = $FollowUp.ToString("yyyy-MM-dd HH:mm:ss")
+    }         
+    if ($parameters.ContainsKey("GroupList")) {
+        $incident.GroupList = $GroupList
+    }              
+    if ($parameters.ContainsKey("Impact")) {
+        $incident.Impact = $Impact
+    } 
     if ($parameters.ContainsKey("IncidentState")) {
         $incident.IncidentState = $IncidentState
     }   
-    if ($parameters.ContainsKey("Impact")) {
-        $incident.Impact = $Impact
+    if ($parameters.ContainsKey("Knowledge")) {
+        $incident.Knowledge = $Knowledge
+    }                  
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $incident.Location = Get-ReferenceLink $Location
+    }     
+    if ($parameters.ContainsKey("Notify")) {
+        $incident.Notify = $Notify
+    }              
+    if ($parameters.ContainsKey("OpenedBy") -and $OpenedBy) {
+        $incident.OpenedBy = Get-ReferenceLink $OpenedBy
+    }     
+    if ($parameters.ContainsKey("OriginId") -and $OriginId) {
+        $incident.OriginId = Get-ReferenceLink $OriginId
+    }  
+    if ($parameters.ContainsKey("OriginTable")) {
+        $incident.OriginTable = $OriginTable
+    }
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $incident.Parent = Get-ReferenceLink $Parent
+    }                
+    if ($parameters.ContainsKey("ParentIncident") -and $ParentIncident) {
+        $incident.ParentIncident = Get-ReferenceLink $ParentIncident
+    }                                                                     
+    if ($parameters.ContainsKey("Priority")) {
+        $incident.Priority = $Priority
+    }       
+    if ($parameters.ContainsKey("ProblemId") -and $ProblemId) {
+        $incident.ProblemId = Get-ReferenceLink $ProblemId
+    }          
+    if ($parameters.ContainsKey("Rfc") -and $Rfc) {
+        $incident.Rfc = Get-ReferenceLink $Rfc
+    }     
+    if ($parameters.ContainsKey("ServiceOffering") -and $ServiceOffering) {
+        $incident.ServiceOffering = Get-ReferenceLink $ServiceOffering
+    } 
+    if ($parameters.ContainsKey("Severity")) {
+        $incident.Severity = $Severity
+    }                                                   
+    if ($parameters.ContainsKey("SubCategory")) {
+        $incident.SubCategory = $SubCategory
+    }                    
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $incident.ShortDescription = $ShortDescription
+    }
+    if ($parameters.ContainsKey("State")) {
+        $incident.State = $State
     }   
     if ($parameters.ContainsKey("Urgency")) {
         $incident.Urgency = $Urgency
     }   
-               
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $incident.ShortDescription = $ShortDescription
-    }
-
-    if ($parameters.ContainsKey("CmdbCi")) {
-        if (-not [string]::IsNullOrEmpty($CmdbCi)) {
-            $incident.CmdbCi = Get-ReferenceLink $CmdbCi
-        }
-        else {
-            $incident.CmdbCi = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $incident.WorkNotes = $WorkNotes
+    }   
 
     $incidentBuilder.Request().AddAsync($incident).GetAwaiter().GetResult()
 }         
@@ -2965,7 +3565,10 @@ function Set-SnowIncident {
         [bool]$Active,
 
         [parameter(Mandatory = $false)]
-        [string]$Caller,
+        [datetime]$ActivityDue,        
+
+        [parameter(Mandatory = $false)]
+        [string]$AdditionalAssigneeList,
 
         [parameter(Mandatory = $false)]
         [string]$AssignedTo,
@@ -2974,47 +3577,112 @@ function Set-SnowIncident {
         [string]$AssignmentGroup,
 
         [parameter(Mandatory = $false)]
+        [string]$BusinessImpact,
+
+        [parameter(Mandatory = $false)]
+        [string]$BusinessService,
+
+        [parameter(Mandatory = $false)]
+        [string]$Category,
+
+        [parameter(Mandatory = $false)]
+        [string]$Cause,
+
+        [parameter(Mandatory = $false)]
+        [string]$CausedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$CloseCode,
+
+        [parameter(Mandatory = $false)]
         [string]$CloseNotes,
-
-        [parameter(Mandatory = $false)]
-        [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContactType,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [int]$State,
-
-        [parameter(Mandatory = $false)]
-        [int]$IncidentState,
-
-        [parameter(Mandatory = $false)]
-        [int]$Urgency,
-
-        [parameter(Mandatory = $false)]
-        [int]$Impact,
-
-        [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
 
         [parameter(Mandatory = $false)]
         [string]$CmdbCi,
 
         [parameter(Mandatory = $false)]
+        [string]$Comments,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$ContactType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contract,
+
+        [parameter(Mandatory = $false)]
         [string]$Description,
 
         [parameter(Mandatory = $false)]
-        [string]$Category,
+        [datetime]$DueDate,        
+
+        [parameter(Mandatory = $false)]
+        [datetime]$ExpectedStart,        
+
+        [parameter(Mandatory = $false)]
+        [datetime]$FollowUp,        
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
+
+        [parameter(Mandatory = $false)]
+        [int]$Impact,
+
+        [parameter(Mandatory = $false)]
+        [int]$IncidentState,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [int]$Notify,
+
+        [parameter(Mandatory = $false)]
+        [string]$OriginId,
         
+        [parameter(Mandatory = $false)]
+        [string]$OriginTable,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ParentIncident,
+
+        [parameter(Mandatory = $false)]
+        [int]$Priority,
+
+        [parameter(Mandatory = $false)]
+        [string]$ProblemId,
+
+        [parameter(Mandatory = $false)]
+        [string]$Rfc,
+
+        [parameter(Mandatory = $false)]
+        [string]$ServiceOffering,
+
+        [parameter(Mandatory = $false)]
+        [int]$Severity,
+
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
+        [parameter(Mandatory = $false)]
+        [int]$State,
+
         [parameter(Mandatory = $false)]
         [string]$SubCategory,
 
         [parameter(Mandatory = $false)]
-        [string]$CloseCode
-                   
+        [int]$Urgency,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes
     )
     
     $incidentBuilder = $ServiceNowClient.Incidents()[$Id] 
@@ -3025,90 +3693,185 @@ function Set-SnowIncident {
     if ($parameters.ContainsKey("Active")) {
         $incident.Active = $Active
     }
-    if ($parameters.ContainsKey("CloseNotes")) {
-        $incident.CloseNotes = $CloseNotes
+    if ($parameters.ContainsKey("ActivityDue") -and ($ActivityDue -ne [DateTime]::MinValue)) {
+        $incident.ActivityDue = $ActivityDue.ToString("yyyy-MM-dd HH:mm:ss")
     } 
-    if ($parameters.ContainsKey("CloseCode")) {
-        $incident.CloseCode = $CloseCode
-    }     
-    if ($parameters.ContainsKey("Description")) {
-        $incident.Description = $Description
-    }         
+    if ($parameters.ContainsKey("AdditionalAssigneeList")) {
+        $incident.AdditionalAssigneeList = $AdditionalAssigneeList
+    }    
+    if ($parameters.ContainsKey("Approval")) {
+        $incident.Approval = $Approval
+    }        
+    if ($parameters.ContainsKey("AssignedTo")) {
+        if ($AssignedTo) {
+            $incident.AssignedTo = Get-ReferenceLink $AssignedTo
+        } else {
+            $incident.AssignedTo = Get-ReferenceLink ""
+        }
+    }          
+    if ($parameters.ContainsKey("AssignmentGroup")) {
+        if ($AssignmentGroup) {
+            $incident.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
+        } else {
+            $incident.AssignmentGroup = Get-ReferenceLink ""
+        }
+    }              
+    if ($parameters.ContainsKey("BusinessImpact")) {
+        if ($BusinessImpact) {
+            $incident.BusinessImpact = Get-ReferenceLink $BusinessImpact
+        } else {
+            $incident.BusinessImpact = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("BusinessService")) {
+        if ($BusinessService) {
+            $incident.BusinessService = Get-ReferenceLink $BusinessService
+        } else {
+            $incident.BusinessService = Get-ReferenceLink ""
+        }
+    }                      
     if ($parameters.ContainsKey("Category")) {
         $incident.Category = $Category
     }         
-    if ($parameters.ContainsKey("SubCategory")) {
-        $incident.SubCategory = $SubCategory
-    }         
-
-    if ($parameters.ContainsKey("AssignedTo")) {
-        if (-not [string]::IsNullOrEmpty($AssignedTo)) {
-            $incident.AssignedTo = Get-ReferenceLink $AssignedTo
-        }
-        else {
-            $incident.AssignedTo = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("Cause")) {
+        $incident.Cause = $Cause
     }          
-
-    if ($parameters.ContainsKey("Caller")) {
-        if (-not [string]::IsNullOrEmpty($Caller)) {
-            $incident.Caller = Get-ReferenceLink $Caller
-        }
-        else {
-            $incident.Caller = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("CausedBy") -and $CausedBy) {
+        $incident.CausedBy = Get-ReferenceLink $CausedBy
     }          
-            
-    if ($parameters.ContainsKey("AssignmentGroup")) {
-        if (-not [string]::IsNullOrEmpty($AssignmentGroup)) {
-            $incident.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
+    if ($parameters.ContainsKey("CloseCode")) {
+        $incident.CloseCode = $CloseCode
+    }                     
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $incident.CloseNotes = $CloseNotes
+    }    
+    if ($parameters.ContainsKey("CmdbCi")) {
+        if ($CmdbCi) {
+            $incident.CmdbCi = Get-ReferenceLink $CmdbCi
+        } else {
+            $incident.CmdbCi = Get-ReferenceLink ""
         }
-        else {
-            $incident.AssignmentGroup = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-          
+    }                          
     if ($parameters.ContainsKey("Comments")) {
         $incident.Comments = $Comments
     }
+    if ($parameters.ContainsKey("Company")) {
+        if ($Company) {
+            $incident.Company = Get-ReferenceLink $Company
+        } else {
+            $incident.Company = Get-ReferenceLink ""
+        }
+    }                              
     if ($parameters.ContainsKey("ContactType")) {
         $incident.ContactType = $ContactType
-    }    
-              
-    if ($parameters.ContainsKey("Location")) {
-        if (-not [string]::IsNullOrEmpty($Location)) {
-            $incident.Location = Get-ReferenceLink $Location
-        }
-        else {
-            $incident.Location = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
     }
-
-    if ($parameters.ContainsKey("State")) {
-        $incident.State = $State
-    }   
+    if ($parameters.ContainsKey("Contract")) {
+        if ($Contract) {
+            $incident.Contract = Get-ReferenceLink $Contract
+        } else {
+            $incident.Contract = Get-ReferenceLink ""
+        }
+    }                                  
+    if ($parameters.ContainsKey("Description")) {
+        $incident.Description = $Description
+    } 
+    if ($parameters.ContainsKey("DueDate") -and ($DueDate -ne [DateTime]::MinValue)) {
+        $incident.DueDate = $DueDate.ToString("yyyy-MM-dd HH:mm:ss")
+    } 
+    if ($parameters.ContainsKey("ExpectedStart") -and ($ExpectedStart -ne [DateTime]::MinValue)) {
+        $incident.ExpectedStart = $ExpectedStart.ToString("yyyy-MM-dd HH:mm:ss")
+    } 
+    if ($parameters.ContainsKey("FollowUp") -and ($FollowUp -ne [DateTime]::MinValue)) {
+        $incident.FollowUp = $FollowUp.ToString("yyyy-MM-dd HH:mm:ss")
+    }         
+    if ($parameters.ContainsKey("GroupList")) {
+        $incident.GroupList = $GroupList
+    }              
+    if ($parameters.ContainsKey("Impact")) {
+        $incident.Impact = $Impact
+    } 
     if ($parameters.ContainsKey("IncidentState")) {
         $incident.IncidentState = $IncidentState
     }   
-    if ($parameters.ContainsKey("Impact")) {
-        $incident.Impact = $Impact
+    if ($parameters.ContainsKey("Knowledge")) {
+        $incident.Knowledge = $Knowledge
+    }             
+    if ($parameters.ContainsKey("Location")) {
+        if ($Location) {
+            $incident.Location = Get-ReferenceLink $Location
+        } else {
+            $incident.Location = Get-ReferenceLink ""
+        }
+    }                                           
+    if ($parameters.ContainsKey("Notify")) {
+        $incident.Notify = $Notify
+    }         
+    if ($parameters.ContainsKey("OriginId")) {
+        if ($OriginId) {
+            $incident.OriginId = Get-ReferenceLink $OriginId
+        } else {
+            $incident.OriginId = Get-ReferenceLink ""
+        }
+    }                                                    
+    if ($parameters.ContainsKey("OriginTable")) {
+        $incident.OriginTable = $OriginTable
+    }
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $incident.Parent = Get-ReferenceLink $Parent
+        } else {
+            $incident.Parent = Get-ReferenceLink ""
+        }
+    }                                                        
+    if ($parameters.ContainsKey("ParentIncident")) {
+        if ($ParentIncident) {
+            $incident.ParentIncident = Get-ReferenceLink $ParentIncident
+        } else {
+            $incident.ParentIncident = Get-ReferenceLink ""
+        }
+    }                                                            
+    if ($parameters.ContainsKey("Priority")) {
+        $incident.Priority = $Priority
+    }       
+    if ($parameters.ContainsKey("ProblemId")) {
+        if ($ProblemId) {
+            $incident.ProblemId = Get-ReferenceLink $ProblemId
+        } else {
+            $incident.ProblemId = Get-ReferenceLink ""
+        }
+    }                                                                
+    if ($parameters.ContainsKey("Rfc")) {
+        if ($Rfc) {
+            $incident.Rfc = Get-ReferenceLink $Rfc
+        } else {
+            $incident.Rfc = Get-ReferenceLink ""
+        }
+    }                                                                    
+    if ($parameters.ContainsKey("ServiceOffering")) {
+        if ($ServiceOffering) {
+            $incident.ServiceOffering = Get-ReferenceLink $ServiceOffering
+        } else {
+            $incident.ServiceOffering = Get-ReferenceLink ""
+        }
+    }                                                                        
+    if ($parameters.ContainsKey("Severity")) {
+        $incident.Severity = $Severity
+    }                                                   
+    if ($parameters.ContainsKey("SubCategory")) {
+        $incident.SubCategory = $SubCategory
+    }                    
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $incident.ShortDescription = $ShortDescription
+    }
+    if ($parameters.ContainsKey("State")) {
+        $incident.State = $State
     }   
     if ($parameters.ContainsKey("Urgency")) {
         $incident.Urgency = $Urgency
     }   
-               
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $incident.ShortDescription = $ShortDescription
-    }
-
-    if ($parameters.ContainsKey("CmdbCi")) {
-        if (-not [string]::IsNullOrEmpty($CmdbCi)) {
-            $incident.CmdbCi = Get-ReferenceLink $CmdbCi
-        }
-        else {
-            $incident.CmdbCi = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }                
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $incident.WorkNotes = $WorkNotes
+    }   
     $incidentBuilder.Request().UpdateAsync($incident).GetAwaiter().GetResult()
 }         
 
@@ -3177,107 +3940,75 @@ function Remove-SnowRoleHasUser {
     $ServiceNowClient.UserHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
 
-function Get-SnowBusinessUnit {
+
+
+
+
+
+function Get-ServiceNowClient {
     param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]$Domain,
 
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]$ClientId, 
 
-        [parameter(Mandatory = $false)]
-        [String]$Select,
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [securestring]$ClientSecret,        
 
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript( { if ( -Not (Test-Path -Path $_) ) {
+                    throw "File $_  does not exist"
+                }
+                return $true })]
+        [String]$LibraryPath, 
+
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [String]$UserName, 
+
+        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
+        [ValidateNotNullOrEmpty()]
+        [securestring]$UserPassword,		
+		  
+        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $false)]
+        [Int]$PageSize = 1000
     )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.BusinessUnits() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-} 
 
-function New-SnowBusinessUnit {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Name,
-
-        [parameter(Mandatory = $false)]
-        [string]$BuHead,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description,
-
-        [parameter(Mandatory = $false)]
-        [string]$Parent
-    )
-    $parameters = $MyInvocation.BoundParameters  
-    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
-    $bu.Name = $Name
-    if ($parameters.ContainsKey("BuHead") -and $BuHead) {
-        $bu.BuHead = Get-ReferenceLink $BuHead
-    }    
-    if ($parameters.ContainsKey("Company") -and $Company) {
-        $bu.Company = Get-ReferenceLink $Company
-    }        
-    if ($parameters.ContainsKey("Parent") -and $Parent) {
-        $bu.Parent = Get-ReferenceLink $Parent
-    }            
-    if ($parameters.ContainsKey("Description")) {
-        $bu.Description = $Description
+    if ($null -eq $Global:ServiceNowClient) {
+        # Initialize the client
+        $plainClientSecret = ""
+        $ptr = [System.IntPtr]::Zero
+        try {
+            $ptr = [System.IntPtr]::Zero    
+            $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($ClientSecret)
+            $plainClientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptr)
+        }
+        finally {
+            [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptr)
+        }
+		  
+        $plainUserPassword = ""
+        $ptrUserPassword = [System.IntPtr]::Zero
+        try {
+            $ptrUserPassword = [System.IntPtr]::Zero    
+            $ptrUserPassword = [System.Runtime.InteropServices.Marshal]::SecureStringToGlobalAllocUnicode($UserPassword)
+            $plainUserPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($ptrUserPassword)
+        }
+        finally {
+            [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptrUserPassword)
+        }		  
+        Add-Type -Path $LibraryPath
+        $authenticationProvider = New-Object -TypeName ServiceNow.Graph.Authentication.ClientCredentialProvider -ArgumentList $Domain, $ClientId, $plainClientSecret, $UserName, $plainUserPassword
+        # Last parameter is the version that is mangled in the API Gateway URL
+        $Global:ServiceNowClient = New-Object -TypeName ServiceNow.Graph.Requests.ServiceNowClient -ArgumentList $Domain, $authenticationProvider, $null
+        $Global:PageSize = $PageSize
     }
-    $ServiceNowClient.BusinessUnits().Request().AddAsync($bu).GetAwaiter().GetResult()
-}         
-
-function Set-SnowBusinessUnit {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [string]$Name,
-
-        [parameter(Mandatory = $false)]
-        [string]$BuHead,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description,
-
-        [parameter(Mandatory = $false)]
-        [string]$Parent
-    )
-   
-    $businessUnitBuilder = $ServiceNowClient.BusinessUnits()[$Id] 
-    $parameters = $MyInvocation.BoundParameters  
-    $bu = New-Object -TypeName ServiceNow.Graph.Models.BusinessUnit
-    $bu.Id = $Id
-    if ($parameters.ContainsKey("BuHead") -and $BuHead) {
-        $bu.BuHead = Get-ReferenceLink $BuHead
-    }  else {
-        $bu.BuHead =  [ServiceNow.Graph.Models.ReferenceLink]$null
-    }    
-
-    if ($parameters.ContainsKey("Company") -and $Company) {
-        $bu.Company = Get-ReferenceLink $Company
-    }  else {
-        $bu.Company =  [ServiceNow.Graph.Models.ReferenceLink]$null
-    }    
-
-    if ($parameters.ContainsKey("Parent") -and $Parent) {
-        $bu.Parent = Get-ReferenceLink $Parent
-    }  else {
-        $bu.Parent =  [ServiceNow.Graph.Models.ReferenceLink]$null
-    }    
-
-    if ($parameters.ContainsKey("Description")) {
-        $bu.Description = $Description
-    }
-    if ($parameters.ContainsKey("Name")) {
-        $bu.Name = $Name
-    }
-    $businessUnitBuilder.Request().UpdateAsync($bu).GetAwaiter().GetResult()
-}         
+}
+function Remove-ServiceNowClient {
+    #$Global:ServiceNowClient = $null
+}

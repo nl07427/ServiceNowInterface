@@ -51,5 +51,17 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty("hierarchy_level", NullValueHandling = NullValueHandling.Ignore)]
         public int? HierarchyLevel { get; set; }
+
+        /// <summary>
+        /// Domain, X32
+        /// </summary>
+        [JsonProperty("sys_domain", NullValueHandling = NullValueHandling.Ignore)]
+        public ReferenceLink SysDomain { get; set; }
+
+        /// <summary>
+        /// Domain Path, X255
+        /// </summary>
+        [JsonProperty("sys_domain_path", NullValueHandling = NullValueHandling.Ignore)]
+        public string SysDomainPath { get; set; }
     }
 }

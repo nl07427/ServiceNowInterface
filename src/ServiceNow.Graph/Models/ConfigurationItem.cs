@@ -51,6 +51,12 @@ namespace ServiceNow.Graph.Models
         public string AttestationScore { get; set; }
 
         /// <summary>
+        /// Attestation status, X40
+        /// </summary>
+        [JsonProperty(PropertyName = "attestation_status", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string AttestationStatus { get; set; }
+
+        /// <summary>
         /// Name of primary (most trusted) discovery source, X40
         /// </summary>
         [JsonProperty(PropertyName = "discovery_source", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
@@ -83,6 +89,24 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "change_control", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public ReferenceLink ApprovalGroup { get; set; }
+
+        /// <summary>
+        /// Reference to business_unit
+        /// </summary>
+        [JsonProperty(PropertyName = "business_unit", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink BusinessUnit { get; set; }
+
+        /// <summary>
+        /// Reference to life_cycle_stage
+        /// </summary>
+        [JsonProperty(PropertyName = "life_cycle_stage", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink LifeCycleStage { get; set; }
+
+        /// <summary>
+        /// Reference to life_cycle_stage_status
+        /// </summary>
+        [JsonProperty(PropertyName = "life_cycle_stage_status", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink LifeCycleStageStatus { get; set; }
 
         /// <summary>
         /// Reference to schedule table

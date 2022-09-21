@@ -9,7 +9,7 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Incident : Task
     {
-        private DateTimeOffset? _reopenedAt;
+        private DateTimeOffset? _reopenedTime;
         private DateTimeOffset? _resolvedAt;
 
         /// <summary>
@@ -21,10 +21,16 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
+        ///Business impact, X4000
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "business_impact", Required = Required.Default)]
+        public string BusinessImpact { get; set; }
+
+        /// <summary>
         /// Business resolve time, integer
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "business_stc", Required = Required.Default)]
-        public int? BusinessResolveTime { get; set; }
+        public int? BusinessStc { get; set; }
 
         /// <summary>
         /// Resolve time, integer
@@ -36,7 +42,7 @@ namespace ServiceNow.Graph.Models
         /// Caller, sys_user reference
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "caller_id", Required = Required.Default)]
-        public ReferenceLink Caller { get; set; }
+        public ReferenceLink CallerId { get; set; }
 
         /// <summary>
         ///Category, X40
@@ -45,10 +51,16 @@ namespace ServiceNow.Graph.Models
         public string Category { get; set; }
 
         /// <summary>
+        /// Probable cause, X4000
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "cause", Required = Required.Default)]
+        public string Cause { get; set; }
+
+        /// <summary>
         /// Caused by Change, change_request reference
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "caused_by", Required = Required.Default)]
-        public ReferenceLink CausedByChange { get; set; }
+        public ReferenceLink CausedBy { get; set; }
 
         /// <summary>
         /// Child Incidents, integer
@@ -63,10 +75,28 @@ namespace ServiceNow.Graph.Models
         public string CloseCode { get; set; }
 
         /// <summary>
+        /// Contract, contract reference
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "contract", Required = Required.Default)]
+        public ReferenceLink Contract { get; set; }
+
+        /// <summary>
+        /// Origin ID, document ID
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "origin_id", Required = Required.Default)]
+        public ReferenceLink OriginId { get; set; }
+
+        /// <summary>
+        /// Origin table, X80
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "origin_table", Required = Required.Default)]
+        public string OriginTable { get; set; }
+
+        /// <summary>
         /// On hold reason, X40
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "hold_reason", Required = Required.Default)]
-        public string OnHoldReason { get; set; }
+        public string HoldReason { get; set; }
 
         /// <summary>
         /// Incident state, integer
@@ -87,10 +117,10 @@ namespace ServiceNow.Graph.Models
         public ReferenceLink ParentIncident { get; set; }
 
         /// <summary>
-        /// Problem, table problem reference
+        /// ProblemId, table problem reference
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "problem_id", Required = Required.Default)]
-        public ReferenceLink Problem { get; set; }
+        public ReferenceLink ProblemId { get; set; }
 
         /// <summary>
         /// Last reopened by, table sys_user reference
@@ -102,14 +132,14 @@ namespace ServiceNow.Graph.Models
         /// Last reopened at, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reopened_time", Required = Required.Default)]
-        public DateTimeOffset? ReopenedAt
+        public DateTimeOffset? ReopenedTime
         {
-            get => _reopenedAt;
+            get => _reopenedTime;
             set
             {
                 if (value.HasValue)
                 {
-                    _reopenedAt = value.Value + value.Value.Offset;
+                    _reopenedTime = value.Value + value.Value.Offset;
                 }
             }
         }
@@ -146,7 +176,7 @@ namespace ServiceNow.Graph.Models
         /// Change Request, table change_request reference
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "rfc", Required = Required.Default)]
-        public ReferenceLink ChangeRequest { get; set; }
+        public ReferenceLink Rfc { get; set; }
 
         /// <summary>
         /// Severity, integer
