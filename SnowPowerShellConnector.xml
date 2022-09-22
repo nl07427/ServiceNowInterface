@@ -324,62 +324,71 @@
 
       <CustomCommand Name="New-SnowCostCenter">
         <![CDATA[
-        param (
-            [parameter(Mandatory = $false)]
-            [string]$AccountNumber,
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$AccountNumber,
 
-            [parameter(Mandatory = $false)]
-            [string]$Code,
+        [parameter(Mandatory = $false)]
+        [string]$Code,
 
-            [parameter(Mandatory = $false)]
-            [string]$Location,
+        [parameter(Mandatory = $false)]
+        [string]$Location,
 
-            [parameter(Mandatory = $false)]
-            [string]$Manager,
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
 
-            [parameter(Mandatory = $true)]
-            [string]$Name,
+        [parameter(Mandatory = $true)]
+        [string]$Name,
 
-            [parameter(Mandatory = $false)]
-            [string]$Parent,
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
 
-            [parameter(Mandatory = $false)]
-            [string]$SysDomain,
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
 
-            [parameter(Mandatory = $false)]
-            [datetime]$ValidFrom,
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$ValidFrom,
 
-            [parameter(Mandatory = $false)]
-            [datetime]$ValidTo        
-        )
-        $parameters = $MyInvocation.BoundParameters  
-        $costcenter = New-Object -TypeName ServiceNow.Graph.Models.CostCenter
-        $costcenter.Name = $Name
-        if ($parameters.ContainsKey("AccountNumber")) {
-            $costcenter.AccountNumber = $AccountNumber
-        }
-        if ($parameters.ContainsKey("Code")) {
-            $costcenter.Code = $Code
-        }        
-        if ($parameters.ContainsKey("Location") -and $Location) {
-            $costcenter.Location = Get-ReferenceLink $Location
-        }    
-        if ($parameters.ContainsKey("Manager") -and $Manager) {
-            $costcenter.Manager = Get-ReferenceLink $Manager
-        }        
-        if ($parameters.ContainsKey("Parent") -and $Parent) {
-            $costcenter.Parent = Get-ReferenceLink $Parent
-        }        
-        if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
-            $costcenter.SysDomain = Get-ReferenceLink $SysDomain
-        }            
-        if ($parameters.ContainsKey("ValidFrom") -and ($ValidFrom -ne [DateTime]::MinValue)) {
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$ValidTo        
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $costcenter = New-Object -TypeName ServiceNow.Graph.Models.CostCenter
+    $costcenter.Name = $Name
+    if ($parameters.ContainsKey("AccountNumber")) {
+        $costcenter.AccountNumber = $AccountNumber
+    }
+    if ($parameters.ContainsKey("Code")) {
+        $costcenter.Code = $Code
+    }        
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $costcenter.Location = Get-ReferenceLink $Location
+    }    
+    if ($parameters.ContainsKey("Manager") -and $Manager) {
+        $costcenter.Manager = Get-ReferenceLink $Manager
+    }        
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $costcenter.Parent = Get-ReferenceLink $Parent
+    }        
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $costcenter.SysDomain = Get-ReferenceLink $SysDomain
+    }            
+    if ($parameters.ContainsKey("ValidFrom") -and $ValidFrom) {
+        if ($ValidFrom -ne [DateTime]::MinValue) {
             $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
-        }         
-        if ($parameters.ContainsKey("ValidTo") -and ($ValidTo -ne [DateTime]::MinValue)) {
+        } else {
+            $costcenter.ValidFrom = [datetime]::MinValue
+        }
+    }                                 
+    if ($parameters.ContainsKey("ValidTo") -and $ValidTo) {
+        if ($ValidTo -ne [DateTime]::MinValue) {
             $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
-        }             
-        $ServiceNowClient.CostCenters().Request().AddAsync($costcenter).GetAwaiter().GetResult()        
+        } else {
+            $costcenter.ValidTo = [datetime]::MinValue
+        }
+    }                     
+
+    $ServiceNowClient.CostCenters().Request().AddAsync($costcenter).GetAwaiter().GetResult()
         ]]>
       </CustomCommand>
 
@@ -408,10 +417,10 @@
         [string]$Parent,
 
         [parameter(Mandatory = $false)]
-        [datetime]$ValidFrom,
+        [nullable[datetime]]$ValidFrom,
 
         [parameter(Mandatory = $false)]
-        [datetime]$ValidTo        
+        [nullable[datetime]]$ValidTo        
     )
    
     $costCenterBuilder = $ServiceNowClient.CostCenters()[$Id] 
@@ -448,13 +457,21 @@
         } else {
             $costcenter.Parent = Get-ReferenceLink ""
         }
-    }            
-    if ($parameters.ContainsKey("ValidFrom") -and ($ValidFrom -ne [DateTime]::MinValue)) {
-        $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
-    }         
-    if ($parameters.ContainsKey("ValidTo") -and ($ValidTo -ne [DateTime]::MinValue)) {
-        $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
-    }             
+    }
+    if ($parameters.ContainsKey("ValidFrom") -and $ValidFrom) {
+        if ($ValidFrom -ne [DateTime]::MinValue) {
+            $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $costcenter.ValidFrom = [datetime]::MinValue
+        }
+    }                                 
+    if ($parameters.ContainsKey("ValidTo") -and $ValidTo) {
+        if ($ValidTo -ne [DateTime]::MinValue) {
+            $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $costcenter.ValidTo = [datetime]::MinValue
+        }
+    }                     
 
     $costCenterBuilder.Request().UpdateAsync($costcenter).GetAwaiter().GetResult()
         ]]>
@@ -647,6 +664,920 @@
 
     $departmentBuilder.Request().UpdateAsync($department).GetAwaiter().GetResult()
         ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Get-SnowLocation">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Locations() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowLocation">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationSource,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Duplicate,
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$FullName,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStage,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStageStatus,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$ManagedByGroup,
+
+        [parameter(Mandatory = $true)]
+        [string]$Name,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [string]$PhoneTerritory,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [bool]$StockRoom,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $location = New-Object -TypeName ServiceNow.Graph.Models.Location
+    $location.Name = $Name
+    if ($parameters.ContainsKey("City")) {
+        $location.City = $City
+    }
+    if ($parameters.ContainsKey("CmnLocationSource")) {
+        $location.CmnLocationSource = $CmnLocationSource
+    }
+    if ($parameters.ContainsKey("CmnLocationType")) {
+        $location.CmnLocationType = $CmnLocationType
+    }            
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $location.Company = Get-ReferenceLink $Company
+    }        
+    if ($parameters.ContainsKey("Contact") -and $Contact) {
+        $location.Contact = Get-ReferenceLink $Contact
+    }        
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $location.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $location.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Duplicate")) {
+        $location.Duplicate = $Duplicate
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $location.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FullName")) {
+        $location.FullName = $FullName
+    }                
+    if ($parameters.ContainsKey("Latitude")) {
+        $location.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $location.LatLongError = $LatLongError
+    }                
+    if ($parameters.ContainsKey("LifeCycleStage") -and $LifeCycleStage) {
+        $location.LifeCycleStage = Get-ReferenceLink $LifeCycleStage
+    }                
+    if ($parameters.ContainsKey("LifeCycleStageStatus") -and $LifeCycleStageStatus) {
+        $location.LifeCycleStageStatus = Get-ReferenceLink $LifeCycleStageStatus
+    }                    
+    if ($parameters.ContainsKey("Longitude")) {
+        $location.Longitude = $Longitude
+    }
+    if ($parameters.ContainsKey("ManagedByGroup") -and $ManagedByGroup) {
+        $location.ManagedByGroup = Get-ReferenceLink $ManagedByGroup
+    }        
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $location.Parent = Get-ReferenceLink $Parent
+    }        
+    if ($parameters.ContainsKey("Phone")) {
+        $location.Phone = $Phone
+    }                
+    if ($parameters.ContainsKey("PhoneTerritory") -and $PhoneTerritory) {
+        $location.PhoneTerritory = Get-ReferenceLink $PhoneTerritory
+    }                
+    if ($parameters.ContainsKey("PrimaryLocation") -and $PrimaryLocation) {
+        $location.PrimaryLocation = Get-ReferenceLink $PrimaryLocation
+    }            
+    if ($parameters.ContainsKey("State")) {
+        $location.State = $State
+    }        
+    if ($parameters.ContainsKey("StockRoom")) {
+        $location.StockRoom = $StockRoom
+    }        
+    if ($parameters.ContainsKey("Street")) {
+        $location.Street = $Street
+    }        
+    if ($parameters.ContainsKey("TimeZone")) {
+        $location.TimeZone = $TimeZone
+    }        
+    if ($parameters.ContainsKey("Zip")) {
+        $location.Zip = $Zip
+    }        
+
+    $ServiceNowClient.Locations().Request().AddAsync($location).GetAwaiter().GetResult()
+      ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Set-SnowLocation">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationSource,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Duplicate,
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$FullName,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStage,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStageStatus,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$ManagedByGroup,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [string]$PhoneTerritory,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [bool]$StockRoom,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+   
+    $locationBuilder = $ServiceNowClient.Locations()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $location = New-Object -TypeName ServiceNow.Graph.Models.Location
+    $location.Id = $Id
+
+    if ($parameters.ContainsKey("City")) {
+        $location.City = $City
+    }
+    if ($parameters.ContainsKey("CmnLocationSource")) {
+        $location.CmnLocationSource = $CmnLocationSource
+    }
+    if ($parameters.ContainsKey("CmnLocationType")) {
+        $location.CmnLocationType = $CmnLocationType
+    }            
+    if ($parameters.ContainsKey("Company")) {
+        if ($Company) {
+            $location.Company = Get-ReferenceLink $Company
+        } else {
+            $location.Company = Get-ReferenceLink ""
+        }
+    }        
+    if ($parameters.ContainsKey("Contact")) {
+        if ($Contact) {
+            $location.Contact = Get-ReferenceLink $Contact
+        } else {
+            $location.Contact = Get-ReferenceLink ""
+        }
+    }            
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $location.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $location.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Duplicate")) {
+        $location.Duplicate = $Duplicate
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $location.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FullName")) {
+        $location.FullName = $FullName
+    }                
+    if ($parameters.ContainsKey("Latitude")) {
+        $location.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $location.LatLongError = $LatLongError
+    }          
+    if ($parameters.ContainsKey("LifeCycleStage")) {
+        if ($LifeCycleStage) {
+            $location.LifeCycleStage = Get-ReferenceLink $LifeCycleStage
+        } else {
+            $location.LifeCycleStage = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("LifeCycleStageStatus")) {
+        if ($LifeCycleStageStatus) {
+            $location.LifeCycleStageStatus = Get-ReferenceLink $LifeCycleStageStatus
+        } else {
+            $location.LifeCycleStageStatus = Get-ReferenceLink ""
+        }
+    }                          
+    if ($parameters.ContainsKey("Longitude")) {
+        $location.Longitude = $Longitude
+    }
+    if ($parameters.ContainsKey("ManagedByGroup")) {
+        if ($ManagedByGroup) {
+            $location.ManagedByGroup = Get-ReferenceLink $ManagedByGroup
+        } else {
+            $location.ManagedByGroup = Get-ReferenceLink ""
+        }
+    }            
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $location.Parent = Get-ReferenceLink $Parent
+        } else {
+            $location.Parent = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Phone")) {
+        $location.Phone = $Phone
+    }            
+    if ($parameters.ContainsKey("PhoneTerritory")) {
+        if ($PhoneTerritory) {
+            $location.PhoneTerritory = Get-ReferenceLink $PhoneTerritory
+        } else {
+            $location.PhoneTerritory = Get-ReferenceLink ""
+        }
+    }                    
+    if ($parameters.ContainsKey("PrimaryLocation")) {
+        if ($PrimaryLocation) {
+            $location.PrimaryLocation = Get-ReferenceLink $PrimaryLocation
+        } else {
+            $location.PrimaryLocation = Get-ReferenceLink ""
+        }
+    }                   
+    if ($parameters.ContainsKey("State")) {
+        $location.State = $State
+    }        
+    if ($parameters.ContainsKey("StockRoom")) {
+        $location.StockRoom = $StockRoom
+    }        
+    if ($parameters.ContainsKey("Street")) {
+        $location.Street = $Street
+    }        
+    if ($parameters.ContainsKey("TimeZone")) {
+        $location.TimeZone = $TimeZone
+    }        
+    if ($parameters.ContainsKey("Zip")) {
+        $location.Zip = $Zip
+    }        
+    if ($parameters.ContainsKey("Name")) {
+        $location.Name = $Name
+    }        
+
+    $locationBuilder.Request().UpdateAsync($location).GetAwaiter().GetResult()
+      ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Get-SnowCompany">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Companies() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowCompany">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$AppleIcon,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImage,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImageLight,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerText,
+
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Customer,
+
+        [parameter(Mandatory = $false)]
+        [string]$Discount,        
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$FiscalYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Manufacturer,
+
+        [parameter(Mandatory = $false)]
+        [string]$MarketCap,        
+
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notes,        
+
+        [parameter(Mandatory = $false)]
+        [int]$NumEmployees,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [bool]$Primary,
+
+        [parameter(Mandatory = $false)]
+        [string]$Profits,
+        
+        [parameter(Mandatory = $false)]
+        [bool]$PubliclyTraded,
+
+        [parameter(Mandatory = $false)]
+        [string]$RankTier,
+
+        [parameter(Mandatory = $false)]
+        [string]$RevenuePerYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,        
+
+        [parameter(Mandatory = $false)]
+        [string]$StockPrice,
+
+        [parameter(Mandatory = $false)]
+        [string]$StockSymbol,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Theme,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Vendor,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorManager,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorType,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Website,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $company = New-Object -TypeName ServiceNow.Graph.Models.Company
+    $company.Name = $Name
+    if ($parameters.ContainsKey("AppleIcon")) {
+        $company.AppleIcon = $AppleIcon
+    }
+    if ($parameters.ContainsKey("BannerImage")) {
+        $company.BannerImage = $BannerImage
+    }
+    if ($parameters.ContainsKey("BannerImageLight")) {
+        $company.BannerImageLight = $BannerImageLight
+    }            
+    if ($parameters.ContainsKey("BannerText")) {
+        $company.BannerText = $BannerText
+    }            
+    if ($parameters.ContainsKey("City")) {
+        $company.City = $City
+    }            
+    if ($parameters.ContainsKey("Contact") -and $Contact) {
+        $company.Contact = Get-ReferenceLink $Contact
+    }        
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $company.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Customer")) {
+        $company.Customer = $Customer
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("Discount")) {
+        $company.Discount = $Discount
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FiscalYear") -and $FiscalYear) {
+        if ($FiscalYear -ne [DateTime]::MinValue) {
+            $company.FiscalYear = $FiscalYear.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.FiscalYear = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Latitude")) {
+        $company.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $company.LatLongError = $LatLongError
+    }                
+    if ($parameters.ContainsKey("Longitude")) {
+        $company.Longitude = $Longitude
+    }    
+    if ($parameters.ContainsKey("Manufacturer")) {
+        $company.Manufacturer = $Manufacturer
+    }    
+    if ($parameters.ContainsKey("MarketCap")) {
+        $company.MarketCap = $MarketCap
+    }    
+    if ($parameters.ContainsKey("Notes")) {
+        $company.Notes = $Notes
+    }    
+    if ($parameters.ContainsKey("NumEmployees")) {
+        $company.NumEmployees = $NumEmployees
+    }    
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $company.Parent = Get-ReferenceLink $Parent
+    }                
+    if ($parameters.ContainsKey("Phone")) {
+        $company.Phone = $Phone
+    }                
+    if ($parameters.ContainsKey("Primary")) {
+        $company.Primary = $Primary
+    }                
+    if ($parameters.ContainsKey("Profits")) {
+        $company.Profits = $Profits
+    }                
+    if ($parameters.ContainsKey("PubliclyTraded")) {
+        $company.PubliclyTraded = $PubliclyTraded
+    }                
+    if ($parameters.ContainsKey("RankTier")) {
+        $company.RankTier = $RankTier
+    }                
+    if ($parameters.ContainsKey("RevenuePerYear")) {
+        $company.RevenuePerYear = $RevenuePerYear
+    }                
+    if ($parameters.ContainsKey("State")) {
+        $company.State = $State
+    }                
+    if ($parameters.ContainsKey("StockPrice")) {
+        $company.StockPrice = $StockPrice
+    }                
+    if ($parameters.ContainsKey("StockSymbol")) {
+        $company.StockSymbol = $StockSymbol
+    }                
+    if ($parameters.ContainsKey("Street")) {
+        $company.Street = $Street
+    }                
+    if ($parameters.ContainsKey("Theme") -and $Theme) {
+        $company.Theme = Get-ReferenceLink $Theme
+    }                
+    if ($parameters.ContainsKey("Vendor")) {
+        $company.Vendor = $Vendor
+    }                    
+    if ($parameters.ContainsKey("VendorManager")) {
+        $company.VendorManager = $VendorManager
+    }                    
+    if ($parameters.ContainsKey("VendorType")) {
+        $company.VendorType = $VendorType
+    }                    
+    if ($parameters.ContainsKey("Website")) {
+        $company.Website = $Website
+    }                    
+    if ($parameters.ContainsKey("Zip")) {
+        $company.Zip = $Zip
+    }        
+
+    $ServiceNowClient.Companies().Request().AddAsync($company).GetAwaiter().GetResult()
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Set-SnowCompany">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$AppleIcon,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImage,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImageLight,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerText,
+
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Customer,
+
+        [parameter(Mandatory = $false)]
+        [string]$Discount,        
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$FiscalYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Manufacturer,
+
+        [parameter(Mandatory = $false)]
+        [string]$MarketCap,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notes,        
+
+        [parameter(Mandatory = $false)]
+        [int]$NumEmployees,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [bool]$Primary,
+
+        [parameter(Mandatory = $false)]
+        [string]$Profits,
+        
+        [parameter(Mandatory = $false)]
+        [bool]$PubliclyTraded,
+
+        [parameter(Mandatory = $false)]
+        [string]$RankTier,
+
+        [parameter(Mandatory = $false)]
+        [string]$RevenuePerYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,        
+
+        [parameter(Mandatory = $false)]
+        [string]$StockPrice,
+
+        [parameter(Mandatory = $false)]
+        [string]$StockSymbol,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Theme,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Vendor,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorManager,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorType,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Website,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+   
+    $companyBuilder = $ServiceNowClient.Companies()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $company = New-Object -TypeName ServiceNow.Graph.Models.Company
+    $company.Id = $Id
+
+    if ($parameters.ContainsKey("AppleIcon")) {
+        $company.AppleIcon = $AppleIcon
+    }
+    if ($parameters.ContainsKey("BannerImage")) {
+        $company.BannerImage = $BannerImage
+    }
+    if ($parameters.ContainsKey("BannerImageLight")) {
+        $company.BannerImageLight = $BannerImageLight
+    }            
+    if ($parameters.ContainsKey("BannerText")) {
+        $company.BannerText = $BannerText
+    }            
+    if ($parameters.ContainsKey("City")) {
+        $company.City = $City
+    }            
+    if ($parameters.ContainsKey("Contact") -and $Contact) {
+        $company.Contact = Get-ReferenceLink $Contact
+    }        
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $company.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Customer")) {
+        $company.Customer = $Customer
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("Discount")) {
+        $company.Discount = $Discount
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FiscalYear") -and $FiscalYear) {
+        if ($FiscalYear -ne [DateTime]::MinValue) {
+            $company.FiscalYear = $FiscalYear.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.FiscalYear = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Latitude")) {
+        $company.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $company.LatLongError = $LatLongError
+    }                
+    if ($parameters.ContainsKey("Longitude")) {
+        $company.Longitude = $Longitude
+    }    
+    if ($parameters.ContainsKey("Manufacturer")) {
+        $company.Manufacturer = $Manufacturer
+    }    
+    if ($parameters.ContainsKey("MarketCap")) {
+        $company.MarketCap = $MarketCap
+    }    
+    if ($parameters.ContainsKey("Notes")) {
+        $company.Notes = $Notes
+    }    
+    if ($parameters.ContainsKey("NumEmployees")) {
+        $company.NumEmployees = $NumEmployees
+    }    
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $company.Parent = Get-ReferenceLink $Parent
+    }                
+    if ($parameters.ContainsKey("Phone")) {
+        $company.Phone = $Phone
+    }                
+    if ($parameters.ContainsKey("Primary")) {
+        $company.Primary = $Primary
+    }                
+    if ($parameters.ContainsKey("Profits")) {
+        $company.Profits = $Profits
+    }                
+    if ($parameters.ContainsKey("PubliclyTraded")) {
+        $company.PubliclyTraded = $PubliclyTraded
+    }                
+    if ($parameters.ContainsKey("RankTier")) {
+        $company.RankTier = $RankTier
+    }                
+    if ($parameters.ContainsKey("RevenuePerYear")) {
+        $company.RevenuePerYear = $RevenuePerYear
+    }                
+    if ($parameters.ContainsKey("State")) {
+        $company.State = $State
+    }                
+    if ($parameters.ContainsKey("StockPrice")) {
+        $company.StockPrice = $StockPrice
+    }                
+    if ($parameters.ContainsKey("StockSymbol")) {
+        $company.StockSymbol = $StockSymbol
+    }                
+    if ($parameters.ContainsKey("Street")) {
+        $company.Street = $Street
+    }                
+    if ($parameters.ContainsKey("Theme") -and $Theme) {
+        $company.Theme = Get-ReferenceLink $Theme
+    }                
+    if ($parameters.ContainsKey("Vendor")) {
+        $company.Vendor = $Vendor
+    }                    
+    if ($parameters.ContainsKey("VendorManager")) {
+        $company.VendorManager = $VendorManager
+    }                    
+    if ($parameters.ContainsKey("VendorType")) {
+        $company.VendorType = $VendorType
+    }                    
+    if ($parameters.ContainsKey("Website")) {
+        $company.Website = $Website
+    }                    
+    if ($parameters.ContainsKey("Zip")) {
+        $company.Zip = $Zip
+    }        
+    if ($parameters.ContainsKey("Name")) {
+        $company.Name = $Name
+    }        
+
+    $companyBuilder.Request().UpdateAsync($company).GetAwaiter().GetResult()
+          ]]>
       </CustomCommand>
 
       <CustomCommand Name="Get-SnowUser">
@@ -1980,25 +2911,7 @@
             ]]>
       </CustomCommand>
 
-      <CustomCommand Name="Get-SnowLocation">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
 
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Locations() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-          ]]>
-      </CustomCommand>
 
       <CustomCommand Name="Get-SnowVariable">
         <![CDATA[
@@ -2877,25 +3790,6 @@
       </CustomCommand>
 
 
-      <CustomCommand Name="Get-SnowCompany">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Companies() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-          ]]>
-      </CustomCommand>
 
       <CustomCommand Name="Get-SnowOrderGuide">
         <![CDATA[
@@ -5188,7 +6082,7 @@
             <ModBy Command="Set-SnowCostCenter" Method="Update"/>
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="New-SnowCostCenter" Parameter="ValidTo"/>
+            <Map ToCommand="New-SnowCostCenter" Parameter="ValidTo" />
             <Map ToCommand="Set-SnowCostCenter" Parameter="ValidTo"/>
           </CommandMappings>
         </Property>
@@ -5432,6 +6326,1043 @@
         <Method Name="Insert">
           <CommandSequence>
             <Item Command="New-SnowDepartment" Order="1"/>
+          </CommandSequence> 
+        </Method>
+      </MethodConfiguration>
+    </Class>
+
+<Class Name="Location">
+      <Properties>
+        <Property Name="Id" DataType="String" AccessConstraint="ReadOnly" IsMandatory="true" IsUniqueKey="true" IsAutoFill="true" IsDisplay="false">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Id" />
+            <Bind CommandResultOf="New-SnowLocation" Path="Id" />
+            <Bind CommandResultOf="Set-SnowLocation" Path="Id" />
+          </ReturnBindings>
+          <CommandMappings>
+            <Map ToCommand="Get-SnowLocation" Parameter="Id" />
+            <Map ToCommand="Set-SnowLocation" Parameter="Id" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="WhenUpdated.DateTime"/>
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="WhenCreated" DataType="DateTime">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="WhenCreated.DateTime"/>
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CreatedBy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="CreatedBy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ObjectType" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="ObjectType" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UpdatedBy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="UpdatedBy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysModCount" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="SysModCount" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="City" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="City" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="City"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="City"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="CmnLocationSource" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="CmnLocationSource" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="CmnLocationSource"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="CmnLocationSource"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="CmnLocationType" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="CmnLocationType" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="CmnLocationType"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="CmnLocationType"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Company" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Company.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Company"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Company"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Contact" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Contact.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Contact"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Contact"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="CoordinatesRetrievedOn" DataType="DateTime">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="CoordinatesRetrievedOn.DateTime"/>
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="CoordinatesRetrievedOn"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="CoordinatesRetrievedOn"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Country" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Country"/>
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Country"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Country"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Duplicate" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Duplicate" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Duplicate"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Duplicate"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="FaxPhone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="FaxPhone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="FaxPhone"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="FaxPhone"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="FullName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="FullName" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="FullName"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="FullName"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Latitude" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Latitude" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Latitude"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Latitude"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="LatLongError" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="LatLongError" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="LatLongError"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="LatLongError"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="LifeCycleStage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="LifeCycleStage.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="LifeCycleStage"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="LifeCycleStage"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="LifeCycleStageStatus" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="LifeCycleStageStatus.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="LifeCycleStageStatus"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="LifeCycleStageStatus"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Longitude" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Longitude" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Longitude"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Longitude"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="ManagedByGroup" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="ManagedByGroup.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="ManagedByGroup"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="ManagedByGroup"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Name" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Name" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Name"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Name"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Parent" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Parent.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Parent"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Parent"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Phone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Phone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Phone"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Phone"/>
+          </CommandMappings>
+        </Property>        
+
+        <Property Name="PhoneTerritory" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="PhoneTerritory.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="PhoneTerritory"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="PhoneTerritory"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="PrimaryLocation" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="PrimaryLocation.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="PrimaryLocation"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="PrimaryLocation"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="State" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="State" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="State"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="State"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="StockRoom" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="StockRoom" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="StockRoom"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="StockRoom"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Street" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Street" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Street"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Street"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="TimeZone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="TimeZone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="TimeZone"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="TimeZone"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Zip" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLocation" Path="Zip" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLocation" Method="Insert"/>
+            <ModBy Command="Set-SnowLocation" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="Zip"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="Zip"/>
+          </CommandMappings>
+        </Property>
+
+      </Properties>
+
+      <!-- Configuration items for readable types -->
+      <ReadConfiguration>
+        <ListingCommand Command="Get-SnowLocation">
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name"/>
+          <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="cmn_location_filter"/>
+        </ListingCommand>
+        <CommandSequence>
+          <Item Command="Get-SnowLocation" Order="1"/>
+        </CommandSequence>
+      </ReadConfiguration>
+
+      <!-- Methods supported by this class -->
+      <MethodConfiguration>
+        <Method Name="Update">
+          <CommandSequence>
+            <Item Command="Set-SnowLocation" Order="1" Condition="ModificationExists"/>
+          </CommandSequence> 
+        </Method>
+        <Method Name="Insert">
+          <CommandSequence>
+            <Item Command="New-SnowLocation" Order="1"/>
+          </CommandSequence> 
+        </Method>
+      </MethodConfiguration>
+    </Class>
+
+  <Class Name="Company">
+      <Properties>
+        <Property Name="Id" DataType="String" AccessConstraint="ReadOnly" IsMandatory="true" IsUniqueKey="true" IsAutoFill="true" IsDisplay="false">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Id" />
+            <Bind CommandResultOf="New-SnowCompany" Path="Id" />
+            <Bind CommandResultOf="Set-SnowCompany" Path="Id" />
+          </ReturnBindings>
+          <CommandMappings>
+            <Map ToCommand="Get-SnowCompany" Parameter="Id" />
+            <Map ToCommand="Set-SnowCompany" Parameter="Id" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="WhenUpdated.DateTime"/>
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="WhenCreated" DataType="DateTime">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="WhenCreated.DateTime"/>
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CreatedBy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="CreatedBy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ObjectType" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="ObjectType" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UpdatedBy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="UpdatedBy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysModCount" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="SysModCount" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="AppleIcon" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="AppleIcon" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="AppleIcon"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="AppleIcon"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="BannerImage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="BannerImage" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="BannerImage"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="BannerImage"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="BannerImageLight" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="BannerImageLight" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="BannerImageLight"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="BannerImageLight"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="BannerText" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="BannerText" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="BannerText"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="BannerText"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="City" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="City"/>
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="City"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="City"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Contact" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Contact.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Contact"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Contact"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="CoordinatesRetrievedOn" DataType="DateTime">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="CoordinatesRetrievedOn.DateTime"/>
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="CoordinatesRetrievedOn"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="CoordinatesRetrievedOn"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Country" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Country" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Country"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Country"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Customer" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Customer" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Customer"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Customer"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Discount" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Discount" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Discount"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Discount"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="FaxPhone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="FaxPhone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLocation" Parameter="FaxPhone"/>
+            <Map ToCommand="Set-SnowLocation" Parameter="FaxPhone"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="FiscalYear" DataType="DateTime">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="FiscalYear.DateTime" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="FiscalYear"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="FiscalYear"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Latitude" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Latitude" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Latitude"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Latitude"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="LatLongError" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="LatLongError" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="LatLongError"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="LatLongError"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Longitude" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Longitude" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Longitude"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Longitude"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Manufacturer" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Manufacturer" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Manufacturer"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Manufacturer"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="MarketCap" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="MarketCap" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="MarketCap"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="MarketCap"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Name" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Name" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Name"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Name"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Notes" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Notes" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Notes"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Notes"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="NumEmployees" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="NumEmployees" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="NumEmployees"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="NumEmployees"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Parent" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Parent.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Parent"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Parent"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Phone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Phone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Phone"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Phone"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Primary" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Primary" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Primary"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Primary"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Profits" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Profits" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Profits"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Profits"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="PubliclyTraded" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="PubliclyTraded" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="PubliclyTraded"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="PubliclyTraded"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="RankTier" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="RankTier" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="RankTier"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="RankTier"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="RevenuePerYear" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="RevenuePerYear" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="RevenuePerYear"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="RevenuePerYear"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="State" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="State" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="State"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="State"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="StockSymbol" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="StockSymbol" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="StockSymbol"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="StockSymbol"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="StockPrice" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="StockPrice" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="StockPrice"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="StockPrice"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Street" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Street" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Street"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Street"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Theme" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Theme.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Theme"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Theme"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Vendor" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Vendor" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Vendor"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Vendor"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="VendorManager" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="VendorManager" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="VendorManager"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="VendorManager"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="VendorType" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="VendorType" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="VendorType"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="VendorType"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Website" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Website" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Website"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Website"/>
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Zip" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCompany" Path="Zip" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCompany" Method="Insert"/>
+            <ModBy Command="Set-SnowCompany" Method="Update"/>
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCompany" Parameter="Zip"/>
+            <Map ToCommand="Set-SnowCompany" Parameter="Zip"/>
+          </CommandMappings>
+        </Property>
+      </Properties>
+
+      <!-- Configuration items for readable types -->
+      <ReadConfiguration>
+        <ListingCommand Command="Get-SnowCompany">
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name"/>
+          <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="core_company_filter"/>
+        </ListingCommand>
+        <CommandSequence>
+          <Item Command="Get-SnowCompany" Order="1"/>
+        </CommandSequence>
+      </ReadConfiguration>
+
+      <!-- Methods supported by this class -->
+      <MethodConfiguration>
+        <Method Name="Update">
+          <CommandSequence>
+            <Item Command="Set-SnowCompany" Order="1" Condition="ModificationExists"/>
+          </CommandSequence> 
+        </Method>
+        <Method Name="Insert">
+          <CommandSequence>
+            <Item Command="New-SnowCompany" Order="1"/>
           </CommandSequence> 
         </Method>
       </MethodConfiguration>
@@ -7842,242 +9773,7 @@
 
     </Class>
 
-    <Class Name="Location">
-      <Properties>
-        <Property Name="Id" DataType="String" AccessConstraint="ReadOnly" IsMandatory="true" IsUniqueKey="true" IsAutoFill="true" IsDisplay="false">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Id" />
-          </ReturnBindings>
-          <CommandMappings>
-            <Map ToCommand="Get-SnowLocation" Parameter="Id" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="WhenUpdated.DateTime"/>
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="WhenCreated" DataType="DateTime">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="WhenCreated.DateTime"/>
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CreatedBy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="CreatedBy" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ObjectType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="ObjectType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="UpdatedBy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="UpdatedBy" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysModCount" DataType="Int">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="SysModCount" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Name" DataType="String" IsDisplay="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Name" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Country" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Country"/>
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Parent" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Parent.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="City" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="City" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Latitude" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Latitude" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LatitudeOld" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="LatitudeOld" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="StockRoom" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="StockRoom" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Street" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Street" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Contact" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Contact.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="PrimaryLocation" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="PrimaryLocation.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="PhoneTerritory" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="PhoneTerritory.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LifeCycleStage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="LifeCycleStage.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LifeCycleStageStatus" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="LifeCycleStageStatus.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Company" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Company.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ManagedByGroup" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="ManagedByGroup.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LatLongError" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="LatLongError" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="State" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="State" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Longitude" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Longitude" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LongitudeOld" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="LongitudeOld" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Zip" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Zip" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="TimeZone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="TimeZone" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="FullName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="FullName" />
-          </ReturnBindings>
-        </Property>
-
-
-        <Property Name="FaxPhone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="FaxPhone" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Phone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Phone" />
-          </ReturnBindings>
-        </Property>        
-        
-        <Property Name="Duplicate" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="Duplicate" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CoordinatesRetrievedOn" DataType="DateTime" IsRevision="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="CoordinatesRetrievedOn.DateTime"/>
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CmnLocationType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="CmnLocationType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CmnLocationSource" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLocation" Path="CmnLocationSource" />
-          </ReturnBindings>
-        </Property>
-
-
-      </Properties>
-
-      <!-- Configuration items for readable types -->
-      <ReadConfiguration>
-        <ListingCommand Command="Get-SnowLocation">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,contact,parent"/>
-          <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="cmn_location_filter"/>
-        </ListingCommand>
-        <CommandSequence>
-          <Item Command="Get-SnowLocation" Order="1"/>
-        </CommandSequence>
-      </ReadConfiguration>
-
-      <!-- Methods supported by this class -->
-      <MethodConfiguration>
-
-      </MethodConfiguration>
-
-    </Class>
+    
 
     <Class Name="Variable">
       <Properties>
@@ -10603,306 +12299,7 @@
 
     
 
-    <Class Name="Company">
-      <Properties>
-        <Property Name="Id" DataType="String" AccessConstraint="ReadOnly" IsMandatory="true" IsUniqueKey="true" IsAutoFill="true" IsDisplay="false">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Id" />
-          </ReturnBindings>
-          <CommandMappings>
-            <Map ToCommand="Get-SnowCompany" Parameter="Id" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="WhenUpdated.DateTime"/>
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="WhenCreated" DataType="DateTime">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="WhenCreated.DateTime"/>
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CreatedBy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="CreatedBy" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ObjectType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="ObjectType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="UpdatedBy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="UpdatedBy" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysModCount" DataType="Int">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="SysModCount" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysTags" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="SysTags" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Name" DataType="String" IsDisplay="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Name" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="BannerImageLight" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="BannerImageLight" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Country" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Country" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Notes" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Notes" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="City" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="City"/>
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Parent" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Parent.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="StockSymbol" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="StockSymbol" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Contact" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Contact.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Latitude" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Latitude" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="UAgreementNumber" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="UAgreementNumber" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Discount" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Discount" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Manufacturer" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Manufacturer" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="AppleIcon" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="AppleIcon" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MarketCap" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="MarketCap" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NumEmployees" DataType="Int">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="NumEmployees" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="FiscalYear" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="FiscalYear" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RankTier" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="RankTier" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SsoSource" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="SsoSource" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Street" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Street" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Vendor" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Vendor" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LatLongError" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="LatLongError" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Theme" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Theme.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="BannerImage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="BannerImage" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="State" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="State" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Longitude" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Longitude" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="VendorType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="VendorType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Zip" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Zip" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RevenuePerYear" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="RevenuePerYear" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Website" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Website" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="PubliclyTraded" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="PubliclyTraded" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="FaxPhone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="FaxPhone" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Phone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Phone" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="VendorManager" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="VendorManager" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="BannerText" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="BannerText" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Customer" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Customer" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Primary" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Primary" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Profits" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="Profits" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="StockPrice" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCompany" Path="StockPrice" />
-          </ReturnBindings>
-        </Property>
-
-      </Properties>
-
-      <!-- Configuration items for readable types -->
-      <ReadConfiguration>
-        <ListingCommand Command="Get-SnowCompany">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,parent,contact"/>
-          <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="core_company_filter"/>
-        </ListingCommand>
-        <CommandSequence>
-          <Item Command="Get-SnowCompany" Order="1"/>
-        </CommandSequence>
-      </ReadConfiguration>
-
-      <!-- Methods supported by this class -->
-      <MethodConfiguration>
-
-      </MethodConfiguration>
-
-    </Class>
+    
 
     
     <Class Name="OrderGuide">
@@ -13614,7 +15011,5 @@
         </Method>
       </MethodConfiguration>
     </Class>
-
-
   </Schema>
 </PowershellConnectorDefinition>

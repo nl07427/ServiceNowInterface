@@ -285,10 +285,10 @@ function New-SnowCostCenter {
         [string]$SysDomain,
 
         [parameter(Mandatory = $false)]
-        [datetime]$ValidFrom,
+        [nullable[datetime]]$ValidFrom,
 
         [parameter(Mandatory = $false)]
-        [datetime]$ValidTo        
+        [nullable[datetime]]$ValidTo        
     )
     $parameters = $MyInvocation.BoundParameters  
     $costcenter = New-Object -TypeName ServiceNow.Graph.Models.CostCenter
@@ -311,12 +311,21 @@ function New-SnowCostCenter {
     if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
         $costcenter.SysDomain = Get-ReferenceLink $SysDomain
     }            
-    if ($parameters.ContainsKey("ValidFrom") -and ($ValidFrom -ne [DateTime]::MinValue)) {
-        $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
-    }         
-    if ($parameters.ContainsKey("ValidTo") -and ($ValidTo -ne [DateTime]::MinValue)) {
-        $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
-    }             
+    if ($parameters.ContainsKey("ValidFrom") -and $ValidFrom) {
+        if ($ValidFrom -ne [DateTime]::MinValue) {
+            $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $costcenter.ValidFrom = [datetime]::MinValue
+        }
+    }                                 
+    if ($parameters.ContainsKey("ValidTo") -and $ValidTo) {
+        if ($ValidTo -ne [DateTime]::MinValue) {
+            $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $costcenter.ValidTo = [datetime]::MinValue
+        }
+    }                     
+
     $ServiceNowClient.CostCenters().Request().AddAsync($costcenter).GetAwaiter().GetResult()
 }         
 
@@ -344,10 +353,10 @@ function Set-SnowCostCenter {
         [string]$Parent,
 
         [parameter(Mandatory = $false)]
-        [datetime]$ValidFrom,
+        [nullable[datetime]]$ValidFrom,
 
         [parameter(Mandatory = $false)]
-        [datetime]$ValidTo        
+        [nullable[datetime]]$ValidTo        
     )
    
     $costCenterBuilder = $ServiceNowClient.CostCenters()[$Id] 
@@ -384,13 +393,21 @@ function Set-SnowCostCenter {
         } else {
             $costcenter.Parent = Get-ReferenceLink ""
         }
-    }            
-    if ($parameters.ContainsKey("ValidFrom") -and ($ValidFrom -ne [DateTime]::MinValue)) {
-        $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
-    }         
-    if ($parameters.ContainsKey("ValidTo") -and ($ValidTo -ne [DateTime]::MinValue)) {
-        $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
-    }             
+    }
+    if ($parameters.ContainsKey("ValidFrom") -and $ValidFrom) {
+        if ($ValidFrom -ne [DateTime]::MinValue) {
+            $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $costcenter.ValidFrom = [datetime]::MinValue
+        }
+    }                                 
+    if ($parameters.ContainsKey("ValidTo") -and $ValidTo) {
+        if ($ValidTo -ne [DateTime]::MinValue) {
+            $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $costcenter.ValidTo = [datetime]::MinValue
+        }
+    }                     
 
     $costCenterBuilder.Request().UpdateAsync($costcenter).GetAwaiter().GetResult()
 }        
@@ -578,6 +595,907 @@ function Set-SnowDepartment {
     $departmentBuilder.Request().UpdateAsync($department).GetAwaiter().GetResult()
 }        
 
+function Get-SnowLocation {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Locations() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+}        
+
+function New-SnowLocation {
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationSource,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Duplicate,
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$FullName,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStage,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStageStatus,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$ManagedByGroup,
+
+        [parameter(Mandatory = $true)]
+        [string]$Name,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [string]$PhoneTerritory,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [bool]$StockRoom,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $location = New-Object -TypeName ServiceNow.Graph.Models.Location
+    $location.Name = $Name
+    if ($parameters.ContainsKey("City")) {
+        $location.City = $City
+    }
+    if ($parameters.ContainsKey("CmnLocationSource")) {
+        $location.CmnLocationSource = $CmnLocationSource
+    }
+    if ($parameters.ContainsKey("CmnLocationType")) {
+        $location.CmnLocationType = $CmnLocationType
+    }            
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $location.Company = Get-ReferenceLink $Company
+    }        
+    if ($parameters.ContainsKey("Contact") -and $Contact) {
+        $location.Contact = Get-ReferenceLink $Contact
+    }        
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $location.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $location.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Duplicate")) {
+        $location.Duplicate = $Duplicate
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $location.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FullName")) {
+        $location.FullName = $FullName
+    }                
+    if ($parameters.ContainsKey("Latitude")) {
+        $location.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $location.LatLongError = $LatLongError
+    }                
+    if ($parameters.ContainsKey("LifeCycleStage") -and $LifeCycleStage) {
+        $location.LifeCycleStage = Get-ReferenceLink $LifeCycleStage
+    }                
+    if ($parameters.ContainsKey("LifeCycleStageStatus") -and $LifeCycleStageStatus) {
+        $location.LifeCycleStageStatus = Get-ReferenceLink $LifeCycleStageStatus
+    }                    
+    if ($parameters.ContainsKey("Longitude")) {
+        $location.Longitude = $Longitude
+    }
+    if ($parameters.ContainsKey("ManagedByGroup") -and $ManagedByGroup) {
+        $location.ManagedByGroup = Get-ReferenceLink $ManagedByGroup
+    }        
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $location.Parent = Get-ReferenceLink $Parent
+    }        
+    if ($parameters.ContainsKey("Phone")) {
+        $location.Phone = $Phone
+    }                
+    if ($parameters.ContainsKey("PhoneTerritory") -and $PhoneTerritory) {
+        $location.PhoneTerritory = Get-ReferenceLink $PhoneTerritory
+    }                
+    if ($parameters.ContainsKey("PrimaryLocation") -and $PrimaryLocation) {
+        $location.PrimaryLocation = Get-ReferenceLink $PrimaryLocation
+    }            
+    if ($parameters.ContainsKey("State")) {
+        $location.State = $State
+    }        
+    if ($parameters.ContainsKey("StockRoom")) {
+        $location.StockRoom = $StockRoom
+    }        
+    if ($parameters.ContainsKey("Street")) {
+        $location.Street = $Street
+    }        
+    if ($parameters.ContainsKey("TimeZone")) {
+        $location.TimeZone = $TimeZone
+    }        
+    if ($parameters.ContainsKey("Zip")) {
+        $location.Zip = $Zip
+    }        
+
+    $ServiceNowClient.Locations().Request().AddAsync($location).GetAwaiter().GetResult()
+}         
+
+function Set-SnowLocation {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationSource,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmnLocationType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Duplicate,
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$FullName,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStage,
+
+        [parameter(Mandatory = $false)]
+        [string]$LifeCycleStageStatus,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$ManagedByGroup,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [string]$PhoneTerritory,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [bool]$StockRoom,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+   
+    $locationBuilder = $ServiceNowClient.Locations()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $location = New-Object -TypeName ServiceNow.Graph.Models.Location
+    $location.Id = $Id
+
+    if ($parameters.ContainsKey("City")) {
+        $location.City = $City
+    }
+    if ($parameters.ContainsKey("CmnLocationSource")) {
+        $location.CmnLocationSource = $CmnLocationSource
+    }
+    if ($parameters.ContainsKey("CmnLocationType")) {
+        $location.CmnLocationType = $CmnLocationType
+    }            
+    if ($parameters.ContainsKey("Company")) {
+        if ($Company) {
+            $location.Company = Get-ReferenceLink $Company
+        } else {
+            $location.Company = Get-ReferenceLink ""
+        }
+    }        
+    if ($parameters.ContainsKey("Contact")) {
+        if ($Contact) {
+            $location.Contact = Get-ReferenceLink $Contact
+        } else {
+            $location.Contact = Get-ReferenceLink ""
+        }
+    }            
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $location.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $location.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Duplicate")) {
+        $location.Duplicate = $Duplicate
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $location.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FullName")) {
+        $location.FullName = $FullName
+    }                
+    if ($parameters.ContainsKey("Latitude")) {
+        $location.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $location.LatLongError = $LatLongError
+    }          
+    if ($parameters.ContainsKey("LifeCycleStage")) {
+        if ($LifeCycleStage) {
+            $location.LifeCycleStage = Get-ReferenceLink $LifeCycleStage
+        } else {
+            $location.LifeCycleStage = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("LifeCycleStageStatus")) {
+        if ($LifeCycleStageStatus) {
+            $location.LifeCycleStageStatus = Get-ReferenceLink $LifeCycleStageStatus
+        } else {
+            $location.LifeCycleStageStatus = Get-ReferenceLink ""
+        }
+    }                          
+    if ($parameters.ContainsKey("Longitude")) {
+        $location.Longitude = $Longitude
+    }
+    if ($parameters.ContainsKey("ManagedByGroup")) {
+        if ($ManagedByGroup) {
+            $location.ManagedByGroup = Get-ReferenceLink $ManagedByGroup
+        } else {
+            $location.ManagedByGroup = Get-ReferenceLink ""
+        }
+    }            
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $location.Parent = Get-ReferenceLink $Parent
+        } else {
+            $location.Parent = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Phone")) {
+        $location.Phone = $Phone
+    }            
+    if ($parameters.ContainsKey("PhoneTerritory")) {
+        if ($PhoneTerritory) {
+            $location.PhoneTerritory = Get-ReferenceLink $PhoneTerritory
+        } else {
+            $location.PhoneTerritory = Get-ReferenceLink ""
+        }
+    }                    
+    if ($parameters.ContainsKey("PrimaryLocation")) {
+        if ($PrimaryLocation) {
+            $location.PrimaryLocation = Get-ReferenceLink $PrimaryLocation
+        } else {
+            $location.PrimaryLocation = Get-ReferenceLink ""
+        }
+    }                   
+    if ($parameters.ContainsKey("State")) {
+        $location.State = $State
+    }        
+    if ($parameters.ContainsKey("StockRoom")) {
+        $location.StockRoom = $StockRoom
+    }        
+    if ($parameters.ContainsKey("Street")) {
+        $location.Street = $Street
+    }        
+    if ($parameters.ContainsKey("TimeZone")) {
+        $location.TimeZone = $TimeZone
+    }        
+    if ($parameters.ContainsKey("Zip")) {
+        $location.Zip = $Zip
+    }        
+    if ($parameters.ContainsKey("Name")) {
+        $location.Name = $Name
+    }        
+
+    $locationBuilder.Request().UpdateAsync($location).GetAwaiter().GetResult()
+}        
+
+function Get-SnowCompany {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Companies() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+}                                
+
+function New-SnowCompany {
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$AppleIcon,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImage,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImageLight,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerText,
+
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Customer,
+
+        [parameter(Mandatory = $false)]
+        [string]$Discount,        
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$FiscalYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Manufacturer,
+
+        [parameter(Mandatory = $false)]
+        [string]$MarketCap,        
+
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notes,        
+
+        [parameter(Mandatory = $false)]
+        [int]$NumEmployees,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [bool]$Primary,
+
+        [parameter(Mandatory = $false)]
+        [string]$Profits,
+        
+        [parameter(Mandatory = $false)]
+        [bool]$PubliclyTraded,
+
+        [parameter(Mandatory = $false)]
+        [string]$RankTier,
+
+        [parameter(Mandatory = $false)]
+        [string]$RevenuePerYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,        
+
+        [parameter(Mandatory = $false)]
+        [string]$StockPrice,
+
+        [parameter(Mandatory = $false)]
+        [string]$StockSymbol,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Theme,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Vendor,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorManager,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorType,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Website,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+    $parameters = $MyInvocation.BoundParameters  
+    $company = New-Object -TypeName ServiceNow.Graph.Models.Company
+    $company.Name = $Name
+    if ($parameters.ContainsKey("AppleIcon")) {
+        $company.AppleIcon = $AppleIcon
+    }
+    if ($parameters.ContainsKey("BannerImage")) {
+        $company.BannerImage = $BannerImage
+    }
+    if ($parameters.ContainsKey("BannerImageLight")) {
+        $company.BannerImageLight = $BannerImageLight
+    }            
+    if ($parameters.ContainsKey("BannerText")) {
+        $company.BannerText = $BannerText
+    }            
+    if ($parameters.ContainsKey("City")) {
+        $company.City = $City
+    }            
+    if ($parameters.ContainsKey("Contact") -and $Contact) {
+        $company.Contact = Get-ReferenceLink $Contact
+    }        
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $company.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Customer")) {
+        $company.Customer = $Customer
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("Discount")) {
+        $company.Discount = $Discount
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FiscalYear") -and $FiscalYear) {
+        if ($FiscalYear -ne [DateTime]::MinValue) {
+            $company.FiscalYear = $FiscalYear.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.FiscalYear = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Latitude")) {
+        $company.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $company.LatLongError = $LatLongError
+    }                
+    if ($parameters.ContainsKey("Longitude")) {
+        $company.Longitude = $Longitude
+    }    
+    if ($parameters.ContainsKey("Manufacturer")) {
+        $company.Manufacturer = $Manufacturer
+    }    
+    if ($parameters.ContainsKey("MarketCap")) {
+        $company.MarketCap = $MarketCap
+    }    
+    if ($parameters.ContainsKey("Notes")) {
+        $company.Notes = $Notes
+    }    
+    if ($parameters.ContainsKey("NumEmployees")) {
+        $company.NumEmployees = $NumEmployees
+    }    
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $company.Parent = Get-ReferenceLink $Parent
+    }                
+    if ($parameters.ContainsKey("Phone")) {
+        $company.Phone = $Phone
+    }                
+    if ($parameters.ContainsKey("Primary")) {
+        $company.Primary = $Primary
+    }                
+    if ($parameters.ContainsKey("Profits")) {
+        $company.Profits = $Profits
+    }                
+    if ($parameters.ContainsKey("PubliclyTraded")) {
+        $company.PubliclyTraded = $PubliclyTraded
+    }                
+    if ($parameters.ContainsKey("RankTier")) {
+        $company.RankTier = $RankTier
+    }                
+    if ($parameters.ContainsKey("RevenuePerYear")) {
+        $company.RevenuePerYear = $RevenuePerYear
+    }                
+    if ($parameters.ContainsKey("State")) {
+        $company.State = $State
+    }                
+    if ($parameters.ContainsKey("StockPrice")) {
+        $company.StockPrice = $StockPrice
+    }                
+    if ($parameters.ContainsKey("StockSymbol")) {
+        $company.StockSymbol = $StockSymbol
+    }                
+    if ($parameters.ContainsKey("Street")) {
+        $company.Street = $Street
+    }                
+    if ($parameters.ContainsKey("Theme") -and $Theme) {
+        $company.Theme = Get-ReferenceLink $Theme
+    }                
+    if ($parameters.ContainsKey("Vendor")) {
+        $company.Vendor = $Vendor
+    }                    
+    if ($parameters.ContainsKey("VendorManager")) {
+        $company.VendorManager = $VendorManager
+    }                    
+    if ($parameters.ContainsKey("VendorType")) {
+        $company.VendorType = $VendorType
+    }                    
+    if ($parameters.ContainsKey("Website")) {
+        $company.Website = $Website
+    }                    
+    if ($parameters.ContainsKey("Zip")) {
+        $company.Zip = $Zip
+    }        
+
+    $ServiceNowClient.Companies().Request().AddAsync($company).GetAwaiter().GetResult()
+}         
+
+function Set-SnowCompany {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$AppleIcon,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImage,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerImageLight,
+
+        [parameter(Mandatory = $false)]
+        [string]$BannerText,
+
+        [parameter(Mandatory = $false)]
+        [string]$City,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contact,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$CoordinatesRetrievedOn,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Customer,
+
+        [parameter(Mandatory = $false)]
+        [string]$Discount,        
+
+        [parameter(Mandatory = $false)]
+        [string]$FaxPhone,
+
+        [parameter(Mandatory = $false)]
+        [nullable[datetime]]$FiscalYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$Latitude,
+
+        [parameter(Mandatory = $false)]
+        [string]$LatLongError,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Longitude,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Manufacturer,
+
+        [parameter(Mandatory = $false)]
+        [string]$MarketCap,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notes,        
+
+        [parameter(Mandatory = $false)]
+        [int]$NumEmployees,
+
+        [parameter(Mandatory = $false)]
+        [string]$PrimaryLocation,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,        
+
+        [parameter(Mandatory = $false)]
+        [bool]$Primary,
+
+        [parameter(Mandatory = $false)]
+        [string]$Profits,
+        
+        [parameter(Mandatory = $false)]
+        [bool]$PubliclyTraded,
+
+        [parameter(Mandatory = $false)]
+        [string]$RankTier,
+
+        [parameter(Mandatory = $false)]
+        [string]$RevenuePerYear,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,        
+
+        [parameter(Mandatory = $false)]
+        [string]$StockPrice,
+
+        [parameter(Mandatory = $false)]
+        [string]$StockSymbol,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Theme,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Vendor,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorManager,
+
+        [parameter(Mandatory = $false)]
+        [string]$VendorType,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Website,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip        
+    )
+   
+    $companyBuilder = $ServiceNowClient.Companies()[$Id] 
+    $parameters = $MyInvocation.BoundParameters  
+    $company = New-Object -TypeName ServiceNow.Graph.Models.Company
+    $company.Id = $Id
+
+    if ($parameters.ContainsKey("AppleIcon")) {
+        $company.AppleIcon = $AppleIcon
+    }
+    if ($parameters.ContainsKey("BannerImage")) {
+        $company.BannerImage = $BannerImage
+    }
+    if ($parameters.ContainsKey("BannerImageLight")) {
+        $company.BannerImageLight = $BannerImageLight
+    }            
+    if ($parameters.ContainsKey("BannerText")) {
+        $company.BannerText = $BannerText
+    }            
+    if ($parameters.ContainsKey("City")) {
+        $company.City = $City
+    }            
+    if ($parameters.ContainsKey("Contact") -and $Contact) {
+        $company.Contact = Get-ReferenceLink $Contact
+    }        
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
+        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
+            $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.CoordinatesRetrievedOn = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Country")) {
+        $company.Country = $Country
+    }                
+    if ($parameters.ContainsKey("Customer")) {
+        $company.Customer = $Customer
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("Discount")) {
+        $company.Discount = $Discount
+    }                
+    if ($parameters.ContainsKey("FaxPhone")) {
+        $company.FaxPhone = $FaxPhone
+    }                
+    if ($parameters.ContainsKey("FiscalYear") -and $FiscalYear) {
+        if ($FiscalYear -ne [DateTime]::MinValue) {
+            $company.FiscalYear = $FiscalYear.ToString("yyyy-MM-dd HH:mm:ss")
+        } else {
+            $company.FiscalYear = [datetime]::MinValue
+        }
+    }                 
+    if ($parameters.ContainsKey("Latitude")) {
+        $company.Latitude = $Latitude
+    }                
+    if ($parameters.ContainsKey("LatLongError")) {
+        $company.LatLongError = $LatLongError
+    }                
+    if ($parameters.ContainsKey("Longitude")) {
+        $company.Longitude = $Longitude
+    }    
+    if ($parameters.ContainsKey("Manufacturer")) {
+        $company.Manufacturer = $Manufacturer
+    }    
+    if ($parameters.ContainsKey("MarketCap")) {
+        $company.MarketCap = $MarketCap
+    }    
+    if ($parameters.ContainsKey("Notes")) {
+        $company.Notes = $Notes
+    }    
+    if ($parameters.ContainsKey("NumEmployees")) {
+        $company.NumEmployees = $NumEmployees
+    }    
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $company.Parent = Get-ReferenceLink $Parent
+    }                
+    if ($parameters.ContainsKey("Phone")) {
+        $company.Phone = $Phone
+    }                
+    if ($parameters.ContainsKey("Primary")) {
+        $company.Primary = $Primary
+    }                
+    if ($parameters.ContainsKey("Profits")) {
+        $company.Profits = $Profits
+    }                
+    if ($parameters.ContainsKey("PubliclyTraded")) {
+        $company.PubliclyTraded = $PubliclyTraded
+    }                
+    if ($parameters.ContainsKey("RankTier")) {
+        $company.RankTier = $RankTier
+    }                
+    if ($parameters.ContainsKey("RevenuePerYear")) {
+        $company.RevenuePerYear = $RevenuePerYear
+    }                
+    if ($parameters.ContainsKey("State")) {
+        $company.State = $State
+    }                
+    if ($parameters.ContainsKey("StockPrice")) {
+        $company.StockPrice = $StockPrice
+    }                
+    if ($parameters.ContainsKey("StockSymbol")) {
+        $company.StockSymbol = $StockSymbol
+    }                
+    if ($parameters.ContainsKey("Street")) {
+        $company.Street = $Street
+    }                
+    if ($parameters.ContainsKey("Theme") -and $Theme) {
+        $company.Theme = Get-ReferenceLink $Theme
+    }                
+    if ($parameters.ContainsKey("Vendor")) {
+        $company.Vendor = $Vendor
+    }                    
+    if ($parameters.ContainsKey("VendorManager")) {
+        $company.VendorManager = $VendorManager
+    }                    
+    if ($parameters.ContainsKey("VendorType")) {
+        $company.VendorType = $VendorType
+    }                    
+    if ($parameters.ContainsKey("Website")) {
+        $company.Website = $Website
+    }                    
+    if ($parameters.ContainsKey("Zip")) {
+        $company.Zip = $Zip
+    }        
+    if ($parameters.ContainsKey("Name")) {
+        $company.Name = $Name
+    }        
+
+    $companyBuilder.Request().UpdateAsync($company).GetAwaiter().GetResult()
+}        
 function Get-SnowUser {
     param (
         [parameter(Mandatory = $false)]
@@ -723,23 +1641,6 @@ function Get-SnowRequestItems {
         Get-Entity -CollectionBuilder $ServiceNowClient.RequestItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }        
 
-function Get-SnowLocation {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Locations() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-}        
 
 function Get-SnowServiceCatalog {
     param (
@@ -898,23 +1799,6 @@ function Get-SnowAttachment {
 
 
 
-function Get-SnowCompany {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Companies() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-}                                
 
 function Get-SnowRole {
     param (

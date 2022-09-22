@@ -43,12 +43,6 @@ namespace ServiceNow.Graph.Models
         public string Latitude { get; set; }
 
         /// <summary>
-        /// Latitude old, string, X40
-        /// </summary>
-        [JsonProperty("latitude_old", NullValueHandling = NullValueHandling.Ignore)]
-        public string LatitudeOld { get; set; }
-
-        /// <summary>
         /// Stock room, true/false
         /// </summary>
         [JsonProperty("stock_room", NullValueHandling = NullValueHandling.Ignore)]
@@ -95,12 +89,6 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty("longitude", NullValueHandling = NullValueHandling.Ignore)]
         public string Longitude { get; set; }
-
-        /// <summary>
-        /// Longitude old, string, X40
-        /// </summary>
-        [JsonProperty("longitude_old", NullValueHandling = NullValueHandling.Ignore)]
-        public string LongitudeOld { get; set; }
 
         /// <summary>
         /// Zip/Postal code, X40
