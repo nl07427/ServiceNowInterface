@@ -12,16 +12,12 @@ namespace ServiceNow.Graph.Models
     [JsonConverter(typeof(DerivedTypeConverter))]
     public class Task : Entity
     {
-        private DateTimeOffset? _closedAt;
-        private DateTimeOffset? _expectedStart;
-        private DateTimeOffset? _openedAt;
-        private DateTimeOffset? _workEnd;
-        private DateTimeOffset? _approvalSet;
-        private DateTimeOffset? _workStart;
-        private DateTimeOffset? _followUp;
-        private DateTimeOffset? _activityDue;
-        private DateTimeOffset? _slaDue;
-        private DateTimeOffset? _dueDate;
+        private DateTime? _closedAt;
+        private DateTime? _openedAt;
+        private DateTime? _workEnd;
+        private DateTime? _approvalSet;
+        private DateTime? _workStart;
+        private DateTime? _slaDue;
 
         /// <summary>
         /// Default constructor
@@ -106,14 +102,14 @@ namespace ServiceNow.Graph.Models
         /// DateTime task was closed
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "closed_at", Required = Required.Default)]
-        public DateTimeOffset? ClosedAt
+        public DateTime? ClosedAt
         {
             get => _closedAt;
             set
             {
                 if (value.HasValue)
                 {
-                    _closedAt = value.Value + value.Value.Offset;
+                    _closedAt = value.Value;
                 }
             }
         }
@@ -175,31 +171,27 @@ namespace ServiceNow.Graph.Models
         /// <summary>
         /// Expected start, datetime
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "expected_start", Required = Required.Default)]
-        public DateTimeOffset? ExpectedStart
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "expected_start",
+            Required = Required.Default)]
+        public string ExpectedStart
         {
-            get => _expectedStart;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _expectedStart = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
+
 
         /// <summary>
         /// Opened at, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "opened_at", Required = Required.Default)]
-        public DateTimeOffset? OpenedAt
+        public DateTime? OpenedAt
         {
             get => _openedAt;
             set
             {
                 if (value.HasValue)
                 {
-                    _openedAt = value.Value + value.Value.Offset;
+                    _openedAt = value.Value;
                 }
             }
         }
@@ -220,14 +212,14 @@ namespace ServiceNow.Graph.Models
         /// Actual end, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "work_end", Required = Required.Default)]
-        public DateTimeOffset? WorkEnd
+        public DateTime? WorkEnd
         {
             get => _workEnd;
             set
             {
                 if (value.HasValue)
                 {
-                    _workEnd = value.Value + value.Value.Offset;
+                    _workEnd = value.Value;
                 }
             }
         }
@@ -236,14 +228,14 @@ namespace ServiceNow.Graph.Models
         /// Approval set, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "approval_set", Required = Required.Default)]
-        public DateTimeOffset? ApprovalSet
+        public DateTime? ApprovalSet
         {
             get => _approvalSet;
             set
             {
                 if (value.HasValue)
                 {
-                    _approvalSet = value.Value + value.Value.Offset;
+                    _approvalSet = value.Value;
                 }
             }
         }
@@ -276,14 +268,14 @@ namespace ServiceNow.Graph.Models
         /// Actual start of fulfillment, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "work_start", Required = Required.Default)]
-        public DateTimeOffset? WorkStart
+        public DateTime? WorkStart
         {
             get => _workStart;
             set
             {
                 if (value.HasValue)
                 {
-                    _workStart = value.Value + value.Value.Offset;
+                    _workStart = value.Value;
                 }
             }
         }
@@ -337,17 +329,12 @@ namespace ServiceNow.Graph.Models
         /// <summary>
         /// Follow up, datetime
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "follow_up", Required = Required.Default)]
-        public DateTimeOffset? FollowUp
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "follow_up",
+            Required = Required.Default)]
+        public string FollowUp
         {
-            get => _followUp;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _followUp = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -375,19 +362,13 @@ namespace ServiceNow.Graph.Models
         public Int32? ReassignmentCount { get; set; }
 
         /// <summary>
-        /// Activity due, ServiceNow type 'Due date'
+        /// Activity due, ServiceNow type 'Activity Due date'
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "activity_due", Required = Required.Default)]
-        public DateTimeOffset? ActivityDue
+        public string ActivityDue
         {
-            get => _activityDue;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _activityDue = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -412,14 +393,14 @@ namespace ServiceNow.Graph.Models
         ///  Due date (date) based on service level agreement
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sla_due", Required = Required.Default)]
-        public DateTimeOffset? SlaDue
+        public DateTime? SlaDue
         {
             get => _slaDue;
             set
             {
                 if (value.HasValue)
                 {
-                    _slaDue = value.Value + value.Value.Offset;
+                    _slaDue = value.Value;
                 }
             }
         }
@@ -434,16 +415,10 @@ namespace ServiceNow.Graph.Models
         /// Due date, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "due_date", Required = Required.Default)]
-        public DateTimeOffset? DueDate
+        public string DueDate
         {
-            get => _dueDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _dueDate = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>

@@ -9,8 +9,8 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Incident : Task
     {
-        private DateTimeOffset? _reopenedTime;
-        private DateTimeOffset? _resolvedAt;
+        private DateTime? _reopenedTime;
+        private DateTime? _resolvedAt;
 
         /// <summary>
         /// Default constructor for Incident
@@ -132,14 +132,14 @@ namespace ServiceNow.Graph.Models
         /// Last reopened at, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reopened_time", Required = Required.Default)]
-        public DateTimeOffset? ReopenedTime
+        public DateTime? ReopenedTime
         {
             get => _reopenedTime;
             set
             {
                 if (value.HasValue)
                 {
-                    _reopenedTime = value.Value + value.Value.Offset;
+                    _reopenedTime = value.Value;
                 }
             }
         }
@@ -154,14 +154,14 @@ namespace ServiceNow.Graph.Models
         /// Resolved, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "resolved_at", Required = Required.Default)]
-        public DateTimeOffset? ResolvedAt
+        public DateTime? ResolvedAt
         {
             get => _resolvedAt;
             set
             {
                 if (value.HasValue)
                 {
-                    _resolvedAt = value.Value + value.Value.Offset;
+                    _resolvedAt = value.Value;
                 }
             }
         }
@@ -189,11 +189,5 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "subcategory", Required = Required.Default)]
         public string SubCategory { get; set; }
-
-        /// <summary>
-        /// Splunk URL, X1000
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "x_splu2_splunk_ser_splunk_url", Required = Required.Default)]
-        public string SplunkURL { get; set; }
     }
 }
