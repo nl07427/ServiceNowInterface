@@ -9,9 +9,9 @@ namespace ServiceNow.Graph.Models
     public class CatalogOptionsResponse
     {
         /// <summary>
-        /// Gets or sets the <see cref="CatalogOptions"/> value.
+        /// Gets or sets the <see cref="CatalogOption"/> value.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "result", Required = Required.Default)]
-        public CatalogOptions Result { get; set; }
+        public CatalogOption Result { get; set; }
     }
 }

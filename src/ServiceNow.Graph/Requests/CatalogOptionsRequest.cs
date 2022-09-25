@@ -30,7 +30,7 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="entry">The entity to create.</param>
         /// <returns>The created entity.</returns>
-        public System.Threading.Tasks.Task<CatalogOptions> CreateAsync(CatalogOptions entry)
+        public System.Threading.Tasks.Task<CatalogOption> CreateAsync(CatalogOption entry)
         {
             return CreateAsync(entry, CancellationToken.None);
         }
@@ -41,12 +41,12 @@ namespace ServiceNow.Graph.Requests
         /// <param name="entry">The entity to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the request.</param>
         /// <returns>The created entity.</returns>
-        public async System.Threading.Tasks.Task<CatalogOptions> CreateAsync(CatalogOptions entry,
+        public async System.Threading.Tasks.Task<CatalogOption> CreateAsync(CatalogOption entry,
             CancellationToken cancellationToken)
         {
             ContentType = "application/json";
             Method = "POST";
-            var newEntity = await SendAsync<CatalogOptions>(entry, cancellationToken).ConfigureAwait(false);
+            var newEntity = await SendAsync<CatalogOption>(entry, cancellationToken).ConfigureAwait(false);
             InitializeCollectionProperties(newEntity);
             return newEntity;
         }
@@ -68,14 +68,14 @@ namespace ServiceNow.Graph.Requests
         public async System.Threading.Tasks.Task DeleteAsync(CancellationToken cancellationToken)
         {
             Method = "DELETE";
-            await SendAsync<CatalogOptions>(null, cancellationToken).ConfigureAwait(false);
+            await SendAsync<CatalogOption>(null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Gets the specified entity.
         /// </summary>
         /// <returns>The entity.</returns>
-        public System.Threading.Tasks.Task<CatalogOptions> GetAsync()
+        public System.Threading.Tasks.Task<CatalogOption> GetAsync()
         {
             return GetAsync(CancellationToken.None);
         }
@@ -85,7 +85,7 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the request.</param>
         /// <returns>The entity (sc_item_option table).</returns>
-        public async System.Threading.Tasks.Task<CatalogOptions> GetAsync(CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<CatalogOption> GetAsync(CancellationToken cancellationToken)
         {
             Method = "GET";
             var retrievedEntity =
@@ -99,7 +99,7 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="toUpdate">The entity to update.</param>
         /// <returns>The updated entity.</returns>
-        public System.Threading.Tasks.Task<CatalogOptions> UpdateAsync(CatalogOptions toUpdate)
+        public System.Threading.Tasks.Task<CatalogOption> UpdateAsync(CatalogOption toUpdate)
         {
             return UpdateAsync(toUpdate, CancellationToken.None);
         }
@@ -111,7 +111,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the request.</param>
         /// <exception cref="ClientException">Thrown when an object returned in a response is used for updating an object.</exception>
         /// <returns>The updated entity.</returns>
-        public async System.Threading.Tasks.Task<CatalogOptions> UpdateAsync(CatalogOptions toUpdate,
+        public async System.Threading.Tasks.Task<CatalogOption> UpdateAsync(CatalogOption toUpdate,
             CancellationToken cancellationToken)
         {
             ContentType = "application/json";
@@ -136,8 +136,8 @@ namespace ServiceNow.Graph.Requests
         /// <summary>
         /// Initializes any collection properties after deserialization, like next requests for paging.
         /// </summary>
-        /// <param name="toUpdate">The <see cref="CatalogOptions"/> with the collection properties to initialize.</param>
-        private void InitializeCollectionProperties(CatalogOptions toUpdate)
+        /// <param name="toUpdate">The <see cref="CatalogOption"/> with the collection properties to initialize.</param>
+        private void InitializeCollectionProperties(CatalogOption toUpdate)
         {
         }
     }

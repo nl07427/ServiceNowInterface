@@ -6,14 +6,14 @@ namespace ServiceNow.Graph.Models
     /// Catalog options (variable linked to a cart item)
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class CatalogOptions : Entity
+    public class CatalogOption : Entity
     {
         /// <summary>
         /// Default constructor
         /// </summary>
-        public CatalogOptions()
+        public CatalogOption()
         {
-            this.ObjectType = "sc_item_option";
+            ObjectType = "sc_item_option";
         }
 
         /// <summary>

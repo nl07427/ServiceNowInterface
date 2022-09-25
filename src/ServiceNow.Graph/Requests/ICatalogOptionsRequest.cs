@@ -13,7 +13,7 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="entry">The entry to create.</param>
         /// <returns>The created entry.</returns>
-        System.Threading.Tasks.Task<CatalogOptions> CreateAsync(CatalogOptions entry);
+        System.Threading.Tasks.Task<CatalogOption> CreateAsync(CatalogOption entry);
 
         /// <summary>
         /// Creates the specified entry using POST.
@@ -21,7 +21,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="entry">The entry to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the request.</param>
         /// <returns>The created entry.</returns>
-        System.Threading.Tasks.Task<CatalogOptions> CreateAsync(CatalogOptions entry, CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<CatalogOption> CreateAsync(CatalogOption entry, CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes the specified entity.
@@ -40,13 +40,13 @@ namespace ServiceNow.Graph.Requests
         /// Gets the specified entity.
         /// </summary>
         /// <returns>The entity.</returns>
-        System.Threading.Tasks.Task<CatalogOptions> GetAsync();
+        System.Threading.Tasks.Task<CatalogOption> GetAsync();
 
         /// <summary>
         /// Gets the specified entity.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the request.</param>
         /// <returns>The entity.</returns>
-        System.Threading.Tasks.Task<CatalogOptions> GetAsync(CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<CatalogOption> GetAsync(CancellationToken cancellationToken);
     }
 }

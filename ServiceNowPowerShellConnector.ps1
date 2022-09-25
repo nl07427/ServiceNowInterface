@@ -2163,16 +2163,30 @@ function New-SnowLiveProfile {
     param (
         [parameter(Mandatory = $true)]
         [string]$Document,
+
         [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
+        [string]$Image,
+
         [parameter(Mandatory = $false)]
-        [string]$Photo,
-            
-        [parameter(Mandatory = $true)]
-        [string]$Table,
-        
+        [bool]$JoinedFeed,
+
         [parameter(Mandatory = $true)]
         [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Photo,
+
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
+        [parameter(Mandatory = $false)]
+        [string]$Status,
+
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
+        
+        [parameter(Mandatory = $true)]
+        [string]$Table,
         
         [parameter(Mandatory = $true)]
         [string]$Type
@@ -2181,27 +2195,30 @@ function New-SnowLiveProfile {
     $profileRequestBuilder = $ServiceNowClient.LiveProfiles()
     $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
     $parameters = $MyInvocation.BoundParameters  
-    if ($parameters.ContainsKey("Document")) {
-        if (-not [string]::IsNullOrEmpty($Document)) {
-            $liveProfile.Document = Get-ReferenceLink $Document
-        }
-        else {
-            $liveProfile.Document = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $liveProfile.ShortDescription = $ShortDescription
-    } 
+
+    $liveProfile.Document = Get-ReferenceLink $Document
+    $liveProfile.Name = $Name
+    $liveProfile.Table = $Table
+    $liveProfile.Type = $Type
+
+    if ($parameters.ContainsKey("Image")) {
+        $liveProfile.Image = $Image
+    }
+    if ($parameters.ContainsKey("JoinedFeed")) {
+        $liveProfile.JoinedFeed = $JoinedFeed
+    }    
     if ($parameters.ContainsKey("Photo")) {
         $liveProfile.Photo = $Photo
     }
-    if ($parameters.ContainsKey("Table")) {
-        $liveProfile.Table = $Table
-    }
-    if ($parameters.ContainsKey("Type")) {
-        $liveProfile.Type = $Type
-    }
-    $liveProfile.Name = $Name
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $liveProfile.ShortDescription = $ShortDescription
+    } 
+    if ($parameters.ContainsKey("Status")) {
+        $liveProfile.Status = $Status
+    } 
+    if ($parameters.ContainsKey("SysDomain")) {
+        $liveProfile.SysDomain = Get-ReferenceLink $SysDomain
+    } 
 
     $profileRequestBuilder.Request().AddAsync($liveProfile).GetAwaiter().GetResult()
 }         
@@ -2210,49 +2227,58 @@ function Set-SnowLiveProfile {
     param (
       [parameter(Mandatory = $true)]
       [string]$Id,
+
       [parameter(Mandatory = $false)]
-      [string]$Document,
+      [string]$Image,
+
       [parameter(Mandatory = $false)]
-      [string]$ShortDescription,
-      [parameter(Mandatory = $false)]
-      [string]$Photo,
+      [bool]$JoinedFeed,
+
       [parameter(Mandatory = $false)]
       [string]$Name,
-      [parameter(Mandatory = $false)]
-      [string]$Table,
-      [parameter(Mandatory = $false)]
-      [string]$Type
-  )
-  $profileRequestBuilder = $ServiceNowClient.LiveProfiles()[$Id] 
-  $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
-  $parameters = $MyInvocation.BoundParameters  
-  $liveProfile.Id = $Id
-  if ($parameters.ContainsKey("Document")) {​
-      if (-not [string]::IsNullOrEmpty($Document)) {​
-          $liveProfile.Document = Get-ReferenceLink $Document
-      }​
-      else {​
-          $liveProfile.Document = [ServiceNow.Graph.Models.ReferenceLink]$null
-      }​
-  }​ 
-  if ($parameters.ContainsKey("ShortDescription")) {​
-      $liveProfile.ShortDescription = $ShortDescription
-  }​ 
-  if ($parameters.ContainsKey("Photo")) {​
-      $liveProfile.Photo = $Photo
-  }​
-  if ($parameters.ContainsKey("Table")) {​
-      $liveProfile.Table = $Table
-  }​
-  if ($parameters.ContainsKey("Type")) {​
-      $liveProfile.Type = $Type
-  }​
-  if ($parameters.ContainsKey("Name")) {​
-      $liveProfile.Name = $Name
-  }​
-  $profileRequestBuilder.Request().UpdateAsync($liveProfile).GetAwaiter().GetResult()
-  }         
 
+      [parameter(Mandatory = $false)]
+      [string]$Photo,
+
+      [parameter(Mandatory = $false)]
+      [string]$ShortDescription,
+
+      [parameter(Mandatory = $false)]
+      [string]$Status
+  )
+  $profileRequestBuilder = $ServiceNowClient.LiveProfiles()[$Id]
+  $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
+  $parameters = $MyInvocation.BoundParameters
+  $liveProfile.Id = $Id
+  if($parameters.ContainsKey("Image"))
+  {
+	 $liveProfile.Image = $Image
+  }
+  if($parameters.ContainsKey("JoinedFeed"))
+  {
+	 $liveProfile.JoinedFeed = $JoinedFeed
+  }
+  if($parameters.ContainsKey("Name"))
+  {
+	 $liveProfile.Name = $Name
+  }
+  if($parameters.ContainsKey("Photo"))
+  {
+	 $liveProfile.Photo = $Photo
+  }
+ 
+  if($parameters.ContainsKey("ShortDescription"))
+  {
+	 $liveProfile.ShortDescription = $ShortDescription
+  }
+    if($parameters.ContainsKey("Status"))
+  {
+	 $liveProfile.Status = $Status
+  }
+	 
+
+  $profileRequestBuilder.Request().UpdateAsync($liveProfile).GetAwaiter().GetResult()
+  }
   function Get-SnowServiceCatalog {
     param (
         [parameter(Mandatory = $false)]
@@ -4878,7 +4904,7 @@ function Get-ServiceNowClient {
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]
         [ValidateNotNullOrEmpty()]
         [securestring]$UserPassword,		
-		  
+
         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $false)]
         [Int]$PageSize = 1000
     )
@@ -4895,7 +4921,6 @@ function Get-ServiceNowClient {
         finally {
             [System.Runtime.InteropServices.Marshal]::ZeroFreeGlobalAllocUnicode($ptr)
         }
-		  
         $plainUserPassword = ""
         $ptrUserPassword = [System.IntPtr]::Zero
         try {

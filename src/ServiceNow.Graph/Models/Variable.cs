@@ -41,6 +41,15 @@ namespace ServiceNow.Graph.Models
         public string Description { get; set; }
 
         /// <summary>
+        /// Enable also request for, Bool
+        /// </summary>
+        [JsonProperty(PropertyName = "enable_also_request_for", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public bool? EnableAlsoRequestFor
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// Global
         /// </summary>
         [JsonProperty(PropertyName = "global", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
@@ -53,10 +62,70 @@ namespace ServiceNow.Graph.Models
         public string Instructions { get; set; }
 
         /// <summary>
-        /// Widget, reference to table sp_widget
+        /// Macroponent, reference to UX Macroponent definition
+        /// </summary>
+        [JsonProperty(PropertyName = "macroponent", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink Macroponent
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Published option, reference to self (item_option_new)
+        /// </summary>
+        [JsonProperty(PropertyName = "published_ref", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink PublishedRef
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Read Script, X8000
+        /// </summary>
+        [JsonProperty(PropertyName = "read_script", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string ReadScript { get; set; }
+
+        /// <summary>
+        /// Rich text, Translated HTML (Text field)
+        /// </summary>
+        [JsonProperty(PropertyName = "rich_text", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string RichText
+        {
+            get; set;
+        }
+
+        /// <summary>
+        ///	Roles to use also request for, X255
+        /// </summary>
+        [JsonProperty(PropertyName = "roles_to_use_also_request_for", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string RolesToUseAlsoRequestFor
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Save script, Script plain (X8000)
+        /// </summary>
+        [JsonProperty(PropertyName = "save_script", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string SaveScript
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// SpWidget, reference to table sp_widget
         /// </summary>
         [JsonProperty(PropertyName = "sp_widget", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Widget { get; set; }
+        public ReferenceLink SpWidget { get; set; }
+
+        /// <summary>
+        ///	Is unique, Bool
+        /// </summary>
+        [JsonProperty(PropertyName = "unique", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public bool? Unique
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Validation regex
@@ -105,76 +174,5 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "visible_summary", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public bool? VisibleSummary { get; set; }
-
-        /// <summary>
-        /// Enable also request for, Bool
-        /// </summary>
-        [JsonProperty(PropertyName = "enable_also_request_for", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public bool? EnableAlsoRequestFor
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// Hidden, Bool
-        /// </summary>
-        [JsonProperty(PropertyName = "hidden", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public bool? Hidden
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// Macroponent, reference to UX Macroponent definition
-        /// </summary>
-        [JsonProperty(PropertyName = "macroponent", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Macroponent
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// Published option, reference to self (item_option_new)
-        /// </summary>
-        [JsonProperty(PropertyName = "published_ref", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink PublishedOption
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// Rich text, Translated HTML (Text field)
-        /// </summary>
-        [JsonProperty(PropertyName = "rich_text", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string RichText
-        {
-            get; set;
-        }
-
-        /// <summary>
-        /// Save script, Script plain (X8000)
-        /// </summary>
-        [JsonProperty(PropertyName = "save_script", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string SaveScript
-        {
-            get; set;
-        }
-
-        /// <summary>
-        ///	Roles to use also request for, X255
-        /// </summary>
-        [JsonProperty(PropertyName = "roles_to_use_also_request_for", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string RolesToUseAlsoRequestFor
-        {
-            get; set;
-        }
-        /// <summary>
-        ///	Is unique, Bool
-        /// </summary>
-        [JsonProperty(PropertyName = "unique", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public bool? Unique
-        {
-            get; set;
-        }
     }
 }

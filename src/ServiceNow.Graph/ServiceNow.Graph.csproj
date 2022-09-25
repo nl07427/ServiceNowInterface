@@ -69,7 +69,7 @@
     <Compile Include="Models\CatalogItemOptionMtomsCollectionResponse.cs" />
     <Compile Include="Models\CatalogItemResponse.cs" />
     <Compile Include="Models\CatalogItemsCollectionResponse.cs" />
-    <Compile Include="Models\CatalogOptions.cs" />
+    <Compile Include="Models\CatalogOption.cs" />
     <Compile Include="Models\CatalogOptionsCollectionResponse.cs" />
     <Compile Include="Models\CatalogOptionsResponse.cs" />
     <Compile Include="Models\CatalogRequest.cs" />

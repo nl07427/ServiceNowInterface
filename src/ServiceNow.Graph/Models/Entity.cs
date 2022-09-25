@@ -63,12 +63,6 @@ namespace ServiceNow.Graph.Models
         public int? SysModCount { get; set; }
 
         /// <summary>
-        /// System tags
-        /// </summary>
-        [JsonProperty(PropertyName = "sys_tags", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string SysTags { get; set; }
-
-        /// <summary>
         /// Gets or sets the user id that last updated the record.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_updated_by", Required = Required.Default)]

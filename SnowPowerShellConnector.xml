@@ -2247,6 +2247,153 @@
           ]]>
       </CustomCommand>
 
+      <CustomCommand Name="Get-SnowLiveProfile">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+    
+        Get-Entity -CollectionBuilder $ServiceNowClient.LiveProfiles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowLiveProfile">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Document,
+
+        [parameter(Mandatory = $false)]
+        [string]$Image,
+
+        [parameter(Mandatory = $false)]
+        [bool]$JoinedFeed,
+
+        [parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Photo,
+
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
+        [parameter(Mandatory = $false)]
+        [string]$Status,
+
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
+        
+        [parameter(Mandatory = $true)]
+        [string]$Table,
+        
+        [parameter(Mandatory = $true)]
+        [string]$Type
+    )
+    
+    $profileRequestBuilder = $ServiceNowClient.LiveProfiles()
+    $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
+    $parameters = $MyInvocation.BoundParameters  
+
+    $liveProfile.Document = Get-ReferenceLink $Document
+    $liveProfile.Name = $Name
+    $liveProfile.Table = $Table
+    $liveProfile.Type = $Type
+
+    if ($parameters.ContainsKey("Image")) {
+        $liveProfile.Image = $Image
+    }
+    if ($parameters.ContainsKey("JoinedFeed")) {
+        $liveProfile.JoinedFeed = $JoinedFeed
+    }    
+    if ($parameters.ContainsKey("Photo")) {
+        $liveProfile.Photo = $Photo
+    }
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $liveProfile.ShortDescription = $ShortDescription
+    } 
+    if ($parameters.ContainsKey("Status")) {
+        $liveProfile.Status = $Status
+    } 
+    if ($parameters.ContainsKey("SysDomain")) {
+        $liveProfile.SysDomain = Get-ReferenceLink $SysDomain
+    } 
+
+    $profileRequestBuilder.Request().AddAsync($liveProfile).GetAwaiter().GetResult()
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Set-SnowLiveProfile">
+        <![CDATA[
+    param (
+      [parameter(Mandatory = $true)]
+      [string]$Id,
+
+      [parameter(Mandatory = $false)]
+      [string]$Image,
+
+      [parameter(Mandatory = $false)]
+      [bool]$JoinedFeed,
+
+      [parameter(Mandatory = $false)]
+      [string]$Name,
+
+      [parameter(Mandatory = $false)]
+      [string]$Photo,
+
+      [parameter(Mandatory = $false)]
+      [string]$ShortDescription,
+
+      [parameter(Mandatory = $false)]
+      [string]$Status
+  )
+  $profileRequestBuilder = $ServiceNowClient.LiveProfiles()[$Id]
+  $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
+  $parameters = $MyInvocation.BoundParameters
+  $liveProfile.Id = $Id
+  if($parameters.ContainsKey("Image"))
+  {
+	 $liveProfile.Image = $Image
+  }
+  if($parameters.ContainsKey("JoinedFeed"))
+  {
+	 $liveProfile.JoinedFeed = $JoinedFeed
+  }
+  if($parameters.ContainsKey("Name"))
+  {
+	 $liveProfile.Name = $Name
+  }
+  if($parameters.ContainsKey("Photo"))
+  {
+	 $liveProfile.Photo = $Photo
+  }
+ 
+  if($parameters.ContainsKey("ShortDescription"))
+  {
+	 $liveProfile.ShortDescription = $ShortDescription
+  }
+    if($parameters.ContainsKey("Status"))
+  {
+	 $liveProfile.Status = $Status
+  }
+	 
+
+  $profileRequestBuilder.Request().UpdateAsync($liveProfile).GetAwaiter().GetResult()
+          ]]>
+      </CustomCommand>
+
+
+
       <CustomCommand Name="Get-SnowUser">
         <![CDATA[
     param (
@@ -4819,123 +4966,6 @@
       </CustomCommand>
 
 
-      <CustomCommand Name="Get-SnowLiveProfile">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-    
-        Get-Entity -CollectionBuilder $ServiceNowClient.LiveProfiles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
-          ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Set-SnowLiveProfile">
-        <![CDATA[
-              param (
-                [parameter(Mandatory = $true)]
-                [string]$Id,
-                [parameter(Mandatory = $false)]
-                [string]$Document,
-                [parameter(Mandatory = $false)]
-                [string]$ShortDescription,
-                [parameter(Mandatory = $false)]
-                [string]$Photo,
-                [parameter(Mandatory = $false)]
-                [string]$Name,
-                [parameter(Mandatory = $false)]
-                [string]$Table,
-                [parameter(Mandatory = $false)]
-                [string]$Type
-            )
-            $profileRequestBuilder = $ServiceNowClient.LiveProfiles()[$Id] 
-            $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
-            $parameters = $MyInvocation.BoundParameters  
-            $liveProfile.Id = $Id
-            if ($parameters.ContainsKey("Document")) {​
-                if (-not [string]::IsNullOrEmpty($Document)) {​
-                    $liveProfile.Document = Get-ReferenceLink $Document
-                }​
-                else {​
-                    $liveProfile.Document = [ServiceNow.Graph.Models.ReferenceLink]$null
-                }​
-            }​ 
-            if ($parameters.ContainsKey("ShortDescription")) {​
-                $liveProfile.ShortDescription = $ShortDescription
-            }​ 
-            if ($parameters.ContainsKey("Photo")) {​
-                $liveProfile.Photo = $Photo
-            }​
-            if ($parameters.ContainsKey("Table")) {​
-                $liveProfile.Table = $Table
-            }​
-            if ($parameters.ContainsKey("Type")) {​
-                $liveProfile.Type = $Type
-            }​
-            if ($parameters.ContainsKey("Name")) {​
-                $liveProfile.Name = $Name
-            }​
-            $profileRequestBuilder.Request().UpdateAsync($liveProfile).GetAwaiter().GetResult()
-          ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="New-SnowLiveProfile">
-        <![CDATA[
-            param (
-                [parameter(Mandatory = $true)]
-                [string]$Document,
-                [parameter(Mandatory = $false)]
-                [string]$ShortDescription,
-                [parameter(Mandatory = $false)]
-                [string]$Photo,
-                    
-                [parameter(Mandatory = $true)]
-                [string]$Table,
-                
-                [parameter(Mandatory = $true)]
-                [string]$Name,
-                
-                [parameter(Mandatory = $true)]
-                [string]$Type
-            )
-            
-            $profileRequestBuilder = $ServiceNowClient.LiveProfiles()
-            $liveProfile = New-Object -TypeName ServiceNow.Graph.Models.LiveProfile
-            $parameters = $MyInvocation.BoundParameters  
-            if ($parameters.ContainsKey("Document")) {
-                if (-not [string]::IsNullOrEmpty($Document)) {
-                    $liveProfile.Document = Get-ReferenceLink $Document
-                }
-                else {
-                    $liveProfile.Document = [ServiceNow.Graph.Models.ReferenceLink]$null
-                }
-            } 
-            if ($parameters.ContainsKey("ShortDescription")) {
-                $liveProfile.ShortDescription = $ShortDescription
-            } 
-            if ($parameters.ContainsKey("Photo")) {
-                $liveProfile.Photo = $Photo
-            }
-            if ($parameters.ContainsKey("Table")) {
-                $liveProfile.Table = $Table
-            }
-            if ($parameters.ContainsKey("Type")) {
-                $liveProfile.Type = $Type
-            }
-            $liveProfile.Name = $Name
-
-            $profileRequestBuilder.Request().AddAsync($liveProfile).GetAwaiter().GetResult()
-          ]]>
-      </CustomCommand>
 
       <CustomCommand Name="Get-SnowAttachment">
         <![CDATA[
@@ -8404,9 +8434,15 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="SysTags" DataType="String">
+        <Property Name="Active" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysTags" />
+            <Bind CommandResultOf="Get-SnowVariable" Path="Active" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Attributes" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Attributes" />
           </ReturnBindings>
         </Property>
 
@@ -8422,6 +8458,48 @@
           </ReturnBindings>
         </Property>
 
+        <Property Name="ChoiceDirection" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ChoiceDirection" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ChoiceField" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ChoiceField" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ChoiceTable" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ChoiceTable" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CreateRoles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="CreateRoles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DefaultHtmlValue" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="DefaultHtmlValue" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DefaultValue" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="DefaultValue" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DeleteRoles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="DeleteRoles" />
+          </ReturnBindings>
+        </Property>
+
         <Property Name="DeliveryPlan" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariable" Path="DeliveryPlan.ToString()" />
@@ -8434,9 +8512,75 @@
           </ReturnBindings>
         </Property>
 
+        <Property Name="DisplayTitle" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="DisplayTitle" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DoNotSelectFirst" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="DoNotSelectFirst" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DynamicDefaultValue" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="DynamicDefaultValue.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DynamicRefQual" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="DynamicRefQual.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="EnableAlsoRequestFor" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="EnableAlsoRequestFor" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ExampleText" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ExampleText" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Field" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Field" />
+          </ReturnBindings>
+        </Property>
+
         <Property Name="Global" DataType="Bool">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariable" Path="Global" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="HelpTag" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="HelpTag" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="HelpText" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="HelpText" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Hidden" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Hidden" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="IncludeNone" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="IncludeNone" />
           </ReturnBindings>
         </Property>
 
@@ -8446,12 +8590,305 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Widget" DataType="String">
+        <Property Name="Layout" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Widget.ToString()" />
+            <Bind CommandResultOf="Get-SnowVariable" Path="Layout" />
           </ReturnBindings>
         </Property>
 
+        <Property Name="ListTable" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ListTable" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LookupLabel" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="LookupLabel" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LookupPrice" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="LookupPrice" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LookupTable" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="LookupTable" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LookupUnique" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="LookupUnique" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LookupValue" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="LookupValue" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Macro" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Macro.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Macroponent" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Macroponent.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Mandatory" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Mandatory" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MapToField" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="MapToField" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MaskUseConfirmation" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="MaskUseConfirmation" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MaskUseEncryption" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="MaskUseEncryption" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Name" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Name" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Order" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Order" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="PriceIfChecked" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="PriceIfChecked" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="PricingImplications" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="PricingImplications" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="PublishedRef" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="PublishedRef.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="QuestionText" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="QuestionText" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ReadOnly" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ReadOnly" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ReadRoles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ReadRoles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ReadScript" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ReadScript" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Record" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Record" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RecordProducerTable" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="RecordProducerTable" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RecLookupPrice" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="RecLookupPrice" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RecPriceIfChecked" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="RecPriceIfChecked" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Reference" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="VariableWidth" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ReferenceQual" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ReferenceQual" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ReferenceQualCondition" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ReferenceQualCondition.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RichText" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="RichText" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RolesToUseAlsoRequestFor" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="RolesToUseAlsoRequestFor" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SaveScript" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SaveScript" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScaleMax" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ScaleMax" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScaleMin" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ScaleMin" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ShowHelp" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ShowHelp" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ShowHelpOnLoad" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="ShowHelpOnLoad" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SpWidget" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SpWidget.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SummaryMacro" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SummaryMacro.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysName" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SysName" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysPackage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SysPackage.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysPolicy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SysPolicy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysScope" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SysScope.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysUpdateName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="SysUpdateName" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Table" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Table" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Tooltip" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Tooltip" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Type" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Type" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UiPage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="UiPage.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Unique" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="Unique" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UseDynamicDefault" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="UseDynamicDefault" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UseReferenceQualifier" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="UseReferenceQualifier" />
+          </ReturnBindings>
+        </Property>
 
         <Property Name="ValidateRegex" DataType="String">
           <ReturnBindings>
@@ -8459,6 +8896,11 @@
           </ReturnBindings>
         </Property>
 
+        <Property Name="VariableName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowVariable" Path="VariableName" />
+          </ReturnBindings>
+        </Property>
 
         <Property Name="VariableSet" DataType="String">
           <ReturnBindings>
@@ -8490,207 +8932,15 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="VisibleSummary" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="VisibleSummary" />
-          </ReturnBindings>
-        </Property>
-
         <Property Name="VisibleStandalone" DataType="Bool">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariable" Path="VisibleStandalone" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="LookupLabel" DataType="String">
+        <Property Name="VisibleSummary" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="LookupLabel" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DynamicRefQual" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="DynamicRefQual.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RecLookupPrice" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="RecLookupPrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RecPriceIfChecked" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="RecPriceIfChecked" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ChoiceField" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ChoiceField" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DisplayTitle" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="DisplayTitle" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Tooltip" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Tooltip" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ShowHelpOnLoad" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ShowHelpOnLoad" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Type" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Type" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="UiPage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="UiPage.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LookupTable" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="LookupTable" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Reference" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="VariableWidth" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LookupValue" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="LookupValue" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Record" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Record" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MaskUseConfirmation" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="MaskUseConfirmation" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ReferenceQualCondition" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ReferenceQualCondition.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Order" DataType="Int">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Order" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MapToField" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="MapToField" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ChoiceDirection" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ChoiceDirection" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DeleteRoles" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="DeleteRoles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Active" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Active" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ChoiceTable" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ChoiceTable" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Field" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Field" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Name" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Name" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="HelpText" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="HelpText" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="UseDynamicDefault" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="UseDynamicDefault" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ScaleMin" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ScaleMin" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ShowHelp" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ShowHelp" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Mandatory" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Mandatory" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DoNotSelectFirst" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="DoNotSelectFirst" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DynamicDefaultValue" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="DynamicDefaultValue.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ExampleText" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ExampleText" />
+            <Bind CommandResultOf="Get-SnowVariable" Path="VisibleSummary" />
           </ReturnBindings>
         </Property>
 
@@ -8699,235 +8949,6 @@
             <Bind CommandResultOf="Get-SnowVariable" Path="WriteRoles" />
           </ReturnBindings>
         </Property>
-
-        <Property Name="PricingImplications" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="PricingImplications" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ReadRoles" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ReadRoles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="VariableName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="VariableName" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CreateRoles" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="CreateRoles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ListTable" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ListTable" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Table" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Table" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Macro" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Macro.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="UseReferenceQualifier" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="UseReferenceQualifier" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MaskUseEncryption" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="MaskUseEncryption" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="IncludeNone" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="IncludeNone" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LookupPrice" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="LookupPrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DefaultValue" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="DefaultValue" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="PriceIfChecked" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="PriceIfChecked" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="HelpTag" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="HelpTag" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Layout" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Layout" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="QuestionText" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="QuestionText" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SummaryMacro" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SummaryMacro.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RecordProducerTable" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="RecordProducerTable" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ScaleMax" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ScaleMax" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Attributes" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Attributes" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="LookupUnique" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="LookupUnique" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ReferenceQual" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="ReferenceQual" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DefaultHtmlValue" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="DefaultHtmlValue" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysReplaceOnUpgrade" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysReplaceOnUpgrade" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysPackage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysPackage.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysUpdateName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysUpdateName" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysName" DataType="String" IsDisplay="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysName" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysScope" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysScope.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysCustomerUpdate" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysCustomerUpdate" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysPolicy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SysPolicy" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="EnableAlsoRequestFor" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="EnableAlsoRequestFor" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Unique" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Unique" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Hidden" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Hidden" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RolesToUseAlsoRequestFor" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="RolesToUseAlsoRequestFor" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Macroponent" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="Macroponent.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="PublishedOption" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="PublishedOption.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RichText" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="RichText" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SaveScript" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariable" Path="SaveScript" />
-          </ReturnBindings>
-        </Property>
-
       </Properties>
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
@@ -8947,8 +8968,7 @@
 
     <Class Name="LiveProfile">
       <Properties>
-        <Property Name="Id" DataType="String" AccessConstraint="ReadOnly" IsMandatory="true" IsUniqueKey="true"
-                  IsAutoFill="true" IsDisplay="false">
+        <Property Name="Id" DataType="String" AccessConstraint="ReadOnly" IsMandatory="true" IsUniqueKey="true" IsAutoFill="true" IsDisplay="false">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="Id" />
             <Bind CommandResultOf="Set-SnowLiveProfile" Path="Id" />
@@ -8959,118 +8979,95 @@
             <Map ToCommand="Set-SnowLiveProfile" Parameter="Id" />
           </CommandMappings>
         </Property>
+
         <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="WhenUpdated.DateTime" />
           </ReturnBindings>
         </Property>
+
         <Property Name="WhenCreated" DataType="DateTime" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="WhenCreated.DateTime" />
           </ReturnBindings>
         </Property>
-        <Property Name="Image" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Image" />
-          </ReturnBindings>
-        </Property>
+
         <Property Name="ObjectType" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="ObjectType" />
           </ReturnBindings>
         </Property>
+
         <Property Name="CreatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
+
         <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
+
         <Property Name="SysModCount" DataType="Int" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="SysModCount" />
           </ReturnBindings>
         </Property>
-        <Property Name="ShortDescription" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLiveProfile" Path="ShortDescription" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
-            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowLiveProfile" Parameter="ShortDescription" />
-            <Map ToCommand="New-SnowLiveProfile" Parameter="ShortDescription" />
-          </CommandMappings>
-        </Property>
+
         <Property Name="Document" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="Document.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
-            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
             <ModBy Command="New-SnowLiveProfile" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowLiveProfile" Parameter="Document" />
             <Map ToCommand="New-SnowLiveProfile" Parameter="Document" />
           </CommandMappings>
         </Property>
-        <Property Name="Photo" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Photo" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
-            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowLiveProfile" Parameter="Photo" />
-            <Map ToCommand="New-SnowLiveProfile" Parameter="Photo" />
-          </CommandMappings>
-        </Property>
-        <Property Name="SysDomainPath" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLiveProfile" Path="SysDomainPath" />
-          </ReturnBindings>
-        </Property>
-        <Property Name="Type" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Type" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
-            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowLiveProfile" Parameter="Type" />
-            <Map ToCommand="New-SnowLiveProfile" Parameter="Type" />
-          </CommandMappings>
-        </Property>
+
         <Property Name="FollowerCount" DataType="Int" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="FollowerCount" />
           </ReturnBindings>
         </Property>
+
         <Property Name="FollowingCount" DataType="Int" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="FollowingCount" />
           </ReturnBindings>
         </Property>
-        <Property Name="JoinedFeed" DataType="Bool" AccessConstraint="ReadOnly">
+
+        <Property Name="Image" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Image" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
+            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowLiveProfile" Parameter="Image" />
+            <Map ToCommand="New-SnowLiveProfile" Parameter="Image" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="JoinedFeed" DataType="Bool">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="JoinedFeed" />
           </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
+            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowLiveProfile" Parameter="JoinedFeed" />
+            <Map ToCommand="New-SnowLiveProfile" Parameter="JoinedFeed" />
+          </CommandMappings>
         </Property>
-        <Property Name="SysDomain" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLiveProfile" Path="SysDomain.ToString()" />
-          </ReturnBindings>
-        </Property>
+
         <Property Name="Name" DataType="String" IsDisplay="true">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="Name" />
@@ -9084,24 +9081,91 @@
             <Map ToCommand="New-SnowLiveProfile" Parameter="Name" />
           </CommandMappings>
         </Property>
-        <Property Name="Table" DataType="String" IsDisplay="true">
+
+        <Property Name="Photo" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Table" />
+            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Photo" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowLiveProfile" Method="Update" />
             <ModBy Command="New-SnowLiveProfile" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowLiveProfile" Parameter="Table" />
-            <Map ToCommand="New-SnowLiveProfile" Parameter="Table" />
+            <Map ToCommand="Set-SnowLiveProfile" Parameter="Photo" />
+            <Map ToCommand="New-SnowLiveProfile" Parameter="Photo" />
           </CommandMappings>
         </Property>
-        <Property Name="Status" DataType="String" AccessConstraint="ReadOnly">
+
+        <Property Name="ShortDescription" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLiveProfile" Path="ShortDescription" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
+            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowLiveProfile" Parameter="ShortDescription" />
+            <Map ToCommand="New-SnowLiveProfile" Parameter="ShortDescription" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Status" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowLiveProfile" Path="Status" />
           </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowLiveProfile" Method="Update" />
+            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowLiveProfile" Parameter="Status" />
+            <Map ToCommand="New-SnowLiveProfile" Parameter="Status" />
+          </CommandMappings>
         </Property>
+
+        <Property Name="SysDomain" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLiveProfile" Path="SysDomain.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLiveProfile" Parameter="SysDomain" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="SysDomainPath" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLiveProfile" Path="SysDomainPath" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Table" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Table" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLiveProfile" Parameter="Table" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Type" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowLiveProfile" Path="Type" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowLiveProfile" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowLiveProfile" Parameter="Type" />
+          </CommandMappings>
+        </Property>
+
       </Properties>
       <!-- Configuration items for readable types -->
       <ReadConfiguration>

@@ -29,7 +29,7 @@ namespace ServiceNow.Graph.Requests
         /// </summary>
         /// <param name="entity">The entity to add</param>
         /// <returns>The created entity.</returns>
-        public async Task<CatalogOptions> AddAsync(CatalogOptions entity)
+        public async Task<CatalogOption> AddAsync(CatalogOption entity)
         {
             return await AddAsync(entity, CancellationToken.None).ConfigureAwait(false);
         }
@@ -40,7 +40,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="entity">The entity to add</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the request.</param>
         /// <returns>The created entity.</returns>
-        public async Task<CatalogOptions> AddAsync(CatalogOptions entity,
+        public async Task<CatalogOption> AddAsync(CatalogOption entity,
             CancellationToken cancellationToken)
         {
             ContentType = "application/json";

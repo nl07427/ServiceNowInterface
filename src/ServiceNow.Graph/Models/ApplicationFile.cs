@@ -15,6 +15,7 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         protected internal ApplicationFile()
         {
+            ObjectType = "sys_metadata";
         }
 
         /// <summary>

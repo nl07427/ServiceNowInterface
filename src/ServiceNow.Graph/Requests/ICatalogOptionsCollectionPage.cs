@@ -8,7 +8,7 @@ namespace ServiceNow.Graph.Requests
     /// ICatalogOptionsCollectionPage
     /// </summary>
     [JsonConverter(typeof(InterfaceConverter<CatalogOptionsCollectionPage>))]
-    public interface ICatalogOptionsCollectionPage : ICollectionPage<CatalogOptions>
+    public interface ICatalogOptionsCollectionPage : ICollectionPage<CatalogOption>
     {
         /// <summary>
         /// Gets the next page <see cref="ICatalogOptionsCollectionRequest"/> instance.

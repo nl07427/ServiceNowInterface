@@ -5,7 +5,7 @@ namespace ServiceNow.Graph.Requests
     /// <summary>
     /// CatalogOptionsCollectionPage
     /// </summary>
-    public class CatalogOptionsCollectionPage : CollectionPage<CatalogOptions>, ICatalogOptionsCollectionPage
+    public class CatalogOptionsCollectionPage : CollectionPage<CatalogOption>, ICatalogOptionsCollectionPage
     {
         /// <summary>
         /// Gets the next page <see cref="ICatalogOptionsCollectionRequest"/> instance.
