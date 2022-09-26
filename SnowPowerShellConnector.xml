@@ -9240,57 +9240,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="SysTags" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysTags" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Description" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Description" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="EnableWishList" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="EnableWishList" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Title" DataType="String" IsDisplay="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Title" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DesktopImage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="DesktopImage" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DesktopHomePage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="DesktopHomePage" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Editors" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Editors" />
-          </ReturnBindings>
-        </Property>
-
         <Property Name="Active" DataType="Bool">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Active" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DesktopContinueShopping" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="DesktopContinueShopping" />
           </ReturnBindings>
         </Property>
 
@@ -9300,27 +9252,45 @@
           </ReturnBindings>
         </Property>
 
+        <Property Name="Description" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Description" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DesktopContinueShopping" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="DesktopContinueShopping" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DesktopHomePage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="DesktopHomePage" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DesktopImage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="DesktopImage" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Editors" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Editors" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="EnableWishList" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="EnableWishList" />
+          </ReturnBindings>
+        </Property>
+
         <Property Name="Manager" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Manager.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysReplaceOnUpgrade" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysReplaceOnUpgrade" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysPackage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysPackage.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysUpdateName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysUpdateName" />
           </ReturnBindings>
         </Property>
 
@@ -9330,15 +9300,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="SysScope" DataType="String">
+        <Property Name="SysPackage" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysScope.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysCustomerUpdate" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysCustomerUpdate" />
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysPackage.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -9348,12 +9312,29 @@
           </ReturnBindings>
         </Property>
 
+        <Property Name="SysScope" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysScope.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysUpdateName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="SysUpdateName" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Title" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowServiceCatalog" Path="Title" />
+          </ReturnBindings>
+        </Property>
       </Properties>
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowServiceCatalog">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,manager,title" />
+                        Value="sys_id,sys_updated_on,title,sys_update_name" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sc_catalog_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -9413,27 +9394,63 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="EntitlementScript" DataType="String">
+        <Property Name="AccessType" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="EntitlementScript" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="AccessType" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="UseScLayout" DataType="Bool">
+        <Property Name="Active" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="UseScLayout" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Active" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="ShowVariableHelpOnLoad" DataType="Bool">
+        <Property Name="Availability" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ShowVariableHelpOnLoad" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Availability" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="NoOrderNow" DataType="Bool">
+        <Property Name="Billable" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoOrderNow" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Billable" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Category" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Category.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CheckedOut" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="CheckedOut" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Cost" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Cost" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CustomCart" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="CustomCart.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DeliveryPlan" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DeliveryPlan.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DeliveryPlanScript" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DeliveryPlanScript" />
           </ReturnBindings>
         </Property>
 
@@ -9443,39 +9460,33 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Type" DataType="String">
+        <Property Name="Description" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Type" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Description" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="NoSearch" DataType="Bool">
+        <Property Name="DisplayPriceProperty" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoSearch" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DisplayPriceProperty" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="Price" DataType="String">
+        <Property Name="EntitlementScript" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Price" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="EntitlementScript" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="RecurringFrequency" DataType="String">
+        <Property Name="FlowDesignerFlow" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="RecurringFrequency" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="FlowDesignerFlow.ToString()" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="Model" DataType="String">
+        <Property Name="FulfillmentAutomationLevel" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Model.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoCart" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoCart" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="FulfillmentAutomationLevel" />
           </ReturnBindings>
         </Property>
 
@@ -9491,63 +9502,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Order" DataType="Int">
+        <Property Name="Icon" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Order" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="StartClosed" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="StartClosed" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Image" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Image" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoQuantity" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoQuantity" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Workflow" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Workflow.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DeliveryPlan" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DeliveryPlan.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Active" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Active" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CustomCart" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="CustomCart.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoCartV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoCartV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoProceedCheckout" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoProceedCheckout" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Icon" />
           </ReturnBindings>
         </Property>
 
@@ -9557,87 +9514,21 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Meta" DataType="String">
+        <Property Name="Image" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Meta" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Image" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="OmitPrice" DataType="Bool">
+        <Property Name="ListPrice" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="OmitPrice" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ListPrice" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="Name" DataType="String" IsDisplay="true">
+        <Property Name="Location" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Name" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="FlowDesignerFlow" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="FlowDesignerFlow.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MobileHidePrice" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="MobileHidePrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoWishlistV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoWishlistV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Preview" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Preview" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Template" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Template.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ShortDescription" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ShortDescription" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Roles" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Roles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Icon" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Icon" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Description" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Description" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MobilePicture" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="MobilePicture" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Availability" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Availability" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Location.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -9647,9 +9538,297 @@
           </ReturnBindings>
         </Property>
 
+        <Property Name="Meta" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Meta" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MobileHidePrice" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="MobileHidePrice" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MobilePicture" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="MobilePicture" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MobilePictureType" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="MobilePictureType" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Model" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Model.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Name" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Name" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoAttachmentV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoAttachmentV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoCart" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoCart" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoCartV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoCartV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoDeliveryTimeV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoDeliveryTimeV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoOrder" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoOrder" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoOrderNow" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoOrderNow" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoProceedCheckout" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoProceedCheckout" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoQuantity" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoQuantity" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoQuantityV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoQuantityV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoSearch" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoSearch" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoWishlistV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoWishlistV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="OmitPrice" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="OmitPrice" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Order" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Order" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="OrderedItemLink" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="OrderedItemLink.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Owner" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Owner.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Picture" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Picture" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Preview" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Preview" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Price" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Price" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="PublishedRef" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="PublishedRef.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RecurringFrequency" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="RecurringFrequency" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RecurringPrice" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="RecurringPrice" />
+          </ReturnBindings>
+        </Property>
+
         <Property Name="RequestMethod" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogItem" Path="RequestMethod" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Roles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Roles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScCatalogs" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ScCatalogs" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScIcItemStaging" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ScIcItemStaging.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScIcVersion" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ScIcVersion" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScTemplate" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ScTemplate.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ShortDescription" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ShortDescription" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ShowVariableHelpOnLoad" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ShowVariableHelpOnLoad" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="StartClosed" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="StartClosed" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="State" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="State" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysName" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysPackage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysPackage.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysPolicy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysPolicy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysScope" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysScope.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysUpdateName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysUpdateName" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="TaxonomyTopic" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="TaxonomyTopic.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Template" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Template.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="TemplateManagerRoles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="TemplateManagerRoles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Type" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Type" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UseScLayout" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="UseScLayout" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Vendor" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Vendor.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="VisibleBundle" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="VisibleBundle" />
           </ReturnBindings>
         </Property>
 
@@ -9665,229 +9844,18 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="NoOrder" DataType="Bool">
+        <Property Name="Workflow" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoOrder" />
+            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Workflow.ToString()" />
           </ReturnBindings>
         </Property>
-
-        <Property Name="Vendor" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Vendor.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoAttachmentV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoAttachmentV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MobilePictureType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="MobilePictureType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="VisibleBundle" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="VisibleBundle" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ScCatalogs" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ScCatalogs" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="OrderedItemLink" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="OrderedItemLink.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoDeliveryTimeV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoDeliveryTimeV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Cost" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Cost" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoQuantityV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="NoQuantityV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RecurringPrice" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="RecurringPrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ListPrice" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ListPrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ScIcItemStaging" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ScIcItemStaging.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Billable" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Billable" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Picture" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Picture" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DisplayPriceProperty" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DisplayPriceProperty" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DeliveryPlanScript" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="DeliveryPlanScript" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Location" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Location.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Category" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Category.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysReplaceOnUpgrade" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysReplaceOnUpgrade" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysPackage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysPackage.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysUpdateName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysUpdateName" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysName" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysScope" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysScope.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysCustomerUpdate" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysCustomerUpdate" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysPolicy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="SysPolicy" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="AccessType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="AccessType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CheckedOut" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="CheckedOut" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="FulfillmentAutomationLevel" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="FulfillmentAutomationLevel" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ScIcVersion" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="ScIcVersion" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="State" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="State" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="TemplateManagerRoles" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="TemplateManagerRoles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="AssociatedTemplate" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="AssociatedTemplate.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="TaxonomyTopic" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="TaxonomyTopic.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Owner" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Owner.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="PublishedItem" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="PublishedItem.ToString()" />
-          </ReturnBindings>
-        </Property>
-
       </Properties>
 
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowCatalogItem">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,name,group,location" />
+                        Value="sys_id,sys_updated_on,name" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sc_cat_item_filter" />
         </ListingCommand>
         <CommandSequence>
