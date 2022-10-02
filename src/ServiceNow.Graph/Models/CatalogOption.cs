@@ -17,28 +17,28 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
-        /// Reference to the service catalog item
-        /// </summary>
-        [JsonProperty(PropertyName ="sc_cat_item_option", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink ItemOption { get; set; }
-
-        /// <summary>
-        /// Reference to the item/request variable
-        /// </summary>
-        [JsonProperty(PropertyName = "item_option_new", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Variable { get; set; }
-
-        /// <summary>
         /// Reference to a cart item
         /// </summary>
         [JsonProperty(PropertyName = "cart_item", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public ReferenceLink CartItem { get; set; }
 
         /// <summary>
+        /// Reference to the item/request variable
+        /// </summary>
+        [JsonProperty(PropertyName = "item_option_new", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink ItemOptionNew { get; set; }
+
+        /// <summary>
         /// Sort order
         /// </summary>
         [JsonProperty(PropertyName = "order", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string Order { get; set; }
+        public int? Order { get; set; }
+
+        /// <summary>
+        /// Reference to the service catalog item
+        /// </summary>
+        [JsonProperty(PropertyName ="sc_cat_item_option", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink ScCatItemOption { get; set; }
 
         /// <summary>
         /// Value

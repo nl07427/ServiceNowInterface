@@ -4623,22 +4623,92 @@
           ]]>
       </CustomCommand>
 
-      <CustomCommand Name="Get-SnowVariableOwnershipList">
+      <CustomCommand Name="New-SnowCatalogOption">
         <![CDATA[
-        if(-not $Global:VariableOwnershipList){
-          $Global:VariableOwnershipList = Get-Entity -CollectionBuilder $ServiceNowClient.VariableOwnerships()
-      }
-      return $Global:VariableOwnershipList
-        ]]>
+    param (
+        [parameter(Mandatory = $false)]
+        [string]$CartItem,
+
+        [parameter(Mandatory = $true)]
+        [string]$ItemOptionNew,
+
+        [parameter(Mandatory = $false)]
+        [int]$Order,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ScCatItemOption,
+
+        [parameter(Mandatory = $false)]
+        [string]$Value
+    )
+        
+    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()
+    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOption
+    $parameters = $MyInvocation.BoundParameters  
+            
+    $option.ItemOptionNew =  Get-ReferenceLink $ItemOptionNew
+
+    if ($parameters.ContainsKey("CartItem") -and $CartItem) {
+        $option.CartItem = Get-ReferenceLink $CartItem
+    }          
+    if ($parameters.ContainsKey("Order")) {
+        $option.Order = $Order
+    }          
+    if ($parameters.ContainsKey("ScCatItemOption") -and $ScCatItemOption) {
+        $option.ScCatItemOption = Get-ReferenceLink $ScCatItemOption
+    }          
+
+    if ($parameters.ContainsKey("Value")) {
+        $option.Value = $Value
+    } 
+
+    $catalogOptionsRequestBuilder.Request().AddAsync($option).GetAwaiter().GetResult()
+            ]]>
       </CustomCommand>
 
-      <CustomCommand Name="Get-SnowCatalogOptionList">
+      <CustomCommand Name="Set-SnowCatalogOption">
         <![CDATA[
-        if(-not $Global:CatalogOptionList){
-          $Global:CatalogOptionList =  Get-Entity -CollectionBuilder $ServiceNowClient.CatalogOptions()
-      }
-      return $Global:CatalogOptionList
-        ]]>
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [string]$CartItem,
+
+        [parameter(Mandatory = $false)]
+        [string]$ScCatItemOption,
+
+        [parameter(Mandatory = $false)]
+        [string]$Value
+    )
+        
+    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()[$Id] 
+    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOption
+    $parameters = $MyInvocation.BoundParameters  
+    $option.Id = $Id
+            
+    if ($parameters.ContainsKey("Value")) {
+        $option.Value = $Value
+    } 
+    
+    if ($parameters.ContainsKey("ScCatItemOption")) {
+        if ($ScCatItemOption) {
+            $option.ScCatItemOption = Get-ReferenceLink $ScCatItemOption
+        } else {
+            $option.ScCatItemOption = Get-ReferenceLink ""
+        }
+    }                                                                            
+
+    if ($parameters.ContainsKey("CartItem")) {
+        if ($CartItem) {
+            $option.CartItem = Get-ReferenceLink $CartItem
+        } else {
+            $option.CartItem = Get-ReferenceLink ""
+        }
+    }                                                                            
+
+    $catalogOptionsRequestBuilder.Request().UpdateAsync($option).GetAwaiter().GetResult()
+            ]]>
       </CustomCommand>
 
       <CustomCommand Name="Get-SnowVariableOwnership">
@@ -4665,115 +4735,21 @@
         <![CDATA[
     param (
         [parameter(Mandatory = $true)]
-        [string]$CatalogItemOption,
+        [string]$RequestItem,
 
         [parameter(Mandatory = $true)]
-        [string]$CatalogRequestItem
+        [string]$ScItemOption
 
     )
         
     $variableOwnershipBuilder = $ServiceNowClient.VariableOwnerships()
     $variableOwnership = New-Object -TypeName ServiceNow.Graph.Models.CatalogItemOptionMtom
             
-    $variableOwnership.CatalogItemOption =  Get-ReferenceLink $CatalogItemOption
-    $variableOwnership.CatalogRequestItem =  Get-ReferenceLink $CatalogRequestItem
+    $variableOwnership.RequestItem =  Get-ReferenceLink $RequestItem
+    $variableOwnership.ScItemOption =  Get-ReferenceLink $ScItemOption
 
     $variableOwnershipBuilder.Request().AddAsync($variableOwnership).GetAwaiter().GetResult()
         ]]>
-      </CustomCommand>
-      <CustomCommand Name="Set-SnowCatalogOption">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [string]$Value,
-
-        [parameter(Mandatory = $false)]
-        [string]$ItemOption,
-
-        [parameter(Mandatory = $false)]
-        [string]$CartItem
-    )
-        
-    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()[$Id] 
-    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
-    $parameters = $MyInvocation.BoundParameters  
-    $option.Id = $Id
-            
-    if ($parameters.ContainsKey("Value")) {
-        $option.Value = $Value
-    } 
-    
-    if ($parameters.ContainsKey("ItemOption")) {
-        if (-not [string]::IsNullOrEmpty($ItemOption)) {
-            $option.ItemOption = Get-ReferenceLink $ItemOption
-        }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-
-    if ($parameters.ContainsKey("CartItem")) {
-        if (-not [string]::IsNullOrEmpty($CartItem)) {
-            $option.CartItem = Get-ReferenceLink $CartItem
-        }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-
-    $catalogOptionsRequestBuilder.Request().UpdateAsync($option).GetAwaiter().GetResult()
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="New-SnowCatalogOption">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Variable,
-
-        [parameter(Mandatory = $false)]
-        [string]$ItemOption,
-
-        [parameter(Mandatory = $false)]
-        [string]$CartItem,
-
-        [parameter(Mandatory = $false)]
-        [string]$Value
-    )
-        
-    $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()
-    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
-    $parameters = $MyInvocation.BoundParameters  
-            
-    $option.Variable =  Get-ReferenceLink $Variable
-
-    if ($parameters.ContainsKey("ItemOption")) {
-        if (-not [string]::IsNullOrEmpty($ItemOption)) {
-            $option.ItemOption = Get-ReferenceLink $ItemOption
-        }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-
-    if ($parameters.ContainsKey("CartItem")) {
-        if (-not [string]::IsNullOrEmpty($CartItem)) {
-            $option.CartItem = Get-ReferenceLink $CartItem
-        }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-
-    if ($parameters.ContainsKey("Value")) {
-        $option.Value = $Value
-    } 
-
-    $catalogOptionsRequestBuilder.Request().AddAsync($option).GetAwaiter().GetResult()
-            ]]>
       </CustomCommand>
 
       <CustomCommand Name="Set-SnowUserPassword">
@@ -9915,33 +9891,69 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="EntitlementScript" DataType="String">
+        <Property Name="AccessType" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="EntitlementScript" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="AccessType" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="UseScLayout" DataType="Bool">
+        <Property Name="Active" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="UseScLayout" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Active" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="ShowVariableHelpOnLoad" DataType="Bool">
+        <Property Name="Availability" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ShowVariableHelpOnLoad" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Availability" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="NoOrderNow" DataType="Bool">
+        <Property Name="Billable" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoOrderNow" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Billable" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="ScIcVersion" DataType="String">
+        <Property Name="Cascade" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ScIcVersion" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Cascade" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Category" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Category.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CheckedOut" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="CheckedOut" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Cost" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Cost" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="CustomCart" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="CustomCart.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DeliveryPlan" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DeliveryPlan.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="DeliveryPlanScript" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DeliveryPlanScript" />
           </ReturnBindings>
         </Property>
 
@@ -9951,41 +9963,33 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Type" DataType="String">
+        <Property Name="Description" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Type" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Description" />
           </ReturnBindings>
         </Property>
 
-
-        <Property Name="NoSearch" DataType="Bool">
+        <Property Name="DisplayPriceProperty" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoSearch" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DisplayPriceProperty" />
           </ReturnBindings>
         </Property>
 
-
-        <Property Name="Price" DataType="String">
+        <Property Name="EntitlementScript" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Price" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="EntitlementScript" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="RecurringFrequency" DataType="String">
+        <Property Name="FlowDesignerFlow" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="RecurringFrequency" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="FlowDesignerFlow.ToString()" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="Model" DataType="String">
+        <Property Name="FulfillmentAutomationLevel" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Model.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoCart" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoCart" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="FulfillmentAutomationLevel" />
           </ReturnBindings>
         </Property>
 
@@ -10001,63 +10005,15 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Order" DataType="Int">
+        <Property Name="Icon" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Order" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Icon" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="StartClosed" DataType="Bool">
+        <Property Name="IncludeItems" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="StartClosed" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Image" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Image" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoQuantity" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoQuantity" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Workflow" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Workflow.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DeliveryPlan" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DeliveryPlan.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Active" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Active" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CustomCart" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="CustomCart.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoCartV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoCartV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoProceedCheckout" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoProceedCheckout" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="IncludeItems" />
           </ReturnBindings>
         </Property>
 
@@ -10067,87 +10023,21 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Meta" DataType="String">
+        <Property Name="Image" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Meta" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Image" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="OmitPrice" DataType="Bool">
+        <Property Name="ListPrice" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="OmitPrice" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ListPrice" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="Name" DataType="String" IsDisplay="true">
+        <Property Name="Location" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Name" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="FlowDesignerFlow" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="FlowDesignerFlow.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MobileHidePrice" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="MobileHidePrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoWishlistV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoWishlistV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Preview" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Preview" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Template" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Template.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ShortDescription" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ShortDescription" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Roles" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Roles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Icon" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Icon" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Description" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Description" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MobilePicture" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="MobilePicture" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Availability" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Availability" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Location.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -10157,9 +10047,321 @@
           </ReturnBindings>
         </Property>
 
+        <Property Name="Meta" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Meta" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MobileHidePrice" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="MobileHidePrice" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MobilePicture" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="MobilePicture" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="MobilePictureType" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="MobilePictureType" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Model" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Model.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Name" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Name" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoAttachmentV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoAttachmentV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoCart" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoCart" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoCartV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoCartV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoDeliveryTimeV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoDeliveryTimeV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoOrder" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoOrder" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoOrderNow" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoOrderNow" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoProceedCheckout" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoProceedCheckout" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoQuantity" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoQuantity" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoQuantityV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoQuantityV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoSearch" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoSearch" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="NoWishlistV2" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoWishlistV2" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="OmitPrice" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="OmitPrice" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Order" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Order" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="OrderedItemLink" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="OrderedItemLink.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="OrderToCart" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="OrderToCart" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Owner" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Owner.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Picture" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Picture" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Preview" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Preview" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Price" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Price" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="PublishedRef" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="PublishedRef.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RecurringFrequency" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="RecurringFrequency" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="RecurringPrice" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="RecurringPrice" />
+          </ReturnBindings>
+        </Property>
+
         <Property Name="RequestMethod" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowOrderGuide" Path="RequestMethod" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Roles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Roles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Script" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Script" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScCatalogs" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ScCatalogs" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScIcItemStaging" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ScIcItemStaging.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScIcVersion" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ScIcVersion" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ScTemplate" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ScTemplate.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ShortDescription" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ShortDescription" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="ShowVariableHelpOnLoad" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ShowVariableHelpOnLoad" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="StartClosed" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="StartClosed" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="State" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="State" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysName" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysPackage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysPackage.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysPolicy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysPolicy" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysScope" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysScope.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="SysUpdateName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysUpdateName" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="TaxonomyTopic" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="TaxonomyTopic.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Template" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Template.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="TemplateManagerRoles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="TemplateManagerRoles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="TwoStep" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="TwoStep" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Type" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Type" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="UseScLayout" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="UseScLayout" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Validator" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Validator" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Vendor" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Vendor.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="VisibleBundle" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="VisibleBundle" />
           </ReturnBindings>
         </Property>
 
@@ -10175,248 +10377,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="NoOrder" DataType="Bool">
+        <Property Name="Workflow" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoOrder" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Vendor" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Vendor.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoAttachmentV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoAttachmentV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="MobilePictureType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="MobilePictureType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="VisibleBundle" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="VisibleBundle" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ScCatalogs" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ScCatalogs" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="OrderedItemLink" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="OrderedItemLink.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoDeliveryTimeV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoDeliveryTimeV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Cost" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Cost" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="NoQuantityV2" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="NoQuantityV2" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="RecurringPrice" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="RecurringPrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ListPrice" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ListPrice" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ScIcItemStaging" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="ScIcItemStaging.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Billable" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Billable" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Picture" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Picture" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DisplayPriceProperty" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DisplayPriceProperty" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="DeliveryPlanScript" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="DeliveryPlanScript" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Location" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Location.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Category" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Category.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysReplaceOnUpgrade" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysReplaceOnUpgrade" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysPackage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysPackage.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysUpdateName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysUpdateName" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysName" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysScope" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysScope.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysCustomerUpdate" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysCustomerUpdate" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysPolicy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="SysPolicy" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Cascade" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Cascade" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="IncludeToggles" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="IncludeToggles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="OrderToCart" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="OrderToCart" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Script" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Script" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="TwoStep" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="TwoStep" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Validator" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Validator" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="AccessType" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="AccessType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CheckedOut" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="CheckedOut" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="FulfillmentAutomationLevel" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="FulfillmentAutomationLevel" />
-          </ReturnBindings>
-        </Property>
-        <Property Name="State" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="State" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="TemplateManagerRoles" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="TemplateManagerRoles" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="AssociatedTemplate" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="AssociatedTemplate.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="TaxonomyTopic" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="TaxonomyTopic.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Owner" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="Owner.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="PublishedItem" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogItem" Path="PublishedItem.ToString()" />
+            <Bind CommandResultOf="Get-SnowOrderGuide" Path="Workflow.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -10426,7 +10389,7 @@
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowOrderGuide">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,name,group,location" />
+                        Value="sys_id,sys_updated_on,name" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sc_cat_item_guide_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -10444,7 +10407,6 @@
                   IsDisplay="true">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="Id" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="Id" />
             <Bind CommandResultOf="Set-SnowCatalogOption" Path="Id" />
             <Bind CommandResultOf="New-SnowCatalogOption" Path="Id" />
           </ReturnBindings>
@@ -10454,97 +10416,45 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true" AccessConstraint="ReadOnly">
+        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="WhenUpdated.DateTime" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="WhenUpdated.DateTime" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="WhenUpdated.DateTime" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="WhenCreated" DataType="DateTime" AccessConstraint="ReadOnly">
+        <Property Name="WhenCreated" DataType="DateTime">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="WhenCreated.DateTime" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="WhenCreated.DateTime" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="WhenCreated.DateTime" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="ObjectType" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="ObjectType" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="ObjectType" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="ObjectType" />
           </ReturnBindings>
         </Property>
 
         <Property Name="CreatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="CreatedBy" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="CreatedBy" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="UpdatedBy" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="UpdatedBy" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="SysModCount" DataType="Int" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="SysModCount" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="SysModCount" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="SysModCount" />
           </ReturnBindings>
-        </Property>
-
-        <Property Name="SysTags" DataType="String" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogOption" Path="SysTags" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="SysTags" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="SysTags" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="ItemOption" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogOption" Path="ItemOption.ToString()" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="ItemOption.ToString()" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="ItemOption.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowCatalogOption" Method="Update" />
-            <ModBy Command="New-SnowCatalogOption" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowCatalogOption" Parameter="ItemOption" />
-            <Map ToCommand="New-SnowCatalogOption" Parameter="ItemOption" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Variable" DataType="String" AccessConstraint="ReadAndInsertOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogOption" Path="Variable.ToString()" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="Variable.ToString()" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="Variable.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowCatalogOption" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="New-SnowCatalogOption" Parameter="Variable" />
-          </CommandMappings>
         </Property>
 
         <Property Name="CartItem" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="CartItem.ToString()" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="CartItem.ToString()" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="CartItem.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowCatalogOption" Method="Update" />
@@ -10556,19 +10466,49 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="Order" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="ItemOptionNew" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogOption" Path="ItemOptionNew.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowCatalogOption" Method="Update" />
+            <ModBy Command="New-SnowCatalogOption" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowCatalogOption" Parameter="ItemOptionNew" />
+            <Map ToCommand="New-SnowCatalogOption" Parameter="ItemOptionNew" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Order" DataType="Int">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="Order" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="Order" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="Order" />
           </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowCatalogOption" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowCatalogOption" Parameter="Order" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="ScCatItemOption" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowCatalogOption" Path="ScCatItemOption.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowCatalogOption" Method="Update" />
+            <ModBy Command="New-SnowCatalogOption" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowCatalogOption" Parameter="ScCatItemOption" />
+            <Map ToCommand="New-SnowCatalogOption" Parameter="ScCatItemOption" />
+          </CommandMappings>
         </Property>
 
         <Property Name="Value" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogOption" Path="Value" />
-            <Bind CommandResultOf="Get-SnowCatalogOptionList" Path="Value" />
-            <Bind CommandResultOf="Set-SnowCatalogOption" Path="Value" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowCatalogOption" Method="Update" />
@@ -10584,7 +10524,8 @@
 
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
-        <ListingCommand Command="Get-SnowCatalogOptionList">
+        <ListingCommand Command="Get-SnowCatalogOption">
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sc_item_option_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -10615,7 +10556,6 @@
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariableOwnership" Path="Id" />
             <Bind CommandResultOf="New-SnowVariableOwnership" Path="Id" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="Id" />
           </ReturnBindings>
           <CommandMappings>
             <Map ToCommand="Get-SnowVariableOwnership" Parameter="Id" />
@@ -10625,84 +10565,69 @@
         <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariableOwnership" Path="WhenUpdated.DateTime" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="WhenUpdated.DateTime" />
           </ReturnBindings>
         </Property>
 
         <Property Name="WhenCreated" DataType="DateTime">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariableOwnership" Path="WhenCreated.DateTime" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="WhenCreated.DateTime" />
           </ReturnBindings>
         </Property>
 
         <Property Name="ObjectType" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariableOwnership" Path="ObjectType" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="ObjectType" />
           </ReturnBindings>
         </Property>
 
         <Property Name="CreatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariableOwnership" Path="CreatedBy" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="UpdatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariableOwnership" Path="UpdatedBy" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="SysModCount" DataType="Int">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowVariableOwnership" Path="SysModCount" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="SysModCount" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="SysTags" DataType="String">
+        <Property Name="RequestItem" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariableOwnership" Path="SysTags" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="SysTags" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CatalogRequestItem" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariableOwnership" Path="CatalogRequestItem.ToString()" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="CatalogRequestItem.ToString()" />
+            <Bind CommandResultOf="Get-SnowVariableOwnership" Path="RequestItem.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowVariableOwnership" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="New-SnowVariableOwnership" Parameter="CatalogRequestItem" />
+            <Map ToCommand="New-SnowVariableOwnership" Parameter="RequestItem" />
           </CommandMappings>
         </Property>
 
-        <Property Name="CatalogItemOption" DataType="String">
+        <Property Name="ScItemOption" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowVariableOwnership" Path="CatalogItemOption.ToString()" />
-            <Bind CommandResultOf="Get-SnowVariableOwnershipList" Path="CatalogItemOption.ToString()" />
+            <Bind CommandResultOf="Get-SnowVariableOwnership" Path="ScItemOption.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowVariableOwnership" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="New-SnowVariableOwnership" Parameter="CatalogItemOption" />
+            <Map ToCommand="New-SnowVariableOwnership" Parameter="ScItemOption" />
           </CommandMappings>
         </Property>
       </Properties>
 
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
-        <ListingCommand Command="Get-SnowVariableOwnershipList">
-          <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String"
-                        Value="sc_item_option_mtom_filter" />
+        <ListingCommand Command="Get-SnowVariableOwnership">
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on" />
+          <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sc_item_option_mtom_filter" />
         </ListingCommand>
         <CommandSequence>
           <Item Command="Get-SnowVariableOwnership" Order="1" />

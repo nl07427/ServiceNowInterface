@@ -2314,7 +2314,7 @@ function Get-SnowCatalogItem {
         
     Get-Entity -CollectionBuilder $ServiceNowClient.CatalogItems() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }                    
-
+Get-SnowCat
 function Get-SnowOrderGuide {
     param (
         [parameter(Mandatory = $false)]
@@ -2353,42 +2353,37 @@ function Get-SnowOrderGuide {
 
 function New-SnowCatalogOption {
     param (
-        [parameter(Mandatory = $true)]
-        [string]$Variable,
-
-        [parameter(Mandatory = $false)]
-        [string]$ItemOption,
-
         [parameter(Mandatory = $false)]
         [string]$CartItem,
+
+        [parameter(Mandatory = $true)]
+        [string]$ItemOptionNew,
+
+        [parameter(Mandatory = $false)]
+        [int]$Order,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ScCatItemOption,
 
         [parameter(Mandatory = $false)]
         [string]$Value
     )
         
     $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()
-    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
+    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOption
     $parameters = $MyInvocation.BoundParameters  
             
-    $option.Variable =  Get-ReferenceLink $Variable
+    $option.ItemOptionNew =  Get-ReferenceLink $ItemOptionNew
 
-    if ($parameters.ContainsKey("ItemOption")) {
-        if (-not [string]::IsNullOrEmpty($ItemOption)) {
-            $option.ItemOption = Get-ReferenceLink $ItemOption
-        }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-
-    if ($parameters.ContainsKey("CartItem")) {
-        if (-not [string]::IsNullOrEmpty($CartItem)) {
-            $option.CartItem = Get-ReferenceLink $CartItem
-        }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
+    if ($parameters.ContainsKey("CartItem") -and $CartItem) {
+        $option.CartItem = Get-ReferenceLink $CartItem
+    }          
+    if ($parameters.ContainsKey("Order")) {
+        $option.Order = $Order
+    }          
+    if ($parameters.ContainsKey("ScCatItemOption") -and $ScCatItemOption) {
+        $option.ScCatItemOption = Get-ReferenceLink $ScCatItemOption
+    }          
 
     if ($parameters.ContainsKey("Value")) {
         $option.Value = $Value
@@ -2403,17 +2398,17 @@ function Set-SnowCatalogOption {
         [string]$Id,
 
         [parameter(Mandatory = $false)]
-        [string]$Value,
+        [string]$CartItem,
 
         [parameter(Mandatory = $false)]
-        [string]$ItemOption,
+        [string]$ScCatItemOption,
 
         [parameter(Mandatory = $false)]
-        [string]$CartItem
+        [string]$Value
     )
         
     $catalogOptionsRequestBuilder = $ServiceNowClient.CatalogOptions()[$Id] 
-    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOptions
+    $option = New-Object -TypeName ServiceNow.Graph.Models.CatalogOption
     $parameters = $MyInvocation.BoundParameters  
     $option.Id = $Id
             
@@ -2421,23 +2416,21 @@ function Set-SnowCatalogOption {
         $option.Value = $Value
     } 
     
-    if ($parameters.ContainsKey("ItemOption")) {
-        if (-not [string]::IsNullOrEmpty($ItemOption)) {
-            $option.ItemOption = Get-ReferenceLink $ItemOption
+    if ($parameters.ContainsKey("ScCatItemOption")) {
+        if ($ScCatItemOption) {
+            $option.ScCatItemOption = Get-ReferenceLink $ScCatItemOption
+        } else {
+            $option.ScCatItemOption = Get-ReferenceLink ""
         }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
+    }                                                                            
 
     if ($parameters.ContainsKey("CartItem")) {
-        if (-not [string]::IsNullOrEmpty($CartItem)) {
+        if ($CartItem) {
             $option.CartItem = Get-ReferenceLink $CartItem
+        } else {
+            $option.CartItem = Get-ReferenceLink ""
         }
-        else {
-            $option.ItemOption = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
+    }                                                                            
 
     $catalogOptionsRequestBuilder.Request().UpdateAsync($option).GetAwaiter().GetResult()
 }     
@@ -2463,18 +2456,18 @@ function Get-SnowVariableOwnership {
 function New-SnowVariableOwnership {
     param (
         [parameter(Mandatory = $true)]
-        [string]$CatalogItemOption,
+        [string]$RequestItem,
 
         [parameter(Mandatory = $true)]
-        [string]$CatalogRequestItem
+        [string]$ScItemOption
 
     )
         
     $variableOwnershipBuilder = $ServiceNowClient.VariableOwnerships()
     $variableOwnership = New-Object -TypeName ServiceNow.Graph.Models.CatalogItemOptionMtom
             
-    $variableOwnership.CatalogItemOption =  Get-ReferenceLink $CatalogItemOption
-    $variableOwnership.CatalogRequestItem =  Get-ReferenceLink $CatalogRequestItem
+    $variableOwnership.RequestItem =  Get-ReferenceLink $RequestItem
+    $variableOwnership.ScItemOption =  Get-ReferenceLink $ScItemOption
 
     $variableOwnershipBuilder.Request().AddAsync($variableOwnership).GetAwaiter().GetResult()
 }     

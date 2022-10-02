@@ -20,12 +20,12 @@ namespace ServiceNow.Graph.Models
         /// Reference to the sc_req_item
         /// </summary>
         [JsonProperty(PropertyName = "request_item", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink CatalogRequestItem { get; set; }
+        public ReferenceLink RequestItem { get; set; }
 
         /// <summary>
         /// Reference to the catalog option, sc_item_option
         /// </summary>
         [JsonProperty(PropertyName = "sc_item_option", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink CatalogItemOption { get; set; }
+        public ReferenceLink ScItemOption { get; set; }
     }
 }
