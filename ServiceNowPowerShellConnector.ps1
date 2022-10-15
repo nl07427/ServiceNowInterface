@@ -4344,7 +4344,7 @@ function New-SnowRoleHasGroup {
     )
     $membership = New-Object -TypeName ServiceNow.Graph.Models.GroupHasRole
 
-    $membership.User = Get-ReferenceLink $Group
+    $membership.Group = Get-ReferenceLink $Group
     $membership.Role = Get-ReferenceLink $Role
 
     $ServiceNowClient.GroupHasRoles().Request().AddAsync($membership).GetAwaiter().GetResult()
