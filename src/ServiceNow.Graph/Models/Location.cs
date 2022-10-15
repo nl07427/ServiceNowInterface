@@ -9,7 +9,6 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Location : Entity
     {
-        private DateTimeOffset? _coordinatesRetrievedOn;
         /// <summary>
         /// Constructor
         /// </summary>
@@ -192,16 +191,10 @@ namespace ServiceNow.Graph.Models
         /// Coordinates retrieved on, date.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "coordinates_retrieved_on", Required = Required.Default)]
-        public DateTimeOffset? CoordinatesRetrievedOn
+        public string CoordinatesRetrievedOn
         {
-            get => _coordinatesRetrievedOn;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _coordinatesRetrievedOn = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
 

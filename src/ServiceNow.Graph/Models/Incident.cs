@@ -9,9 +9,6 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Incident : Task
     {
-        private DateTime? _reopenedTime;
-        private DateTime? _resolvedAt;
-
         /// <summary>
         /// Default constructor for Incident
         /// </summary>
@@ -75,12 +72,6 @@ namespace ServiceNow.Graph.Models
         public string CloseCode { get; set; }
 
         /// <summary>
-        /// Contract, contract reference
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "contract", Required = Required.Default)]
-        public ReferenceLink Contract { get; set; }
-
-        /// <summary>
         /// Origin ID, document ID
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "origin_id", Required = Required.Default)]
@@ -134,14 +125,8 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "reopened_time", Required = Required.Default)]
         public DateTime? ReopenedTime
         {
-            get => _reopenedTime;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _reopenedTime = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -156,14 +141,8 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "resolved_at", Required = Required.Default)]
         public DateTime? ResolvedAt
         {
-            get => _resolvedAt;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _resolvedAt = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>

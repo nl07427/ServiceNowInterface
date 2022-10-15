@@ -11,9 +11,6 @@ namespace ServiceNow.Graph.Models
     [JsonConverter(typeof(DerivedTypeConverter))]
     public class Entity
     {
-        private DateTimeOffset? _updatedOn;
-        private DateTimeOffset? _createdOn;
-
         ///<summary>
         /// The internal Entity constructor
         ///</summary>
@@ -38,15 +35,9 @@ namespace ServiceNow.Graph.Models
         /// Gets the create timestamp of the record.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_created_on", Required = Required.Default)]
-        public DateTimeOffset? WhenCreated {
-            get => _createdOn;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _createdOn = value.Value + value.Value.Offset;
-                }
-            }
+        public DateTime WhenCreated {
+            get;
+            set;
         }
 
         /// <summary>
@@ -72,16 +63,10 @@ namespace ServiceNow.Graph.Models
         /// Gets the update timestamp of the record.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sys_updated_on", Required = Required.Default)]
-        public DateTimeOffset? WhenUpdated
+        public DateTime WhenUpdated
         {
-            get => _updatedOn;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _updatedOn = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
     }
 }

@@ -285,10 +285,10 @@ function New-SnowCostCenter {
         [string]$SysDomain,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$ValidFrom,
+        [string]$ValidFrom,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$ValidTo        
+        [string]$ValidTo        
     )
     $parameters = $MyInvocation.BoundParameters  
     $costcenter = New-Object -TypeName ServiceNow.Graph.Models.CostCenter
@@ -312,18 +312,11 @@ function New-SnowCostCenter {
         $costcenter.SysDomain = Get-ReferenceLink $SysDomain
     }            
     if ($parameters.ContainsKey("ValidFrom") -and $ValidFrom) {
-        if ($ValidFrom -ne [DateTime]::MinValue) {
-            $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $costcenter.ValidFrom = [datetime]::MinValue
-        }
-    }                                 
+        $costcenter.ValidFrom = $ValidFrom
+    }                     
+
     if ($parameters.ContainsKey("ValidTo") -and $ValidTo) {
-        if ($ValidTo -ne [DateTime]::MinValue) {
-            $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $costcenter.ValidTo = [datetime]::MinValue
-        }
+        $costcenter.ValidTo = $ValidTo
     }                     
 
     $ServiceNowClient.CostCenters().Request().AddAsync($costcenter).GetAwaiter().GetResult()
@@ -353,10 +346,10 @@ function Set-SnowCostCenter {
         [string]$Parent,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$ValidFrom,
+        [string]$ValidFrom,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$ValidTo        
+        [string]$ValidTo        
     )
    
     $costCenterBuilder = $ServiceNowClient.CostCenters()[$Id] 
@@ -394,19 +387,12 @@ function Set-SnowCostCenter {
             $costcenter.Parent = Get-ReferenceLink ""
         }
     }
-    if ($parameters.ContainsKey("ValidFrom") -and $ValidFrom) {
-        if ($ValidFrom -ne [DateTime]::MinValue) {
-            $costcenter.ValidFrom = $ValidFrom.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $costcenter.ValidFrom = [datetime]::MinValue
-        }
-    }                                 
-    if ($parameters.ContainsKey("ValidTo") -and $ValidTo) {
-        if ($ValidTo -ne [DateTime]::MinValue) {
-            $costcenter.ValidTo = $ValidTo.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $costcenter.ValidTo = [datetime]::MinValue
-        }
+    if ($parameters.ContainsKey("ValidFrom")) {
+        $costcenter.ValidFrom = $ValidFrom
+    }                     
+
+    if ($parameters.ContainsKey("ValidTo")) {
+        $costcenter.ValidTo = $ValidTo
     }                     
 
     $costCenterBuilder.Request().UpdateAsync($costcenter).GetAwaiter().GetResult()
@@ -631,7 +617,7 @@ function New-SnowLocation {
         [string]$Contact,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$CoordinatesRetrievedOn,
+        [string]$CoordinatesRetrievedOn,
 
         [parameter(Mandatory = $false)]
         [string]$Country,
@@ -711,12 +697,8 @@ function New-SnowLocation {
     if ($parameters.ContainsKey("Contact") -and $Contact) {
         $location.Contact = Get-ReferenceLink $Contact
     }        
-    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
-        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
-            $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $location.CoordinatesRetrievedOn = [datetime]::MinValue
-        }
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn")) {
+        $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn
     }                 
     if ($parameters.ContainsKey("Country")) {
         $location.Country = $Country
@@ -800,7 +782,7 @@ function Set-SnowLocation {
         [string]$Contact,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$CoordinatesRetrievedOn,
+        [string]$CoordinatesRetrievedOn,
 
         [parameter(Mandatory = $false)]
         [string]$Country,
@@ -891,12 +873,8 @@ function Set-SnowLocation {
             $location.Contact = Get-ReferenceLink ""
         }
     }            
-    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
-        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
-            $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $location.CoordinatesRetrievedOn = [datetime]::MinValue
-        }
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn")) {
+        $location.CoordinatesRetrievedOn = $CoordinatesRetrievedOn
     }                 
     if ($parameters.ContainsKey("Country")) {
         $location.Country = $Country
@@ -1025,7 +1003,7 @@ function New-SnowCompany {
         [string]$Contact,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$CoordinatesRetrievedOn,
+        [string]$CoordinatesRetrievedOn,
 
         [parameter(Mandatory = $false)]
         [string]$Country,
@@ -1040,7 +1018,7 @@ function New-SnowCompany {
         [string]$FaxPhone,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$FiscalYear,
+        [string]$FiscalYear,
 
         [parameter(Mandatory = $false)]
         [string]$Latitude,
@@ -1141,12 +1119,8 @@ function New-SnowCompany {
     if ($parameters.ContainsKey("Contact") -and $Contact) {
         $company.Contact = Get-ReferenceLink $Contact
     }        
-    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
-        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
-            $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $company.CoordinatesRetrievedOn = [datetime]::MinValue
-        }
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn")) {
+        $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn
     }                 
     if ($parameters.ContainsKey("Country")) {
         $company.Country = $Country
@@ -1163,12 +1137,8 @@ function New-SnowCompany {
     if ($parameters.ContainsKey("FaxPhone")) {
         $company.FaxPhone = $FaxPhone
     }                
-    if ($parameters.ContainsKey("FiscalYear") -and $FiscalYear) {
-        if ($FiscalYear -ne [DateTime]::MinValue) {
-            $company.FiscalYear = $FiscalYear.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $company.FiscalYear = [datetime]::MinValue
-        }
+    if ($parameters.ContainsKey("FiscalYear")) {
+        $company.FiscalYear = $FiscalYear
     }                 
     if ($parameters.ContainsKey("Latitude")) {
         $company.Latitude = $Latitude
@@ -1270,7 +1240,7 @@ function Set-SnowCompany {
         [string]$Contact,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$CoordinatesRetrievedOn,
+        [string]$CoordinatesRetrievedOn,
 
         [parameter(Mandatory = $false)]
         [string]$Country,
@@ -1285,7 +1255,7 @@ function Set-SnowCompany {
         [string]$FaxPhone,
 
         [parameter(Mandatory = $false)]
-        [nullable[datetime]]$FiscalYear,
+        [string]$FiscalYear,
 
         [parameter(Mandatory = $false)]
         [string]$Latitude,
@@ -1386,16 +1356,17 @@ function Set-SnowCompany {
     if ($parameters.ContainsKey("City")) {
         $company.City = $City
     }            
-    if ($parameters.ContainsKey("Contact") -and $Contact) {
-        $company.Contact = Get-ReferenceLink $Contact
-    }        
-    if ($parameters.ContainsKey("CoordinatesRetrievedOn") -and $CoordinatesRetrievedOn) {
-        if ($CoordinatesRetrievedOn -ne [DateTime]::MinValue) {
-            $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn.ToString("yyyy-MM-dd HH:mm:ss")
+    if ($parameters.ContainsKey("Contact")) {
+        if($Contact){
+            $company.Contact = Get-ReferenceLink $Contact
         } else {
-            $company.CoordinatesRetrievedOn = [datetime]::MinValue
+            $company.Contact = Get-ReferenceLink ""
         }
+    }        
+    if ($parameters.ContainsKey("CoordinatesRetrievedOn")) {
+        $company.CoordinatesRetrievedOn = $CoordinatesRetrievedOn
     }                 
+
     if ($parameters.ContainsKey("Country")) {
         $company.Country = $Country
     }                
@@ -1411,12 +1382,8 @@ function Set-SnowCompany {
     if ($parameters.ContainsKey("FaxPhone")) {
         $company.FaxPhone = $FaxPhone
     }                
-    if ($parameters.ContainsKey("FiscalYear") -and $FiscalYear) {
-        if ($FiscalYear -ne [DateTime]::MinValue) {
-            $company.FiscalYear = $FiscalYear.ToString("yyyy-MM-dd HH:mm:ss")
-        } else {
-            $company.FiscalYear = [datetime]::MinValue
-        }
+    if ($parameters.ContainsKey("FiscalYear")) {
+        $company.FiscalYear = $FiscalYear
     }                 
     if ($parameters.ContainsKey("Latitude")) {
         $company.Latitude = $Latitude
@@ -1439,8 +1406,12 @@ function Set-SnowCompany {
     if ($parameters.ContainsKey("NumEmployees")) {
         $company.NumEmployees = $NumEmployees
     }    
-    if ($parameters.ContainsKey("Parent") -and $Parent) {
-        $company.Parent = Get-ReferenceLink $Parent
+    if ($parameters.ContainsKey("Parent")) {
+        if($Parent){
+            $company.Parent = Get-ReferenceLink $Parent
+        } else {
+            $company.Parent = Get-ReferenceLink ""
+        }
     }                
     if ($parameters.ContainsKey("Phone")) {
         $company.Phone = $Phone
@@ -1472,8 +1443,13 @@ function Set-SnowCompany {
     if ($parameters.ContainsKey("Street")) {
         $company.Street = $Street
     }                
-    if ($parameters.ContainsKey("Theme") -and $Theme) {
-        $company.Theme = Get-ReferenceLink $Theme
+    if ($parameters.ContainsKey("Theme")) {
+        if ($Theme) {
+            $company.Theme = Get-ReferenceLink $Theme    
+        }
+        else {
+            $company.Theme = Get-ReferenceLink ""
+        }
     }                
     if ($parameters.ContainsKey("Vendor")) {
         $company.Vendor = $Vendor
@@ -1984,8 +1960,12 @@ function Set-SnowIncident {
     if ($parameters.ContainsKey("Cause")) {
         $incident.Cause = $Cause
     }          
-    if ($parameters.ContainsKey("CausedBy") -and $CausedBy) {
-        $incident.CausedBy = Get-ReferenceLink $CausedBy
+    if ($parameters.ContainsKey("CausedBy")) {
+        if($CausedBy){
+            $incident.CausedBy = Get-ReferenceLink $CausedBy
+        } else {
+            $incident.CausedBy = Get-ReferenceLink ""
+        }
     }          
     if ($parameters.ContainsKey("CloseCode")) {
         $incident.CloseCode = $CloseCode
@@ -2496,19 +2476,73 @@ function New-SnowCatalogRequest {
         [bool]$Active,
 
         [parameter(Mandatory = $false)]
+        [string]$ActivityDue,
+
+        [parameter(Mandatory = $false)]
+        [string]$AdditionalAssigneeList,
+
+        [parameter(Mandatory = $false)]
+        [string]$Approval,
+
+        [parameter(Mandatory = $false)]
         [string]$AssignedTo,
 
         [parameter(Mandatory = $false)]
         [string]$AssignmentGroup,
 
         [parameter(Mandatory = $false)]
+        [string]$BusinessService,
+
+        [parameter(Mandatory = $false)]
+        [string]$ClosedBy,
+
+        [parameter(Mandatory = $false)]
         [string]$CloseNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmdbCi,
 
         [parameter(Mandatory = $false)]
         [string]$Comments,
 
         [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
         [string]$ContactType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contract,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationDisplay,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationId,
+
+        [parameter(Mandatory = $false)]
+        [string]$DeliveryAddress,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,        
+
+        [parameter(Mandatory = $false)]
+        [string]$DueDate,
+
+        [parameter(Mandatory = $false)]
+        [string]$ExpectedStart,
+
+        [parameter(Mandatory = $false)]
+        [string]$FollowUp,
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
+
+        [parameter(Mandatory = $false)]
+        [int]$Impact,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
 
         [parameter(Mandatory = $false)]
         [string]$Location,
@@ -2517,55 +2551,55 @@ function New-SnowCatalogRequest {
         [string]$OpenedBy,
 
         [parameter(Mandatory = $false)]
-        [string]$ClosedBy,
+        [string]$Order,
 
         [parameter(Mandatory = $false)]
-        [string]$Company,
+        [string]$Parent,
 
         [parameter(Mandatory = $false)]
-        [int]$State,
+        [string]$ParentInteraction,
 
         [parameter(Mandatory = $false)]
         [int]$Priority,
 
         [parameter(Mandatory = $false)]
-        [int]$Impact,
-
-        [parameter(Mandatory = $false)]
-        [int]$Urgency,
-
-        [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
-
-        [parameter(Mandatory = $false)]
-        [string]$BusinessService,
-
-        [parameter(Mandatory = $false)]
-        [string]$AdditionalAssigneeList,
-
-        [parameter(Mandatory = $false)]
-        [string]$ServiceOffering,
-
-        [parameter(Mandatory = $false)]
-        [string]$Price,
+        [string]$RequestedDate,
 
         [parameter(Mandatory = $false)]
         [string]$RequestedFor,
 
         [parameter(Mandatory = $false)]
-        [string]$Description,        
+        [string]$RequestState,
 
         [parameter(Mandatory = $false)]
-        [string]$DeliveryAddress,        
+        [string]$ServiceOffering,
 
         [parameter(Mandatory = $false)]
-        [bool]$Knowledge,        
-        
+        [string]$ShortDescription,
+
         [parameter(Mandatory = $false)]
         [string]$SpecialInstructions,
 
         [parameter(Mandatory = $false)]
-        [datetime]$RequestedForDate
+        [int]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
+
+        [parameter(Mandatory = $false)]
+        [int]$Urgency,
+
+        [parameter(Mandatory = $false)]
+        [string]$UserInput,
+
+        [parameter(Mandatory = $false)]
+        [string]$WatchList,        
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotesList        
     )
     
     $requestBuilder = $ServiceNowClient.CatalogRequests()
@@ -2575,140 +2609,132 @@ function New-SnowCatalogRequest {
     if ($parameters.ContainsKey("Active")) {
         $request.Active = $Active
     }
-
-    if ($parameters.ContainsKey("Knowledge")) {
-        $request.Knowledge = $Knowledge
-    }
-
-    if ($parameters.ContainsKey("DeliveryAddress")) {
-        $request.DeliveryAddress = $DeliveryAddress
-    }
-
-    if ($parameters.ContainsKey("Price")) {
-        $request.Price = $Price
-    }
-
-    if ($parameters.ContainsKey("Urgency")) {
-        $request.Urgency = $Urgency
-    }
-
-    if ($parameters.ContainsKey("Impact")) {
-        $request.Impact = $Impact
-    }
-
-    if ($parameters.ContainsKey("Priority")) {
-        $request.Priority = $Priority
-    }
-    if ($parameters.ContainsKey("CloseNotes")) {
-        $request.CloseNotes = $CloseNotes
-    } 
-
+    if ($parameters.ContainsKey("ActivityDue")) {
+        $request.ActivityDue = $ActivityDue
+    }                                 
     if ($parameters.ContainsKey("AdditionalAssigneeList")) {
         $request.AdditionalAssigneeList = $AdditionalAssigneeList
     } 
-    if ($parameters.ContainsKey("Description")) {
-        $request.Description = $Description
-    }         
-    if ($parameters.ContainsKey("SpecialInstructions")) {
-        $request.SpecialInstructions = $SpecialInstructions
-    }             
-    
-    if ($parameters.ContainsKey("AssignedTo")) {
-        if (-not [string]::IsNullOrEmpty($AssignedTo)) {
-            $request.AssignedTo = Get-ReferenceLink $AssignedTo
-        }
-        else {
-            $request.AssignedTo = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-
-    if ($parameters.ContainsKey("ClosedBy")) {
-        if (-not [string]::IsNullOrEmpty($ClosedBy)) {
-            $request.ClosedBy = Get-ReferenceLink $ClosedBy
-        }
-        else {
-            $request.ClosedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-
-    if ($parameters.ContainsKey("Company")) {
-        if (-not [string]::IsNullOrEmpty($Company)) {
-            $request.Company = Get-ReferenceLink $Company
-        }
-        else {
-            $request.Company = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-    if ($parameters.ContainsKey("ServiceOffering")) {
-        if (-not [string]::IsNullOrEmpty($ServiceOffering)) {
-            $request.ServiceOffering = Get-ReferenceLink $ServiceOffering
-        }
-        else {
-            $request.ServiceOffering = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-    if ($parameters.ContainsKey("SpecialInstructions")) {
-        $request.SpecialInstructions = $SpecialInstructions
-    }             
-    if ($parameters.ContainsKey("BusinessService")) {
-        if (-not [string]::IsNullOrEmpty($BusinessService)) {
-            $request.BusinessService = Get-ReferenceLink $BusinessService
-        }
-        else {
-            $request.BusinessService = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-            
-    if ($parameters.ContainsKey("AssignmentGroup")) {
-        if (-not [string]::IsNullOrEmpty($AssignmentGroup)) {
-            $request.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
-        }
-        else {
-            $request.AssignmentGroup = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("Approval")) {
+        $request.Approval = $Approval
+    } 
+    if ($parameters.ContainsKey("AssignedTo") -and $AssignedTo) {
+        $request.AssignedTo = Get-ReferenceLink $AssignedTo
+    }                  
+    if ($parameters.ContainsKey("AssignmentGroup") -and $AssignmentGroup) {
+        $request.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
     }     
-          
+    if ($parameters.ContainsKey("BusinessService") -and $BusinessService) {
+        $request.BusinessService = Get-ReferenceLink $BusinessService
+    }              
+    if ($parameters.ContainsKey("ClosedBy") -and $ClosedBy) {
+        $request.ClosedBy = Get-ReferenceLink $ClosedBy
+    }              
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $request.CloseNotes = $CloseNotes
+    }     
+    if ($parameters.ContainsKey("CmdbCi") -and $CmdbCi) {
+        $request.CmdbCi = Get-ReferenceLink $CmdbCi
+    }                  
     if ($parameters.ContainsKey("Comments")) {
         $request.Comments = $Comments
     }
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $request.Company = Get-ReferenceLink $Company
+    }    
     if ($parameters.ContainsKey("ContactType")) {
         $request.ContactType = $ContactType
+    }         
+    if ($parameters.ContainsKey("Contract") -and $Contract) {
+        $request.Contract = Get-ReferenceLink $Contract
+    }         
+    if ($parameters.ContainsKey("CorrelationDisplay")) {
+        $request.CorrelationDisplay = $CorrelationDisplay
+    }         
+    if ($parameters.ContainsKey("CorrelationId")) {
+        $request.CorrelationId = $CorrelationId
+    }                         
+    if ($parameters.ContainsKey("DeliveryAddress")) {
+        $request.DeliveryAddress = $DeliveryAddress
+    }        
+    if ($parameters.ContainsKey("Description")) {
+        $request.Description = $Description
+    }     
+    if ($parameters.ContainsKey("DueDate")) {
+        $request.DueDate = $DueDate
+    }                                             
+    if ($parameters.ContainsKey("ExpectedStart")) {
+        $request.ExpectedStart = $ExpectedStart
+    }                                             
+    if ($parameters.ContainsKey("FollowUp")) {
+        $request.FollowUp = $FollowUp
+    }                                             
+    if ($parameters.ContainsKey("GroupList")) {
+        $request.GroupList = $GroupList
+    }                                             
+    if ($parameters.ContainsKey("Impact")) {
+        $request.Impact = $Impact
     }    
-              
-    if ($parameters.ContainsKey("Location")) {
-        if (-not [string]::IsNullOrEmpty($Location)) {
-            $request.Location = Get-ReferenceLink $Location
-        }
-        else {
-            $request.Location = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("Knowledge")) {
+        $request.Knowledge = $Knowledge
     }
-
-    if ($parameters.ContainsKey("OpenedBy")) {
-        if (-not [string]::IsNullOrEmpty($OpenedBy)) {
-            $request.OpenedBy = Get-ReferenceLink $OpenedBy
-        }
-        else {
-            $request.OpenedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $request.Location = Get-ReferenceLink $Location
+    }    
+    if ($parameters.ContainsKey("OpenedBy") -and $OpenedBy) {
+        $request.OpenedBy = Get-ReferenceLink $OpenedBy
     }
-                                   
-    if ($parameters.ContainsKey("State")) {
-        $request.State = $State
-    }   
-               
+    if ($parameters.ContainsKey("Order")) {
+        $request.Order = $Order
+    }
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $request.Parent = Get-ReferenceLink $Parent
+    }            
+    if ($parameters.ContainsKey("ParentInteraction")) {
+        $request.ParentInteraction = Get-ReferenceLink $ParentInteraction
+    }
+    if ($parameters.ContainsKey("Priority")) {
+        $request.Priority = $Priority
+    }
+    if ($parameters.ContainsKey("RequestedDate")) {
+        $request.RequestedDate = $RequestedDate
+    }
+    if ($parameters.ContainsKey("RequestedFor") -and $RequestedFor) {
+        $request.RequestedFor = Get-ReferenceLink $RequestedFor
+    }         
+    if ($parameters.ContainsKey("RequestState")) {
+        $request.RequestState = $RequestState
+    }                 
+    if ($parameters.ContainsKey("ServiceOffering") -and $ServiceOffering) {
+        $request.ServiceOffering = Get-ReferenceLink $ServiceOffering
+    }          
     if ($parameters.ContainsKey("ShortDescription")) {
         $request.ShortDescription = $ShortDescription
     }
-
-    if ($parameters.ContainsKey("RequestedFor")) {
-        if (-not [string]::IsNullOrEmpty($RequestedFor)) {
-            $request.RequestedFor = Get-ReferenceLink $RequestedFor
-        }
-        else {
-            $request.RequestedFor = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
+    if ($parameters.ContainsKey("SpecialInstructions")) {
+        $request.SpecialInstructions = $SpecialInstructions
+    }             
+    if ($parameters.ContainsKey("State")) {
+        $request.State = $State
+    }   
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $request.SysDomain = Get-ReferenceLink $SysDomain
+    }          
+    if ($parameters.ContainsKey("Urgency")) {
+        $request.Urgency = $Urgency
+    }
+    if ($parameters.ContainsKey("UserInput")) {
+        $request.UserInput = $UserInput
+    }             
+    if ($parameters.ContainsKey("WatchList")) {
+        $request.WatchList = $WatchList
+    }             
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $request.WorkNotes = $WorkNotes
+    }             
+    if ($parameters.ContainsKey("WorkNotesList")) {
+        $request.WorkNotesList = $WorkNotesList
+    }             
 
     $requestBuilder.Request().AddAsync($request).GetAwaiter().GetResult()
 }         
@@ -2722,74 +2748,124 @@ function Set-SnowCatalogRequest {
         [bool]$Active,
 
         [parameter(Mandatory = $false)]
+        [string]$ActivityDue,
+
+        [parameter(Mandatory = $false)]
+        [string]$AdditionalAssigneeList,
+
+        [parameter(Mandatory = $false)]
+        [string]$Approval,
+
+        [parameter(Mandatory = $false)]
         [string]$AssignedTo,
 
         [parameter(Mandatory = $false)]
         [string]$AssignmentGroup,
 
         [parameter(Mandatory = $false)]
-        [string]$CloseNotes,
-
-        [parameter(Mandatory = $false)]
-        [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContactType,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
+        [string]$BusinessService,
 
         [parameter(Mandatory = $false)]
         [string]$ClosedBy,
 
         [parameter(Mandatory = $false)]
+        [string]$CloseNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmdbCi,
+
+        [parameter(Mandatory = $false)]
+        [string]$Comments,
+
+        [parameter(Mandatory = $false)]
         [string]$Company,
 
         [parameter(Mandatory = $false)]
-        [int]$State,
+        [string]$ContactType,
 
         [parameter(Mandatory = $false)]
-        [int]$Priority,
+        [string]$Contract,
 
         [parameter(Mandatory = $false)]
-        [int]$Impact,
+        [string]$CorrelationDisplay,
 
         [parameter(Mandatory = $false)]
-        [int]$Urgency,
+        [string]$CorrelationId,
 
         [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
-
-        [parameter(Mandatory = $false)]
-        [string]$BusinessService,
-
-        [parameter(Mandatory = $false)]
-        [string]$AdditionalAssigneeList,
-
-        [parameter(Mandatory = $false)]
-        [string]$ServiceOffering,
-
-        [parameter(Mandatory = $false)]
-        [string]$Price,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Knowledge,        
-
-        [parameter(Mandatory = $false)]
-        [string]$RequestedFor,
+        [string]$DeliveryAddress,        
 
         [parameter(Mandatory = $false)]
         [string]$Description,        
 
         [parameter(Mandatory = $false)]
-        [string]$DeliveryAddress,        
-        
+        [string]$DueDate,
+
+        [parameter(Mandatory = $false)]
+        [string]$ExpectedStart,
+
+        [parameter(Mandatory = $false)]
+        [string]$FollowUp,
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
+
+        [parameter(Mandatory = $false)]
+        [int]$Impact,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$OpenedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$ParentInteraction,
+
+        [parameter(Mandatory = $false)]
+        [int]$Priority,
+
+        [parameter(Mandatory = $false)]
+        [string]$RequestedDate,
+
+        [parameter(Mandatory = $false)]
+        [string]$RequestedFor,
+
+        [parameter(Mandatory = $false)]
+        [string]$RequestState,
+
+        [parameter(Mandatory = $false)]
+        [string]$ServiceOffering,
+
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
         [parameter(Mandatory = $false)]
         [string]$SpecialInstructions,
 
         [parameter(Mandatory = $false)]
-        [datetime]$RequestedForDate
-        
+        [int]$State,
+
+        [parameter(Mandatory = $false)]
+        [int]$Urgency,
+
+        [parameter(Mandatory = $false)]
+        [string]$UserInput,
+
+        [parameter(Mandatory = $false)]
+        [string]$WatchList,        
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotesList        
     )
     
     $requestBuilder = $ServiceNowClient.CatalogRequests()[$Id] 
@@ -2800,132 +2876,192 @@ function Set-SnowCatalogRequest {
     if ($parameters.ContainsKey("Active")) {
         $request.Active = $Active
     }
-    
-    if ($parameters.ContainsKey("Knowledge")) {
-        $request.Knowledge = $Knowledge
-    }
-
-    if ($parameters.ContainsKey("DeliveryAddress")) {
-        $request.DeliveryAddress = $DeliveryAddress
-    }
-
-    if ($parameters.ContainsKey("Price")) {
-        $request.Price = $Price
-    }
-
-    if ($parameters.ContainsKey("Urgency")) {
-        $request.Urgency = $Urgency
-    }
-
-    if ($parameters.ContainsKey("Impact")) {
-        $request.Impact = $Impact
-    }
-
-    if ($parameters.ContainsKey("Priority")) {
-        $request.Priority = $Priority
-    }
-    if ($parameters.ContainsKey("CloseNotes")) {
-        $request.CloseNotes = $CloseNotes
-    } 
-
+    if ($parameters.ContainsKey("ActivityDue")) {
+        $request.ActivityDue = $ActivityDue
+    }                                 
     if ($parameters.ContainsKey("AdditionalAssigneeList")) {
         $request.AdditionalAssigneeList = $AdditionalAssigneeList
     } 
-    if ($parameters.ContainsKey("Description")) {
-        $request.Description = $Description
-    }         
-    if ($parameters.ContainsKey("SpecialInstructions")) {
-        $request.SpecialInstructions = $SpecialInstructions
-    }             
-    
-    if ($parameters.ContainsKey("AssignedTo")) {
-        if (-not [string]::IsNullOrEmpty($AssignedTo)) {
+    if ($parameters.ContainsKey("Approval")) {
+        $request.Approval = $Approval
+    } 
+    if ($parameters.ContainsKey("AssignedTo") ) {
+        if ($AssignedTo) {
             $request.AssignedTo = Get-ReferenceLink $AssignedTo
         }
         else {
-            $request.AssignedTo = [ServiceNow.Graph.Models.ReferenceLink]$null
+            $request.AssignedTo = Get-ReferenceLink ""
         }
-    }          
-
-    if ($parameters.ContainsKey("ClosedBy")) {
-        if (-not [string]::IsNullOrEmpty($ClosedBy)) {
-            $request.ClosedBy = Get-ReferenceLink $ClosedBy
-        }
-        else {
-            $request.ClosedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-
-    if ($parameters.ContainsKey("Company")) {
-        if (-not [string]::IsNullOrEmpty($Company)) {
-            $request.Company = Get-ReferenceLink $Company
-        }
-        else {
-            $request.Company = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-    if ($parameters.ContainsKey("ServiceOffering")) {
-        if (-not [string]::IsNullOrEmpty($ServiceOffering)) {
-            $request.ServiceOffering = Get-ReferenceLink $ServiceOffering
-        }
-        else {
-            $request.ServiceOffering = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-    if ($parameters.ContainsKey("SpecialInstructions")) {
-        $request.SpecialInstructions = $SpecialInstructions
-    }             
-    if ($parameters.ContainsKey("BusinessService")) {
-        if (-not [string]::IsNullOrEmpty($BusinessService)) {
-            $request.BusinessService = Get-ReferenceLink $BusinessService
-        }
-        else {
-            $request.BusinessService = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-            
+    }                  
     if ($parameters.ContainsKey("AssignmentGroup")) {
-        if (-not [string]::IsNullOrEmpty($AssignmentGroup)) {
+        if ($AssignmentGroup) {
             $request.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
         }
         else {
-            $request.AssignmentGroup = [ServiceNow.Graph.Models.ReferenceLink]$null
+            $request.AssignmentGroup = Get-ReferenceLink ""
         }
     }     
-          
+    if ($parameters.ContainsKey("BusinessService")) {
+        if ($BusinessService) {
+            $request.BusinessService = Get-ReferenceLink $BusinessService
+        }
+        else {
+            $request.BusinessService = Get-ReferenceLink ""
+        }
+    }              
+    if ($parameters.ContainsKey("ClosedBy")) {
+        if ($ClosedBy) {
+            $request.ClosedBy = Get-ReferenceLink $ClosedBy
+        }
+        else {
+            $request.ClosedBy = Get-ReferenceLink ""
+        }
+    }              
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $request.CloseNotes = $CloseNotes
+    }     
+    if ($parameters.ContainsKey("CmdbCi")) {
+        if ($CmdbCi) {
+            $request.CmdbCi = Get-ReferenceLink $CmdbCi
+        }
+        else {
+            $request.CmdbCi = Get-ReferenceLink ""
+        }
+    }                  
     if ($parameters.ContainsKey("Comments")) {
         $request.Comments = $Comments
     }
+    if ($parameters.ContainsKey("Company")) {
+        if ($Company) {
+            $request.Company = Get-ReferenceLink $Company
+        }
+        else {
+            $request.Company = Get-ReferenceLink ""
+        }
+    }    
     if ($parameters.ContainsKey("ContactType")) {
         $request.ContactType = $ContactType
+    }         
+    if ($parameters.ContainsKey("Contract")) {
+        if ($Contract) {
+            $request.Contract = Get-ReferenceLink $Contract
+        }
+        else {
+            $request.Contract = Get-ReferenceLink ""
+        }
+    }         
+    if ($parameters.ContainsKey("CorrelationDisplay")) {
+        $request.CorrelationDisplay = $CorrelationDisplay
+    }         
+    if ($parameters.ContainsKey("CorrelationId")) {
+        $request.CorrelationId = $CorrelationId
+    }                         
+    if ($parameters.ContainsKey("DeliveryAddress")) {
+        $request.DeliveryAddress = $DeliveryAddress
+    }        
+    if ($parameters.ContainsKey("Description")) {
+        $request.Description = $Description
+    }     
+    if ($parameters.ContainsKey("DueDate")) {
+        $request.DueDate = $DueDate
+    }                                             
+    if ($parameters.ContainsKey("ExpectedStart")) {
+        $request.ExpectedStart = $ExpectedStart
+    }                                             
+    if ($parameters.ContainsKey("FollowUp")) {
+        $request.FollowUp = $FollowUp
+    }   
+    if ($parameters.ContainsKey("GroupList")) {
+        $request.GroupList = $GroupList
+    }                                                                                           
+    if ($parameters.ContainsKey("Impact")) {
+        $request.Impact = $Impact
     }    
-              
+    if ($parameters.ContainsKey("Knowledge")) {
+        $request.Knowledge = $Knowledge
+    }
     if ($parameters.ContainsKey("Location")) {
-        if (-not [string]::IsNullOrEmpty($Location)) {
+        if ($Location) {
             $request.Location = Get-ReferenceLink $Location
         }
         else {
-            $request.Location = [ServiceNow.Graph.Models.ReferenceLink]$null
+            $request.Location = Get-ReferenceLink ""
+        }
+    }    
+    if ($parameters.ContainsKey("OpenedBy")) {
+        if ($OpenedBy) {
+            $request.OpenedBy = Get-ReferenceLink $OpenedBy
+        }
+        else {
+            $request.OpenedBy = Get-ReferenceLink ""
         }
     }
 
-                                  
-    if ($parameters.ContainsKey("State")) {
-        $request.State = $State
-    }   
-               
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $request.ShortDescription = $ShortDescription
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $request.Parent = Get-ReferenceLink $Parent
+        }
+        else {
+            $request.Parent = Get-ReferenceLink ""
+        }
+    }            
+    if ($parameters.ContainsKey("ParentInteraction")) {
+        if ($ParentInteraction) {
+            $request.ParentInteraction = Get-ReferenceLink $ParentInteraction
+        }
+        else {
+            $request.ParentInteraction = Get-ReferenceLink ""
+        }
     }
-
+    if ($parameters.ContainsKey("Priority")) {
+        $request.Priority = $Priority
+    }
+    if ($parameters.ContainsKey("RequestedDate")) {
+        $request.RequestedDate = $RequestedDate
+    }
     if ($parameters.ContainsKey("RequestedFor")) {
-        if (-not [string]::IsNullOrEmpty($RequestedFor)) {
+        if ($RequestedFor) {
             $request.RequestedFor = Get-ReferenceLink $RequestedFor
         }
         else {
-            $request.RequestedFor = [ServiceNow.Graph.Models.ReferenceLink]$null
+            $request.RequestedFor = Get-ReferenceLink ""
         }
-    }     
+    }         
+    if ($parameters.ContainsKey("RequestState")) {
+        $request.RequestState = $RequestState
+    }                 
+    if ($parameters.ContainsKey("ServiceOffering")) {
+        if ($ServiceOffering) {
+            $request.ServiceOffering = Get-ReferenceLink $ServiceOffering
+        }
+        else {
+            $request.ServiceOffering = Get-ReferenceLink ""
+        }
+    }          
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $request.ShortDescription = $ShortDescription
+    }
+    if ($parameters.ContainsKey("SpecialInstructions")) {
+        $request.SpecialInstructions = $SpecialInstructions
+    }             
+    if ($parameters.ContainsKey("State")) {
+        $request.State = $State
+    }   
+    if ($parameters.ContainsKey("Urgency")) {
+        $request.Urgency = $Urgency
+    }
+    if ($parameters.ContainsKey("UserInput")) {
+        $request.UserInput = $UserInput
+    }             
+    if ($parameters.ContainsKey("WatchList")) {
+        $request.WatchList = $WatchList
+    }             
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $request.WorkNotes = $WorkNotes
+    }             
+    if ($parameters.ContainsKey("WorkNotesList")) {
+        $request.WorkNotesList = $WorkNotesList
+    }             
 
     $requestBuilder.Request().UpdateAsync($request).GetAwaiter().GetResult()
 }         
@@ -2950,219 +3086,390 @@ function Get-SnowRequestItems {
 
 function New-SnowRequestItem {
     param (
-        [parameter(Mandatory = $true)]
-        [string]$OpenedBy,
-
-        [parameter(Mandatory = $true)]
-        [string]$CatalogItem,
-
-        [parameter(Mandatory = $true)]
-        [string]$Request,
-
-        [parameter(Mandatory = $true)]
-        [string]$RequestedFor,
+        [parameter(Mandatory = $false)]
+        [bool]$Active,
 
         [parameter(Mandatory = $false)]
-        [string]$AssignmentGroup,
+        [string]$ActivityDue,
+
+        [parameter(Mandatory = $false)]
+        [string]$AdditionalAssigneeList,
+
+        [parameter(Mandatory = $false)]
+        [string]$Approval,
 
         [parameter(Mandatory = $false)]
         [string]$AssignedTo,
 
         [parameter(Mandatory = $false)]
-        [string]$OrderGuide,
+        [string]$AssignmentGroup,
 
         [parameter(Mandatory = $false)]
-        [string]$Comments,
+        [string]$BusinessService,
 
         [parameter(Mandatory = $false)]
-        [bool]$Active,
+        [string]$CatItem,
 
         [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContactType,
-
-        [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description,
-
-        [parameter(Mandatory = $false)]
-        [string]$Price,
-
-        [parameter(Mandatory = $false)]
-        [string]$Quantity,
-
-        [parameter(Mandatory = $false)]
-        [string]$ConfigurationItem,
-
-        [parameter(Mandatory = $false)]
-        [int]$Impact,
-
-        [parameter(Mandatory = $false)]
-        [int]$Priority,
-
-        [parameter(Mandatory = $false)]
-        [int]$Urgency,
-
-        [parameter(Mandatory = $false)]
-        [string]$CmdbCi
-        
-    )
-    
-    $requestItemsBuilder = $ServiceNowClient.RequestItems()
-    $requestItem = New-Object -TypeName ServiceNow.Graph.Models.RequestItem
-    $parameters = $MyInvocation.BoundParameters  
-
-
-    $requestItem.OpenedBy = Get-ReferenceLink $OpenedBy
-    $requestItem.RequestedFor = Get-ReferenceLink $RequestedFor
-    $requestItem.CatalogItem = Get-ReferenceLink $CatalogItem
-    $requestItem.Request = Get-ReferenceLink $Request
-
-    if ($parameters.ContainsKey("Price")) {
-        if(-not [string]::IsNullOrEmpty($Price)){
-            $requestItem.Price =  $Price
-        }
-    } 
-
-    if ($parameters.ContainsKey("Quantity")) {
-        if(-not [string]::IsNullOrEmpty($Quantity)){
-            $requestItem.Quantity =  $Quantity
-        }
-    } 
-
-    if ($parameters.ContainsKey("Impact")) {
-        $requestItem.Impact =  $Impact
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $requestItem.Description =  $Description
-    } 
-
-    if ($parameters.ContainsKey("Urgency")) {
-        $requestItem.Urgency =  $Urgency
-    } 
-
-    if ($parameters.ContainsKey("Priority")) {
-        $requestItem.Priority =  $Priority
-    } 
-
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $requestItem.ShortDescription =  $ShortDescription
-    } 
-
-    if ($parameters.ContainsKey("CmdbCi")) {
-        $requestItem.CmdbCi = Get-ReferenceLink $CmdbCi
-    } 
-
-    if ($parameters.ContainsKey("ContactType")) {
-        $requestItem.ContactType = $ContactType
-    } 
-
-    if ($parameters.ContainsKey("Company")) {
-        $requestItem.Company = Get-ReferenceLink $Company
-    } 
-
-    if ($parameters.ContainsKey("ConfigurationItem")) {
-        $requestItem.ConfigurationItem = Get-ReferenceLink $ConfigurationItem
-    } 
-
-    if ($parameters.ContainsKey("Location")) {
-        $requestItem.Location = Get-ReferenceLink $Location
-    } 
-
-    if ($parameters.ContainsKey("AssignedTo")) {
-        $requestItem.AssignedTo = Get-ReferenceLink $AssignedTo
-    } 
-
-    if ($parameters.ContainsKey("AssignmentGroup")) {
-        $requestItem.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
-    } 
-
-    if ($parameters.ContainsKey("OrderGuide")) {
-        $requestItem.OrderGuide = Get-ReferenceLink $OrderGuide
-    } 
-    if ($parameters.ContainsKey("Comments")) {
-        $requestItem.Comments = $Comments
-    } 
-    if ($parameters.ContainsKey("Active")) {
-        $requestItem.Active = $Active
-    } 
-
-    $requestItemsBuilder.Request().AddAsync($requestItem).GetAwaiter().GetResult()
-}         
-
-function Set-SnowRequestItem {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [string]$State,
+        [string]$ClosedBy,
 
         [parameter(Mandatory = $false)]
         [string]$CloseNotes,
 
         [parameter(Mandatory = $false)]
+        [string]$CmdbCi,
+
+        [parameter(Mandatory = $false)]
         [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$RequestedFor,
-
-        [parameter(Mandatory = $false)]
-        [string]$AssignmentGroup,
-
-        [parameter(Mandatory = $false)]
-        [string]$AssignedTo,
-
-        [parameter(Mandatory = $false)]
-        [string]$OrderGuide,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,
 
         [parameter(Mandatory = $false)]
         [string]$Company,
 
         [parameter(Mandatory = $false)]
-        [string]$Location,
+        [string]$ConfigurationItem,
 
         [parameter(Mandatory = $false)]
         [string]$ContactType,
 
         [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
+        [string]$Contract,
 
         [parameter(Mandatory = $false)]
-        [string]$Description,
+        [string]$CorrelationDisplay,
 
         [parameter(Mandatory = $false)]
-        [string]$Price,
+        [string]$CorrelationId,
 
         [parameter(Mandatory = $false)]
-        [string]$Quantity,
+        [string]$Description,        
 
         [parameter(Mandatory = $false)]
-        [string]$ConfigurationItem,
+        [string]$DueDate,
+
+        [parameter(Mandatory = $false)]
+        [string]$ExpectedStart,
+
+        [parameter(Mandatory = $false)]
+        [string]$FollowUp,
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
 
         [parameter(Mandatory = $false)]
         [int]$Impact,
 
         [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$OpenedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$Order,
+
+        [parameter(Mandatory = $false)]
+        [string]$OrderGuide,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
         [int]$Priority,
+
+        [parameter(Mandatory = $false)]
+        [string]$Request,
+
+        [parameter(Mandatory = $false)]
+        [string]$RequestedFor,
+
+        [parameter(Mandatory = $false)]
+        [string]$ScCatalog,
+
+        [parameter(Mandatory = $false)]
+        [string]$ServiceOffering,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
+        [parameter(Mandatory = $false)]
+        [int]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
 
         [parameter(Mandatory = $false)]
         [int]$Urgency,
 
         [parameter(Mandatory = $false)]
-        [string]$CmdbCi
+        [string]$UserInput,
 
+        [parameter(Mandatory = $false)]
+        [string]$WatchList,        
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotesList        
     )
+    
+    $requestItemBuilder = $ServiceNowClient.RequestItems()
+    $requestItem = New-Object -TypeName ServiceNow.Graph.Models.RequestItem
+    $parameters = $MyInvocation.BoundParameters  
+
+    if ($parameters.ContainsKey("Active")) {
+        $requestItem.Active = $Active
+    }
+    if ($parameters.ContainsKey("ActivityDue")) {
+        $requestItem.ActivityDue = $ActivityDue
+    }                                 
+    if ($parameters.ContainsKey("AdditionalAssigneeList")) {
+        $requestItem.AdditionalAssigneeList = $AdditionalAssigneeList
+    } 
+    if ($parameters.ContainsKey("Approval")) {
+        $requestItem.Approval = $Approval
+    } 
+    if ($parameters.ContainsKey("AssignedTo") -and $AssignedTo) {
+        $requestItem.AssignedTo = Get-ReferenceLink $AssignedTo
+    }                  
+    if ($parameters.ContainsKey("AssignmentGroup") -and $AssignmentGroup) {
+        $requestItem.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
+    }     
+    if ($parameters.ContainsKey("BusinessService") -and $BusinessService) {
+        $requestItem.BusinessService = Get-ReferenceLink $BusinessService
+    }              
+    if ($parameters.ContainsKey("CatItem") -and $CatItem) {
+        $requestItem.CatItem = Get-ReferenceLink $CatItem
+    }              
+    if ($parameters.ContainsKey("ClosedBy") -and $ClosedBy) {
+        $requestItem.ClosedBy = Get-ReferenceLink $ClosedBy
+    }              
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $requestItem.CloseNotes = $CloseNotes
+    }     
+    if ($parameters.ContainsKey("CmdbCi") -and $CmdbCi) {
+        $requestItem.CmdbCi = Get-ReferenceLink $CmdbCi
+    }                  
+    if ($parameters.ContainsKey("Comments")) {
+        $requestItem.Comments = $Comments
+    }
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $requestItem.Company = Get-ReferenceLink $Company
+    }    
+    if ($parameters.ContainsKey("ConfigurationItem") -and $ConfigurationItem) {
+        $requestItem.ConfigurationItem = Get-ReferenceLink $ConfigurationItem
+    }    
+    if ($parameters.ContainsKey("ContactType")) {
+        $requestItem.ContactType = $ContactType
+    }         
+    if ($parameters.ContainsKey("Contract") -and $Contract) {
+        $requestItem.Contract = Get-ReferenceLink $Contract
+    }         
+    if ($parameters.ContainsKey("CorrelationDisplay")) {
+        $requestItem.CorrelationDisplay = $CorrelationDisplay
+    }         
+    if ($parameters.ContainsKey("CorrelationId")) {
+        $requestItem.CorrelationId = $CorrelationId
+    }                         
+    if ($parameters.ContainsKey("Description")) {
+        $requestItem.Description = $Description
+    }     
+    if ($parameters.ContainsKey("DueDate")) {
+        $requestItem.DueDate = $DueDate
+    }                                             
+    if ($parameters.ContainsKey("ExpectedStart")) {
+        $requestItem.ExpectedStart = $ExpectedStart
+    }                                             
+    if ($parameters.ContainsKey("FollowUp")) {
+        $requestItem.FollowUp = $FollowUp
+    }                                             
+    if ($parameters.ContainsKey("GroupList")) {
+        $requestItem.GroupList = $GroupList
+    }                                             
+    if ($parameters.ContainsKey("Impact")) {
+        $requestItem.Impact = $Impact
+    }    
+    if ($parameters.ContainsKey("Knowledge")) {
+        $requestItem.Knowledge = $Knowledge
+    }
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $requestItem.Location = Get-ReferenceLink $Location
+    }    
+    if ($parameters.ContainsKey("OpenedBy") -and $OpenedBy) {
+        $requestItem.OpenedBy = Get-ReferenceLink $OpenedBy
+    }
+    if ($parameters.ContainsKey("Order")) {
+        $requestItem.Order = $Order
+    }
+    if ($parameters.ContainsKey("OrderGuide") -and $OrderGuide) {
+        $requestItem.OrderGuide = Get-ReferenceLink $OrderGuide
+    }            
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $requestItem.Parent = Get-ReferenceLink $Parent
+    }            
+    if ($parameters.ContainsKey("Priority")) {
+        $requestItem.Priority = $Priority
+    }
+    if ($parameters.ContainsKey("RequestedFor") -and $RequestedFor) {
+        $requestItem.RequestedFor = Get-ReferenceLink $RequestedFor
+    }         
+    if ($parameters.ContainsKey("ScCatalog") -and $ScCatalog) {
+        $requestItem.ScCatalog = Get-ReferenceLink $ScCatalog
+    }          
+    if ($parameters.ContainsKey("ServiceOffering") -and $ServiceOffering) {
+        $requestItem.ServiceOffering = Get-ReferenceLink $ServiceOffering
+    }          
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $requestItem.ShortDescription = $ShortDescription
+    }
+    if ($parameters.ContainsKey("State")) {
+        $requestItem.State = $State
+    }   
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $requestItem.SysDomain = Get-ReferenceLink $SysDomain
+    }          
+    if ($parameters.ContainsKey("Urgency")) {
+        $requestItem.Urgency = $Urgency
+    }
+    if ($parameters.ContainsKey("UserInput")) {
+        $requestItem.UserInput = $UserInput
+    }             
+    if ($parameters.ContainsKey("WatchList")) {
+        $requestItem.WatchList = $WatchList
+    }             
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $requestItem.WorkNotes = $WorkNotes
+    }             
+    if ($parameters.ContainsKey("WorkNotesList")) {
+        $requestItem.WorkNotesList = $WorkNotesList
+    }             
+
+    $requestItemBuilder.Request().AddAsync($requestItem).GetAwaiter().GetResult()
+}         
+
+function Set-SnowRequestItem {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Active,
+
+        [parameter(Mandatory = $false)]
+        [string]$ActivityDue,
+
+        [parameter(Mandatory = $false)]
+        [string]$AdditionalAssigneeList,
+
+        [parameter(Mandatory = $false)]
+        [string]$Approval,
+
+        [parameter(Mandatory = $false)]
+        [string]$AssignedTo,
+
+        [parameter(Mandatory = $false)]
+        [string]$AssignmentGroup,
+
+        [parameter(Mandatory = $false)]
+        [string]$BusinessService,
+
+        [parameter(Mandatory = $false)]
+        [string]$ClosedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$CloseNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmdbCi,
+
+        [parameter(Mandatory = $false)]
+        [string]$Comments,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$ConfigurationItem,
+
+        [parameter(Mandatory = $false)]
+        [string]$ContactType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contract,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationDisplay,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationId,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,        
+
+        [parameter(Mandatory = $false)]
+        [string]$DueDate,
+
+        [parameter(Mandatory = $false)]
+        [string]$ExpectedStart,
+
+        [parameter(Mandatory = $false)]
+        [string]$FollowUp,
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
+
+        [parameter(Mandatory = $false)]
+        [int]$Impact,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$OpenedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$OrderGuide,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [int]$Priority,
+
+        [parameter(Mandatory = $false)]
+        [string]$RequestedFor,
+
+        [parameter(Mandatory = $false)]
+        [string]$ServiceOffering,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
+        [parameter(Mandatory = $false)]
+        [int]$State,
+
+        [parameter(Mandatory = $false)]
+        [int]$Urgency,
+
+        [parameter(Mandatory = $false)]
+        [string]$UserInput,
+
+        [parameter(Mandatory = $false)]
+        [string]$WatchList,        
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotesList        
+    )
+
     
     $requestItemsBuilder = $ServiceNowClient.RequestItems()[$Id] 
     $requestItem = New-Object -TypeName ServiceNow.Graph.Models.RequestItem
@@ -3170,110 +3477,193 @@ function Set-SnowRequestItem {
     $requestItem.Id = $Id
 
 
-    if ($parameters.ContainsKey("State")) {
-        $requestItem.State = $State
-    }
-    if ($parameters.ContainsKey("CloseNotes")) {
-        $requestItem.CloseNotes = $CloseNotes
-    } 
-
-    if ($parameters.ContainsKey("Comments")) {
-        $requestItem.Comments = $Comments
-    } 
-
-    if ($parameters.ContainsKey("Price")) {
-        if(-not [string]::IsNullOrEmpty($Price)){
-            $requestItem.Price =  $Price
-        }
-    } 
-
-    if ($parameters.ContainsKey("Quantity")) {
-        if(-not [string]::IsNullOrEmpty($Quantity)){
-            $requestItem.Quantity =  $Quantity
-        }
-    } 
-
-    if ($parameters.ContainsKey("Impact")) {
-        $requestItem.Impact =  $Impact
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $requestItem.Description =  $Description
-    } 
-
-    if ($parameters.ContainsKey("Urgency")) {
-        $requestItem.Urgency =  $Urgency
-    } 
-
-    if ($parameters.ContainsKey("Priority")) {
-        $requestItem.Priority =  $Priority
-    } 
-
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $requestItem.ShortDescription =  $ShortDescription
-    } 
-
-    if ($parameters.ContainsKey("CmdbCi")) {
-        $requestItem.CmdbCi = Get-ReferenceLink $CmdbCi
-    } 
-
-    if ($parameters.ContainsKey("RequestedFor")) {
-        $requestItem.RequestedFor = Get-ReferenceLink $RequestedFor
-    } 
-
-    if ($parameters.ContainsKey("ContactType")) {
-        $requestItem.ContactType = $ContactType
-    } 
-
-    if ($parameters.ContainsKey("Company")) {
-        $requestItem.Company = Get-ReferenceLink $Company
-    } 
-
-    if ($parameters.ContainsKey("ConfigurationItem")) {
-        $requestItem.ConfigurationItem = Get-ReferenceLink $ConfigurationItem
-    } 
-
-    if ($parameters.ContainsKey("Location")) {
-        $requestItem.Location = Get-ReferenceLink $Location
-    } 
-
-    if ($parameters.ContainsKey("AssignedTo")) {
-        $requestItem.AssignedTo = Get-ReferenceLink $AssignedTo
-    } 
-
-    if ($parameters.ContainsKey("AssignmentGroup")) {
-        $requestItem.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
-    } 
-
-    if ($parameters.ContainsKey("OrderGuide")) {
-        $requestItem.OrderGuide = Get-ReferenceLink $OrderGuide
-    } 
-    if ($parameters.ContainsKey("Comments")) {
-        $requestItem.Comments = $Comments
-    } 
     if ($parameters.ContainsKey("Active")) {
         $requestItem.Active = $Active
+    }
+    if ($parameters.ContainsKey("ActivityDue")) {
+        $requestItem.ActivityDue = $ActivityDue
+    }                                 
+    if ($parameters.ContainsKey("AdditionalAssigneeList")) {
+        $requestItem.AdditionalAssigneeList = $AdditionalAssigneeList
     } 
+    if ($parameters.ContainsKey("Approval")) {
+        $requestItem.Approval = $Approval
+    } 
+    if ($parameters.ContainsKey("AssignedTo")) {
+        if ($AssignedTo) {
+            $requestItem.AssignedTo = Get-ReferenceLink $AssignedTo
+        }
+        else {
+            $requestItem.AssignedTo = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("AssignmentGroup")) {
+        if ($AssignmentGroup) {
+            $requestItem.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
+        }
+        else {
+            $requestItem.AssignmentGroup = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("BusinessService")) {
+        if ($BusinessService) {
+            $requestItem.BusinessService = Get-ReferenceLink $BusinessService
+        }
+        else {
+            $requestItem.BusinessService = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ClosedBy")) {
+        if ($ClosedBy) {
+            $requestItem.ClosedBy = Get-ReferenceLink $ClosedBy
+        }
+        else {
+            $requestItem.ClosedBy = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $requestItem.CloseNotes = $CloseNotes
+    }     
+    if ($parameters.ContainsKey("CmdbCi")) {
+        if ($CmdbCi) {
+            $requestItem.CmdbCi = Get-ReferenceLink $CmdbCi
+        }
+        else {
+            $requestItem.CmdbCi = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Comments")) {
+        $requestItem.Comments = $Comments
+    }
+    if ($parameters.ContainsKey("Company")) {
+        if ($Company) {
+            $requestItem.Company = Get-ReferenceLink $Company
+        }
+        else {
+            $requestItem.Company = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ConfigurationItem")) {
+        if ($ConfigurationItem) {
+            $requestItem.ConfigurationItem = Get-ReferenceLink $ConfigurationItem
+        }
+        else {
+            $requestItem.ConfigurationItem = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ContactType")) {
+        $requestItem.ContactType = $ContactType
+    }         
+    if ($parameters.ContainsKey("Contract")) {
+        if ($Contract) {
+            $requestItem.Contract = Get-ReferenceLink $Contract
+        }
+        else {
+            $requestItem.Contract = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("CorrelationDisplay")) {
+        $requestItem.CorrelationDisplay = $CorrelationDisplay
+    }         
+    if ($parameters.ContainsKey("CorrelationId")) {
+        $requestItem.CorrelationId = $CorrelationId
+    }                         
+    if ($parameters.ContainsKey("Description")) {
+        $requestItem.Description = $Description
+    }     
+    if ($parameters.ContainsKey("DueDate")) {
+        $requestItem.DueDate = $DueDate
+    }                                             
+    if ($parameters.ContainsKey("ExpectedStart")) {
+        $requestItem.ExpectedStart = $ExpectedStart
+    }                                             
+    if ($parameters.ContainsKey("FollowUp")) {
+        $requestItem.FollowUp = $FollowUp
+    }                                             
+    if ($parameters.ContainsKey("GroupList")) {
+        $requestItem.GroupList = $GroupList
+    }                                             
+    if ($parameters.ContainsKey("Impact")) {
+        $requestItem.Impact = $Impact
+    }    
+    if ($parameters.ContainsKey("Knowledge")) {
+        $requestItem.Knowledge = $Knowledge
+    }
+    if ($parameters.ContainsKey("Location")) {
+        if ($Location) {
+            $requestItem.Location = Get-ReferenceLink $Location
+        }
+        else {
+            $requestItem.Location = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("OpenedBy")) {
+        if ($OpenedBy) {
+            $requestItem.OpenedBy = Get-ReferenceLink $OpenedBy
+        }
+        else {
+            $requestItem.OpenedBy = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("OrderGuide")) {
+        if ($OrderGuide) {
+            $requestItem.OrderGuide = Get-ReferenceLink $OrderGuide
+        }
+        else {
+            $requestItem.OrderGuide = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $requestItem.Parent = Get-ReferenceLink $Parent
+        }
+        else {
+            $requestItem.Parent = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Priority")) {
+        $requestItem.Priority = $Priority
+    }
+    if ($parameters.ContainsKey("RequestedFor")) {
+        if ($RequestedFor) {
+            $requestItem.RequestedFor = Get-ReferenceLink $RequestedFor
+        }
+        else {
+            $requestItem.RequestedFor = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ServiceOffering")) {
+        if ($ServiceOffering) {
+            $requestItem.ServiceOffering = Get-ReferenceLink $ServiceOffering
+        }
+        else {
+            $requestItem.ServiceOffering = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $requestItem.ShortDescription = $ShortDescription
+    }
+    if ($parameters.ContainsKey("State")) {
+        $requestItem.State = $State
+    }   
+    if ($parameters.ContainsKey("Urgency")) {
+        $requestItem.Urgency = $Urgency
+    }
+    if ($parameters.ContainsKey("UserInput")) {
+        $requestItem.UserInput = $UserInput
+    }             
+    if ($parameters.ContainsKey("WatchList")) {
+        $requestItem.WatchList = $WatchList
+    }             
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $requestItem.WorkNotes = $WorkNotes
+    }             
+    if ($parameters.ContainsKey("WorkNotesList")) {
+        $requestItem.WorkNotesList = $WorkNotesList
+    }             
         
     $requestItemsBuilder.Request().UpdateAsync($requestItem).GetAwaiter().GetResult()
 }         
-
-function Get-SnowUser {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-}
 
 function Get-SnowCatalogTask {
     param (
@@ -3295,409 +3685,566 @@ function Get-SnowCatalogTask {
 
 function New-SnowCatalogTask {
     param (
-        [parameter(Mandatory = $true)]
-        [string]$RequestItem,
-
-        [parameter(Mandatory = $true)]
-        [string]$Request,
+        [parameter(Mandatory = $false)]
+        [bool]$Active,
 
         [parameter(Mandatory = $false)]
-        [string]$AssignedTo,
-
-        [parameter(Mandatory = $false)]
-        [string]$AssignmentGroup,
+        [string]$ActivityDue,
 
         [parameter(Mandatory = $false)]
         [string]$AdditionalAssigneeList,
 
         [parameter(Mandatory = $false)]
-        [string]$CloseNotes,
-
-        [parameter(Mandatory = $false)]
-        [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
-        
-        [parameter(Mandatory = $false)]
-        [int]$State,
-        
-        [parameter(Mandatory = $false)]
-        [bool]$Knowledge,
-        
-        [parameter(Mandatory = $false)]
-        [bool]$Active,
-        
-        [parameter(Mandatory = $false)]
-        [int]$Priority,
-
-        [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description ,
-
-        [parameter(Mandatory = $false)]
-        [string]$BusinessService ,
-
-        [parameter(Mandatory = $false)]
-        [string]$CmdbCi,
-
-        [parameter(Mandatory = $false)]
-        [int]$Impact,
-
-        [parameter(Mandatory = $false)]
-        [int]$Urgency,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContactType,
-
-        [parameter(Mandatory = $false)]
-        [string]$ClosedBy,
-
-        [parameter(Mandatory = $false)]
-        [string]$ServiceOffering,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company
-
-)
-    
-    $requestBuilder = $ServiceNowClient.CatalogTasks()
-    $task = New-Object -TypeName ServiceNow.Graph.Models.CatalogTask
-    $parameters = $MyInvocation.BoundParameters  
-
-    $task.RequestItem = Get-ReferenceLink $RequestItem
-    $task.Request = Get-ReferenceLink $Request
-    if ($parameters.ContainsKey("ContactType")) {
-        $task.ContactType = $ContactType
-    } 
-
-    if ($parameters.ContainsKey("CloseNotes")) {
-        $task.CloseNotes = $CloseNotes
-    } 
-
-    if ($parameters.ContainsKey("AdditionalAssigneeList")) {
-        $task.AdditionalAssigneeList = $AdditionalAssigneeList
-    } 
-
-    if ($parameters.ContainsKey("Priority")) {
-        $task.Priority = $Priority
-    } 
-
-    if ($parameters.ContainsKey("Active")) {
-        $task.Active = $Active
-    } 
-
-    if ($parameters.ContainsKey("Knowledge")) {
-        $task.Knowledge = $Knowledge
-    } 
-
-    if ($parameters.ContainsKey("Description")) {
-        $task.Description = $Description
-    } 
-
-    if ($parameters.ContainsKey("CmdbCi")) {
-        if (-not [string]::IsNullOrEmpty($CmdbCi)) {
-            $task.CmdbCi = Get-ReferenceLink $CmdbCi
-        }
-        else {
-            $task.CmdbCi = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-
-    if ($parameters.ContainsKey("ServiceOffering")) {
-        if (-not [string]::IsNullOrEmpty($ServiceOffering)) {
-            $task.ServiceOffering = Get-ReferenceLink $ServiceOffering
-        }
-        else {
-            $task.ServiceOffering = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-
-    if ($parameters.ContainsKey("ClosedBy")) {
-        if (-not [string]::IsNullOrEmpty($ClosedBy)) {
-            $task.ClosedBy = Get-ReferenceLink $ClosedBy
-        }
-        else {
-            $task.ClosedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    
-    if ($parameters.ContainsKey("Location")) {
-        if (-not [string]::IsNullOrEmpty($Location)) {
-            $task.Location = Get-ReferenceLink $Location
-        }
-        else {
-            $task.Location = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    
-    if ($parameters.ContainsKey("Company")) {
-        if (-not [string]::IsNullOrEmpty($Company)) {
-            $task.Company = Get-ReferenceLink $Company
-        }
-        else {
-            $task.Company = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-
-    if ($parameters.ContainsKey("BusinessService")) {
-        if (-not [string]::IsNullOrEmpty($BusinessService)) {
-            $task.BusinessService = Get-ReferenceLink $BusinessService
-        }
-        else {
-            $task.BusinessService = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("AssignedTo")) {
-        if (-not [string]::IsNullOrEmpty($AssignedTo)) {
-            $task.AssignedTo = Get-ReferenceLink $AssignedTo
-        }
-        else {
-            $task.AssignedTo = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-            
-    if ($parameters.ContainsKey("AssignmentGroup")) {
-        if (-not [string]::IsNullOrEmpty($AssignmentGroup)) {
-            $task.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
-        }
-        else {
-            $task.AssignmentGroup = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-          
-    if ($parameters.ContainsKey("Comments")) {
-        $task.Comments = $Comments
-    }
-
-    if ($parameters.ContainsKey("WorkNotes")) {
-        $task.WorkNotes = $WorkNotes
-    }
-
-    if ($parameters.ContainsKey("Urgency")) {
-        $task.Urgency = $Urgency
-    }   
- 
-    if ($parameters.ContainsKey("Impact")) {
-        $task.Impact = $Impact
-    }   
- 
-    if ($parameters.ContainsKey("State")) {
-        $task.State = $State
-    }   
-     
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $task.ShortDescription = $ShortDescription
-    }
-                
-    $requestBuilder.Request().AddAsync($task).GetAwaiter().GetResult()
-}         
-
-function Set-SnowCatalogTask {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
+        [string]$Approval,
 
         [parameter(Mandatory = $false)]
         [string]$AssignedTo,
 
         [parameter(Mandatory = $false)]
         [string]$AssignmentGroup,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$CloseNotes,
-
-        [parameter(Mandatory = $false)]
-        [string]$Comments,
-
-        [parameter(Mandatory = $false)]
-        [string]$WorkNotes,
-        
-        [parameter(Mandatory = $false)]
-        [int]$State,
-
-        [parameter(Mandatory = $false)]
-        [string]$ShortDescription,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description ,
-
-        [parameter(Mandatory = $false)]
-        [string]$CmdbCi,
 
         [parameter(Mandatory = $false)]
         [string]$BusinessService,
 
         [parameter(Mandatory = $false)]
-        [string]$ContactType,
-
-        [parameter(Mandatory = $false)]
         [string]$ClosedBy,
 
         [parameter(Mandatory = $false)]
-        [string]$ServiceOffering,
+        [string]$CloseNotes,
 
         [parameter(Mandatory = $false)]
-        [int]$Impact ,
+        [string]$CmdbCi,
+
+        [parameter(Mandatory = $false)]
+        [string]$Comments,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$ContactType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contract,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationDisplay,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationId,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,        
+
+        [parameter(Mandatory = $false)]
+        [string]$DueDate,
+
+        [parameter(Mandatory = $false)]
+        [string]$ExpectedStart,
+
+        [parameter(Mandatory = $false)]
+        [string]$FollowUp,
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
+
+        [parameter(Mandatory = $false)]
+        [int]$Impact,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$OpenedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$Order,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [int]$Priority,
+
+        [parameter(Mandatory = $true)]
+        [string]$Request,
+
+        [parameter(Mandatory = $false)]
+        [string]$RequestItem,
+
+        [parameter(Mandatory = $false)]
+        [string]$ScCatalog,
+
+        [parameter(Mandatory = $false)]
+        [string]$ServiceOffering,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
+        [parameter(Mandatory = $false)]
+        [int]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,
 
         [parameter(Mandatory = $false)]
         [int]$Urgency,
-        
+
+        [parameter(Mandatory = $false)]
+        [string]$UserInput,
+
+        [parameter(Mandatory = $false)]
+        [string]$WatchList,        
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotesList        
+    )
+    
+    $catalogTaskBuilder = $ServiceNowClient.RequestItems()
+    $task = New-Object -TypeName ServiceNow.Graph.Models.CatalogTask
+    $parameters = $MyInvocation.BoundParameters  
+
+    if ($parameters.ContainsKey("Active")) {
+        $task.Active = $Active
+    }
+    if ($parameters.ContainsKey("ActivityDue")) {
+        $task.ActivityDue = $ActivityDue
+    }                                 
+    if ($parameters.ContainsKey("AdditionalAssigneeList")) {
+        $task.AdditionalAssigneeList = $AdditionalAssigneeList
+    } 
+    if ($parameters.ContainsKey("Approval")) {
+        $task.Approval = $Approval
+    } 
+    if ($parameters.ContainsKey("AssignedTo") -and $AssignedTo) {
+        $task.AssignedTo = Get-ReferenceLink $AssignedTo
+    }                  
+    if ($parameters.ContainsKey("AssignmentGroup") -and $AssignmentGroup) {
+        $task.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
+    }     
+    if ($parameters.ContainsKey("BusinessService") -and $BusinessService) {
+        $task.BusinessService = Get-ReferenceLink $BusinessService
+    }              
+    if ($parameters.ContainsKey("ClosedBy") -and $ClosedBy) {
+        $task.ClosedBy = Get-ReferenceLink $ClosedBy
+    }              
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $task.CloseNotes = $CloseNotes
+    }     
+    if ($parameters.ContainsKey("CmdbCi") -and $CmdbCi) {
+        $task.CmdbCi = Get-ReferenceLink $CmdbCi
+    }                  
+    if ($parameters.ContainsKey("Comments")) {
+        $task.Comments = $Comments
+    }
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $task.Company = Get-ReferenceLink $Company
+    }    
+    if ($parameters.ContainsKey("ContactType")) {
+        $task.ContactType = $ContactType
+    }         
+    if ($parameters.ContainsKey("Contract") -and $Contract) {
+        $task.Contract = Get-ReferenceLink $Contract
+    }         
+    if ($parameters.ContainsKey("CorrelationDisplay")) {
+        $task.CorrelationDisplay = $CorrelationDisplay
+    }         
+    if ($parameters.ContainsKey("CorrelationId")) {
+        $task.CorrelationId = $CorrelationId
+    }                         
+    if ($parameters.ContainsKey("Description")) {
+        $task.Description = $Description
+    }     
+    if ($parameters.ContainsKey("DueDate")) {
+        $task.DueDate = $DueDate
+    }                                             
+    if ($parameters.ContainsKey("ExpectedStart")) {
+        $task.ExpectedStart = $ExpectedStart
+    }                                             
+    if ($parameters.ContainsKey("FollowUp")) {
+        $task.FollowUp = $FollowUp
+    }                                             
+    if ($parameters.ContainsKey("GroupList")) {
+        $task.GroupList = $GroupList
+    }                                             
+    if ($parameters.ContainsKey("Impact")) {
+        $task.Impact = $Impact
+    }    
+    if ($parameters.ContainsKey("Knowledge")) {
+        $task.Knowledge = $Knowledge
+    }
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $task.Location = Get-ReferenceLink $Location
+    }    
+    if ($parameters.ContainsKey("OpenedBy") -and $OpenedBy) {
+        $task.OpenedBy = Get-ReferenceLink $OpenedBy
+    }
+    if ($parameters.ContainsKey("Order")) {
+        $task.Order = $Order
+    }
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $task.Parent = Get-ReferenceLink $Parent
+    }            
+    if ($parameters.ContainsKey("Priority")) {
+        $task.Priority = $Priority
+    }
+    if ($parameters.ContainsKey("Request") -and $Request) {
+        $task.Request = Get-ReferenceLink $Request
+    }          
+    if ($parameters.ContainsKey("RequestItem") -and $RequestItem) {
+        $task.RequestItem = Get-ReferenceLink $RequestItem
+    }          
+    if ($parameters.ContainsKey("ScCatalog") -and $ScCatalog) {
+        $task.ScCatalog = Get-ReferenceLink $ScCatalog
+    }          
+    if ($parameters.ContainsKey("ServiceOffering") -and $ServiceOffering) {
+        $task.ServiceOffering = Get-ReferenceLink $ServiceOffering
+    }          
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $task.ShortDescription = $ShortDescription
+    }
+    if ($parameters.ContainsKey("State")) {
+        $task.State = $State
+    }   
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $task.SysDomain = Get-ReferenceLink $SysDomain
+    }          
+    if ($parameters.ContainsKey("Urgency")) {
+        $task.Urgency = $Urgency
+    }
+    if ($parameters.ContainsKey("UserInput")) {
+        $task.UserInput = $UserInput
+    }             
+    if ($parameters.ContainsKey("WatchList")) {
+        $task.WatchList = $WatchList
+    }             
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $task.WorkNotes = $WorkNotes
+    }             
+    if ($parameters.ContainsKey("WorkNotesList")) {
+        $task.WorkNotesList = $WorkNotesList
+    }             
+
+    $catalogTaskBuilder.Request().AddAsync($task).GetAwaiter().GetResult()
+}         
+
+function Set-SnowCatalogTask {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Id,
+
         [parameter(Mandatory = $false)]
         [bool]$Active,
 
         [parameter(Mandatory = $false)]
-        [bool]$Knowledge,
-
-        [parameter(Mandatory = $false)]
-        [int]$Priority,
+        [string]$ActivityDue,
 
         [parameter(Mandatory = $false)]
         [string]$AdditionalAssigneeList,
 
         [parameter(Mandatory = $false)]
-        [string]$Location
+        [string]$Approval,
 
-)
-    
-    $requestBuilder = $ServiceNowClient.CatalogTasks()[$Id] 
+        [parameter(Mandatory = $false)]
+        [string]$AssignedTo,
+
+        [parameter(Mandatory = $false)]
+        [string]$AssignmentGroup,
+
+        [parameter(Mandatory = $false)]
+        [string]$BusinessService,
+
+        [parameter(Mandatory = $false)]
+        [string]$ClosedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$CloseNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$CmdbCi,
+
+        [parameter(Mandatory = $false)]
+        [string]$Comments,
+
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+
+        [parameter(Mandatory = $false)]
+        [string]$ContactType,
+
+        [parameter(Mandatory = $false)]
+        [string]$Contract,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationDisplay,
+
+        [parameter(Mandatory = $false)]
+        [string]$CorrelationId,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,        
+
+        [parameter(Mandatory = $false)]
+        [string]$DueDate,
+
+        [parameter(Mandatory = $false)]
+        [string]$ExpectedStart,
+
+        [parameter(Mandatory = $false)]
+        [string]$FollowUp,
+
+        [parameter(Mandatory = $false)]
+        [string]$GroupList,
+
+        [parameter(Mandatory = $false)]
+        [int]$Impact,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Knowledge,        
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$OpenedBy,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [int]$Priority,
+
+        [parameter(Mandatory = $true)]
+        [string]$Request,
+
+        [parameter(Mandatory = $false)]
+        [string]$RequestItem,
+
+        [parameter(Mandatory = $false)]
+        [string]$ScCatalog,
+
+        [parameter(Mandatory = $false)]
+        [string]$ServiceOffering,
+        
+        [parameter(Mandatory = $false)]
+        [string]$ShortDescription,
+
+        [parameter(Mandatory = $false)]
+        [int]$State,
+
+        [parameter(Mandatory = $false)]
+        [int]$Urgency,
+
+        [parameter(Mandatory = $false)]
+        [string]$UserInput,
+
+        [parameter(Mandatory = $false)]
+        [string]$WatchList,        
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotes,
+
+        [parameter(Mandatory = $false)]
+        [string]$WorkNotesList        
+    )
+    $catalogTaskBuilder = $ServiceNowClient.RequestItems()[$Id] 
     $task = New-Object -TypeName ServiceNow.Graph.Models.CatalogTask
     $parameters = $MyInvocation.BoundParameters  
     $task.Id = $Id
 
 
-    if ($parameters.ContainsKey("CloseNotes")) {
-        $task.CloseNotes = $CloseNotes
-    } 
-
-    if ($parameters.ContainsKey("ContactType")) {
-        $task.ContactType = $ContactType
-    } 
-
     if ($parameters.ContainsKey("Active")) {
         $task.Active = $Active
-    } 
-
-    if ($parameters.ContainsKey("Knowledge")) {
-        $task.Knowledge = $Knowledge
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $task.Description = $Description
-    }                 
-    
-    if ($parameters.ContainsKey("CmdbCi")) {
-        if (-not [string]::IsNullOrEmpty($CmdbCi)) {
-            $task.CmdbCi = Get-ReferenceLink $CmdbCi
-        }
-        else {
-            $task.CmdbCi = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    
-    if ($parameters.ContainsKey("ServiceOffering")) {
-        if (-not [string]::IsNullOrEmpty($ServiceOffering)) {
-            $task.ServiceOffering = Get-ReferenceLink $ServiceOffering
-        }
-        else {
-            $task.ServiceOffering = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    
-    if ($parameters.ContainsKey("ClosedBy")) {
-        if (-not [string]::IsNullOrEmpty($ClosedBy)) {
-            $task.ClosedBy = Get-ReferenceLink $ClosedBy
-        }
-        else {
-            $task.ClosedBy = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    
-    if ($parameters.ContainsKey("Location")) {
-        if (-not [string]::IsNullOrEmpty($Location)) {
-            $task.Location = Get-ReferenceLink $Location
-        }
-        else {
-            $task.Location = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-
-    if ($parameters.ContainsKey("BusinessService")) {
-        if (-not [string]::IsNullOrEmpty($BusinessService)) {
-            $task.BusinessService = Get-ReferenceLink $BusinessService
-        }
-        else {
-            $task.BusinessService = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("AssignedTo")) {
-        if (-not [string]::IsNullOrEmpty($AssignedTo)) {
-            $task.AssignedTo = Get-ReferenceLink $AssignedTo
-        }
-        else {
-            $task.AssignedTo = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }          
-            
-    if ($parameters.ContainsKey("AssignmentGroup")) {
-        if (-not [string]::IsNullOrEmpty($AssignmentGroup)) {
-            $task.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
-        }
-        else {
-            $task.AssignmentGroup = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    }     
-          
-    if ($parameters.ContainsKey("Comments")) {
-        $task.Comments = $Comments
     }
-
-    if ($parameters.ContainsKey("WorkNotes")) {
-        $task.WorkNotes = $WorkNotes
-    }
-
-    if ($parameters.ContainsKey("Urgency")) {
-        $task.Urgency = $Urgency
-    }   
- 
-    if ($parameters.ContainsKey("Impact")) {
-        $task.Impact = $Impact
-    }   
- 
-    if ($parameters.ContainsKey("State")) {
-        $task.State = $State
-    }   
-     
-    if ($parameters.ContainsKey("ShortDescription")) {
-        $task.ShortDescription = $ShortDescription
-    }
-
-    if ($parameters.ContainsKey("Priority")) {
-        $task.Priority = $Priority
-    } 
-
+    if ($parameters.ContainsKey("ActivityDue")) {
+        $task.ActivityDue = $ActivityDue
+    }                                 
     if ($parameters.ContainsKey("AdditionalAssigneeList")) {
         $task.AdditionalAssigneeList = $AdditionalAssigneeList
     } 
-    
+    if ($parameters.ContainsKey("Approval")) {
+        $task.Approval = $Approval
+    } 
+    if ($parameters.ContainsKey("AssignedTo")) {
+        if ($AssignedTo) {
+            $task.AssignedTo = Get-ReferenceLink $AssignedTo
+        }
+        else {
+            $task.AssignedTo = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("AssignmentGroup")) {
+        if ($AssignmentGroup) {
+            $task.AssignmentGroup = Get-ReferenceLink $AssignmentGroup
+        }
+        else {
+            $task.AssignmentGroup = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("BusinessService")) {
+        if ($BusinessService) {
+            $task.BusinessService = Get-ReferenceLink $BusinessService
+        }
+        else {
+            $task.BusinessService = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ClosedBy")) {
+        if ($ClosedBy) {
+            $task.ClosedBy = Get-ReferenceLink $ClosedBy
+        }
+        else {
+            $task.ClosedBy = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("CloseNotes")) {
+        $task.CloseNotes = $CloseNotes
+    }     
+    if ($parameters.ContainsKey("CmdbCi")) {
+        if ($CmdbCi) {
+            $task.CmdbCi = Get-ReferenceLink $CmdbCi
+        }
+        else {
+            $task.CmdbCi = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Comments")) {
+        $task.Comments = $Comments
+    }
     if ($parameters.ContainsKey("Company")) {
-        if (-not [string]::IsNullOrEmpty($Company)) {
+        if ($Company) {
             $task.Company = Get-ReferenceLink $Company
         }
         else {
-            $task.Company = [ServiceNow.Graph.Models.ReferenceLink]$null
+            $task.Company = Get-ReferenceLink ""
         }
-    } 
-
-                
-    $requestBuilder.Request().UpdateAsync($task).GetAwaiter().GetResult()
+    }                  
+    if ($parameters.ContainsKey("ContactType")) {
+        $task.ContactType = $ContactType
+    }         
+    if ($parameters.ContainsKey("Contract")) {
+        if ($Contract) {
+            $task.Contract = Get-ReferenceLink $Contract
+        }
+        else {
+            $task.Contract = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("CorrelationDisplay")) {
+        $task.CorrelationDisplay = $CorrelationDisplay
+    }         
+    if ($parameters.ContainsKey("CorrelationId")) {
+        $task.CorrelationId = $CorrelationId
+    }                         
+    if ($parameters.ContainsKey("Description")) {
+        $task.Description = $Description
+    }     
+    if ($parameters.ContainsKey("DueDate")) {
+        $task.DueDate = $DueDate
+    }                                             
+    if ($parameters.ContainsKey("ExpectedStart")) {
+        $task.ExpectedStart = $ExpectedStart
+    }                                             
+    if ($parameters.ContainsKey("FollowUp")) {
+        $task.FollowUp = $FollowUp
+    }                                             
+    if ($parameters.ContainsKey("GroupList")) {
+        $task.GroupList = $GroupList
+    }                                             
+    if ($parameters.ContainsKey("Impact")) {
+        $task.Impact = $Impact
+    }    
+    if ($parameters.ContainsKey("Knowledge")) {
+        $task.Knowledge = $Knowledge
+    }
+    if ($parameters.ContainsKey("Location")) {
+        if ($Location) {
+            $task.Location = Get-ReferenceLink $Location
+        }
+        else {
+            $task.Location = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("OpenedBy")) {
+        if ($OpenedBy) {
+            $task.OpenedBy = Get-ReferenceLink $OpenedBy
+        }
+        else {
+            $task.OpenedBy = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $task.Parent = Get-ReferenceLink $Parent
+        }
+        else {
+            $task.Parent = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("Priority")) {
+        $task.Priority = $Priority
+    }
+    if ($parameters.ContainsKey("Request")) {
+        if ($Request) {
+            $task.Request = Get-ReferenceLink $Request
+        }
+        else {
+            $task.Request = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("RequestItem")) {
+        if ($RequestItem) {
+            $task.RequestItem = Get-ReferenceLink $RequestItem
+        }
+        else {
+            $task.RequestItem = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ScCatalog")) {
+        if ($ScCatalog) {
+            $task.ScCatalog = Get-ReferenceLink $ScCatalog
+        }
+        else {
+            $task.ScCatalog = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ServiceOffering")) {
+        if ($ServiceOffering) {
+            $task.ServiceOffering = Get-ReferenceLink $ServiceOffering
+        }
+        else {
+            $task.ServiceOffering = Get-ReferenceLink ""
+        }
+    }                  
+    if ($parameters.ContainsKey("ShortDescription")) {
+        $task.ShortDescription = $ShortDescription
+    }
+    if ($parameters.ContainsKey("State")) {
+        $task.State = $State
+    }   
+    if ($parameters.ContainsKey("Urgency")) {
+        $task.Urgency = $Urgency
+    }
+    if ($parameters.ContainsKey("UserInput")) {
+        $task.UserInput = $UserInput
+    }             
+    if ($parameters.ContainsKey("WatchList")) {
+        $task.WatchList = $WatchList
+    }             
+    if ($parameters.ContainsKey("WorkNotes")) {
+        $task.WorkNotes = $WorkNotes
+    }             
+    if ($parameters.ContainsKey("WorkNotesList")) {
+        $task.WorkNotesList = $WorkNotesList
+    }             
+        
+    $catalogTaskBuilder.Request().UpdateAsync($task).GetAwaiter().GetResult()
 }         
 
 function Get-SnowAttachment {
@@ -3793,20 +4340,12 @@ function New-SnowRoleHasGroup {
         [string]$Role,
 
         [parameter(Mandatory = $true)]
-        [string]$Group,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Inherits       
+        [string]$Group       
     )
-    $parameters = $MyInvocation.BoundParameters  
     $membership = New-Object -TypeName ServiceNow.Graph.Models.GroupHasRole
 
     $membership.User = Get-ReferenceLink $Group
     $membership.Role = Get-ReferenceLink $Role
-
-    if ($parameters.ContainsKey("Inherits")) {
-        $membership.Inherits = $Inherits
-    }
 
     $ServiceNowClient.GroupHasRoles().Request().AddAsync($membership).GetAwaiter().GetResult()
 }         
@@ -3922,25 +4461,6 @@ function Get-SnowTask {
         
     Get-Entity -CollectionBuilder $ServiceNowClient.Tasks() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
 }        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
 
 function Get-SnowJournalFields {
     param (
@@ -4068,6 +4588,24 @@ function Get-ReferenceLink {
         $refLink.Link = $Link
     }
     $refLink
+}
+
+function Get-SnowUser {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
 }
 
 function New-SnowUser {

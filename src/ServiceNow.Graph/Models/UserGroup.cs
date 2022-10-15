@@ -14,7 +14,7 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         public UserGroup()
         {
-            this.ObjectType = "sys_user_group";
+            ObjectType = "sys_user_group";
         }
 
         /// <summary>

@@ -12,13 +12,6 @@ namespace ServiceNow.Graph.Models
     [JsonConverter(typeof(DerivedTypeConverter))]
     public class Task : Entity
     {
-        private DateTime? _closedAt;
-        private DateTime? _openedAt;
-        private DateTime? _workEnd;
-        private DateTime? _approvalSet;
-        private DateTime? _workStart;
-        private DateTime? _slaDue;
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -84,7 +77,7 @@ namespace ServiceNow.Graph.Models
         /// Task state, integer (N1)
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "state", Required = Required.Default)]
-        public Int32? State { get; set; }
+        public int? State { get; set; }
 
         /// <summary>
         /// Knowledge entry, boolean
@@ -104,14 +97,8 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "closed_at", Required = Required.Default)]
         public DateTime? ClosedAt
         {
-            get => _closedAt;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _closedAt = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -179,21 +166,14 @@ namespace ServiceNow.Graph.Models
             set;
         }
 
-
         /// <summary>
         /// Opened at, datetime
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "opened_at", Required = Required.Default)]
         public DateTime? OpenedAt
         {
-            get => _openedAt;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _openedAt = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -214,14 +194,8 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "work_end", Required = Required.Default)]
         public DateTime? WorkEnd
         {
-            get => _workEnd;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _workEnd = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -230,14 +204,8 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "approval_set", Required = Required.Default)]
         public DateTime? ApprovalSet
         {
-            get => _approvalSet;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _approvalSet = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -251,6 +219,12 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "short_description", Required = Required.Default)]
         public string ShortDescription { get; set; }
+
+        /// <summary>
+        /// Contract, reference to ast_contract
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "contract", Required = Required.Default)]
+        public string Contract { get; set; }
 
         /// <summary>
         /// Correlation display
@@ -270,14 +244,8 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "work_start", Required = Required.Default)]
         public DateTime? WorkStart
         {
-            get => _workStart;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _workStart = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -395,14 +363,8 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "sla_due", Required = Required.Default)]
         public DateTime? SlaDue
         {
-            get => _slaDue;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _slaDue = value.Value;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -425,7 +387,7 @@ namespace ServiceNow.Graph.Models
         /// Escalation state, integer, default value is 0
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "escalation", Required = Required.Default)]
-        public Int32? Escalation { get; set; }
+        public int? Escalation { get; set; }
 
         /// <summary>
         /// Upon approval state, defaul value is 'proceed'
@@ -469,15 +431,6 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "universal_request", Required = Required.Default)]
         public ReferenceLink UniversalRequest
         { get; set; }
-
-        /// <summary>
-        /// Request state, X40
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "request_state", Required = Required.Default)]
-        public string RequestState
-        {
-            get; set;
-        }
 
         /// <summary>
         /// Transfer reason, X40

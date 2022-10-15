@@ -10,58 +10,16 @@ namespace ServiceNow.Graph.Models
     public class Attachment : Entity
     {
         /// <summary>
-        /// Size in bytes
-        /// </summary>
-        [JsonProperty(PropertyName = "size_bytes", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public long? SizeBytes { get; set; }
-
-        /// <summary>
-        /// File name, X100
-        /// </summary>
-        [JsonProperty(PropertyName = "file_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string FileName { get; set; }
-
-        /// <summary>
         /// Average image color, ServiceNow color type
         /// </summary>
         [JsonProperty(PropertyName = "average_image_color", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public string AverageImageColor { get; set; }
 
         /// <summary>
-        /// Image width
+        /// Chunk size bytes
         /// </summary>
-        [JsonProperty(PropertyName = "image_width", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public int? ImageWidth { get; set; }
-
-        /// <summary>
-        /// Name of table linked to this attachment
-        /// </summary>
-        [JsonProperty(PropertyName = "table_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string TableName { get; set; }
-
-        /// <summary>
-        /// Image height
-        /// </summary>
-        [JsonProperty(PropertyName = "image_height", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public int? ImageHeight { get; set; }
-
-        /// <summary>
-        /// Direct download link of the attachment
-        /// </summary>
-        [JsonProperty(PropertyName = "download_link", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public Uri DownloadLink { get; set; }
-
-        /// <summary>
-        /// HTTP Content type
-        /// </summary>
-        [JsonProperty(PropertyName = "content_type", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string ContentType { get; set; }
-
-        /// <summary>
-        /// Size of attachment when compressed
-        /// </summary>
-        [JsonProperty(PropertyName = "size_compressed", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public int? SizeCompressed { get; set; }
+        [JsonProperty(PropertyName = "chunk_size_bytes", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public int? ChunkSizeBytes { get; set; }
 
         /// <summary>
         /// Compressed flag
@@ -70,22 +28,22 @@ namespace ServiceNow.Graph.Models
         public bool? Compressed { get; set; }
 
         /// <summary>
-        /// Attachment state
+        /// HTTP Content type
         /// </summary>
-        [JsonProperty(PropertyName = "state", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string State { get; set; }
+        [JsonProperty(PropertyName = "content_type", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string ContentType { get; set; }
 
         /// <summary>
-        /// Sys_id of the referenced table row
+        /// Direct download link of the attachment
         /// </summary>
-        [JsonProperty(PropertyName = "table_sys_id", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string TableSysId { get; set; }
+        [JsonProperty(PropertyName = "download_link", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public Uri DownloadLink { get; set; }
 
         /// <summary>
-        /// Chunk size bytes
+        /// File name, X100
         /// </summary>
-        [JsonProperty(PropertyName = "chunk_size_bytes", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public int? ChunkSizeBytes { get; set; }
+        [JsonProperty(PropertyName = "file_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string FileName { get; set; }
 
         /// <summary>
         /// Hash value of attachment
@@ -97,5 +55,47 @@ namespace ServiceNow.Graph.Models
         /// Image base64 encoded
         /// </summary>
         public string Image { get; set; }
+
+        /// <summary>
+        /// Image height
+        /// </summary>
+        [JsonProperty(PropertyName = "image_height", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public int? ImageHeight { get; set; }
+
+        /// <summary>
+        /// Image width
+        /// </summary>
+        [JsonProperty(PropertyName = "image_width", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public int? ImageWidth { get; set; }
+
+        /// <summary>
+        /// Size in bytes
+        /// </summary>
+        [JsonProperty(PropertyName = "size_bytes", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public long? SizeBytes { get; set; }
+
+        /// <summary>
+        /// Size of attachment when compressed
+        /// </summary>
+        [JsonProperty(PropertyName = "size_compressed", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public int? SizeCompressed { get; set; }
+
+        /// <summary>
+        /// Attachment state
+        /// </summary>
+        [JsonProperty(PropertyName = "state", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string State { get; set; }
+
+        /// <summary>
+        /// Name of table linked to this attachment
+        /// </summary>
+        [JsonProperty(PropertyName = "table_name", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string TableName { get; set; }
+
+        /// <summary>
+        /// Sys_id of the referenced table row
+        /// </summary>
+        [JsonProperty(PropertyName = "table_sys_id", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string TableSysId { get; set; }
     }
 }

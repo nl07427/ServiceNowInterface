@@ -9,9 +9,6 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class User : Entity
     {
-        private DateTimeOffset? _lastLoginTime;
-        private DateTimeOffset? _lastLogin;
-
         /// <summary>
         /// Calendar integration
         /// </summary>
@@ -34,16 +31,10 @@ namespace ServiceNow.Graph.Models
         /// Last login time
         /// </summary>
         [JsonProperty(PropertyName = "last_login_time", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? LastLoginTime
+        public DateTime? LastLoginTime
         {
-            get => _lastLoginTime;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _lastLoginTime = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -110,16 +101,10 @@ namespace ServiceNow.Graph.Models
         /// Last login, date
         /// </summary>
         [JsonProperty(PropertyName = "last_login", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? LastLogin
+        public DateTime? LastLogin
         {
-            get => _lastLogin;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _lastLogin = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>

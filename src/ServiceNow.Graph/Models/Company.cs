@@ -9,9 +9,6 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Company : Entity
     {
-        private DateTimeOffset? _coordinatesRetrievedOn;
-        private DateTimeOffset? _fiscalYear;
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -60,16 +57,10 @@ namespace ServiceNow.Graph.Models
         /// Coordinates retrieved on, date.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "coordinates_retrieved_on", Required = Required.Default)]
-        public DateTimeOffset? CoordinatesRetrievedOn
+        public string CoordinatesRetrievedOn
         {
-            get => _coordinatesRetrievedOn;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _coordinatesRetrievedOn = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -100,16 +91,10 @@ namespace ServiceNow.Graph.Models
         /// Fiscal year, date but X40 in database
         /// </summary>
         [JsonProperty(PropertyName = "fiscal_year", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? FiscalYear 
+        public string FiscalYear 
         {
-            get => _fiscalYear;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _fiscalYear = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>

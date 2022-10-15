@@ -11,16 +11,6 @@ namespace ServiceNow.Graph.Models
     [JsonConverter(typeof(DerivedTypeConverter))]
     public class BaseConfigurationItem : Entity
     {
-        private DateTimeOffset? _checkedIn;
-        private DateTimeOffset? _installDate;
-        private DateTimeOffset? _warrantExpirationDate;
-        private DateTimeOffset? _checkedOut;
-        private DateTimeOffset? _orderDate;
-        private DateTimeOffset? _deliveryDate;
-        private DateTimeOffset? _dueDate;
-        private DateTimeOffset? _assigned;
-        private DateTimeOffset? _purchaseDate;
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -75,16 +65,9 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "checked_in", NullValueHandling = NullValueHandling.Ignore,
             Required = Required.Default)]
-        public DateTimeOffset? CheckedIn
+        public DateTime? CheckedIn
         {
-            get => _checkedIn;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _checkedIn = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>
@@ -109,16 +92,9 @@ namespace ServiceNow.Graph.Models
         /// Date and time instance was most recently installed
         /// </summary>
         [JsonProperty(PropertyName = "install_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? InstallDate
+        public DateTime? InstallDate
         {
-            get => _installDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _installDate = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>
@@ -155,16 +131,9 @@ namespace ServiceNow.Graph.Models
         /// Date current warranty expires
         /// </summary>
         [JsonProperty(PropertyName = "warranty_expiration", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? WarrantyExpiration
+        public DateTime? WarrantyExpiration
         {
-            get => _warrantExpirationDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _warrantExpirationDate = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>
@@ -195,16 +164,10 @@ namespace ServiceNow.Graph.Models
         /// Date and time of checking out
         /// </summary>
         [JsonProperty(PropertyName = "checked_out", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? CheckedOut
+        public DateTime? CheckedOut
         {
-            get => _checkedOut;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _checkedOut = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -229,16 +192,10 @@ namespace ServiceNow.Graph.Models
         /// Date and time instance was initially ordered
         /// </summary>
         [JsonProperty(PropertyName = "order_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? OrderDate
+        public DateTime? OrderDate
         {
-            get => _orderDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _orderDate = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -251,16 +208,10 @@ namespace ServiceNow.Graph.Models
         /// Date and time instance was initially received
         /// </summary>
         [JsonProperty(PropertyName = "delivery_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? DeliveryDate
+        public DateTime? DeliveryDate
         {
-            get => _deliveryDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _deliveryDate = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -279,16 +230,10 @@ namespace ServiceNow.Graph.Models
         /// Date and time instance was due
         /// </summary>
         [JsonProperty(PropertyName = "due", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? Due
+        public DateTime? Due
         {
-            get => _dueDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _dueDate = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -313,16 +258,10 @@ namespace ServiceNow.Graph.Models
         /// Date and time of assignment to user
         /// </summary>
         [JsonProperty(PropertyName = "assigned", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? Assigned
+        public DateTime? Assigned
         {
-            get => _assigned;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _assigned = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -341,16 +280,10 @@ namespace ServiceNow.Graph.Models
         /// Date instance was purchased
         /// </summary>
         [JsonProperty(PropertyName = "purchase_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? PurchaseDate
+        public DateTime? PurchaseDate
         {
-            get => _purchaseDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _purchaseDate = value.Value + value.Value.Offset;
-                }
-            }
+            get;
+            set;
         }
 
         /// <summary>

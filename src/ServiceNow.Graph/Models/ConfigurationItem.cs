@@ -11,11 +11,6 @@ namespace ServiceNow.Graph.Models
     [JsonConverter(typeof(DerivedTypeConverter))]
     public class ConfigurationItem : BaseConfigurationItem
     {
-        private DateTimeOffset? _attestedDate;
-        private DateTimeOffset? _firstDiscovered;
-        private DateTimeOffset? _lastDiscovered;
-        private DateTimeOffset? _startDate;
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -26,16 +21,9 @@ namespace ServiceNow.Graph.Models
         /// Attested date
         /// </summary>
         [JsonProperty(PropertyName = "attested_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? AttestedDate
+        public DateTime? AttestedDate
         {
-            get => _attestedDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _attestedDate = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>
@@ -66,16 +54,9 @@ namespace ServiceNow.Graph.Models
         /// Date and time instance was initially discovered
         /// </summary>
         [JsonProperty(PropertyName = "first_discovered", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? FirstDiscovered
+        public DateTime? FirstDiscovered
         {
-            get => _firstDiscovered;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _firstDiscovered = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>
@@ -154,16 +135,9 @@ namespace ServiceNow.Graph.Models
         /// Date and time instance was last discovered
         /// </summary>
         [JsonProperty(PropertyName = "last_discovered", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? LastDiscovered
+        public DateTime? LastDiscovered
         {
-            get => _lastDiscovered;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _lastDiscovered = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>
@@ -182,16 +156,9 @@ namespace ServiceNow.Graph.Models
         /// Date and time the instance was last started
         /// </summary>
         [JsonProperty(PropertyName = "start_date", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? StartDate
+        public DateTime? StartDate
         {
-            get => _startDate;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _startDate = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>

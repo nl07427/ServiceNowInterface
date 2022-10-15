@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace ServiceNow.Graph.Models
 {
@@ -9,9 +8,6 @@ namespace ServiceNow.Graph.Models
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class CostCenter : Entity
     {
-        private DateTimeOffset? _validFrom;
-        private DateTimeOffset? _validTo;
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -59,32 +55,18 @@ namespace ServiceNow.Graph.Models
         /// Valid from, datetime
         /// </summary>
         [JsonProperty(PropertyName = "valid_from", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? ValidFrom
+        public string ValidFrom
         {
-            get => _validFrom;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _validFrom = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>
         /// Valid to, datetime
         /// </summary>
         [JsonProperty(PropertyName = "valid_to", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public DateTimeOffset? ValidTo
+        public string ValidTo
         {
-            get => _validTo;
-            set
-            {
-                if (value.HasValue)
-                {
-                    _validTo = value.Value + value.Value.Offset;
-                }
-            }
+            get; set;
         }
 
         /// <summary>

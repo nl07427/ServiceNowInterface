@@ -17,18 +17,6 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
-        /// Role, reference to sys_user_role table
-        /// </summary>
-        [JsonProperty(PropertyName = "role", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Role { get; set; }
-
-        /// <summary>
-        /// Inherits, boolean
-        /// </summary>
-        [JsonProperty(PropertyName = "inherits", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public bool? Inherits { get; set; }
-
-        /// <summary>
         /// Granted by, reference to sys_user_group
         /// </summary>
         [JsonProperty(PropertyName = "granted_by", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
@@ -39,5 +27,17 @@ namespace ServiceNow.Graph.Models
         /// </summary>
         [JsonProperty(PropertyName = "group", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public ReferenceLink Group { get; set; }
+
+        /// <summary>
+        /// Inherits, boolean
+        /// </summary>
+        [JsonProperty(PropertyName = "inherits", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public bool? Inherits { get; set; }
+
+        /// <summary>
+        /// Role, reference to sys_user_role table
+        /// </summary>
+        [JsonProperty(PropertyName = "role", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink Role { get; set; }
     }
 }
