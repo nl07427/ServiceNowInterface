@@ -14001,41 +14001,35 @@
         <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="WhenUpdated" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="WhenUpdated" />
           </ReturnBindings>
         </Property>
 
         <Property Name="WhenCreated" DataType="DateTime" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="WhenCreated" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="WhenCreated" />
           </ReturnBindings>
         </Property>
 
         <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="ObjectType" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="ObjectType" />
           </ReturnBindings>
         </Property>
 
         <Property Name="CreatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="CreatedBy" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="UpdatedBy" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="SysModCount" DataType="Int" AccessConstraint="ReadOnly">
           <ReturnBindings>
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="SysModCount" />
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="SysModCount" />
           </ReturnBindings>
         </Property>
@@ -14043,14 +14037,12 @@
         <Property Name="GrantedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="GrantedBy.ToString()" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="GrantedBy.ToString()" />
           </ReturnBindings>
         </Property>
 
         <Property Name="Group" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="Group.ToString()" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="Group.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowRoleHasGroup" Method="Insert" />
@@ -14063,14 +14055,12 @@
         <Property Name="Inherits" DataType="Bool">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="Inherits" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="Inherits" />
           </ReturnBindings>
         </Property>
 
         <Property Name="Role" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="Role.ToString()" />
-            <Bind CommandResultOf="New-SnowRoleHasGroup" Path="Role.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowRoleHasGroup" Method="Insert" />
