@@ -2373,498 +2373,6 @@
           ]]>
       </CustomCommand>
 
-      <CustomCommand Name="Get-SnowUser">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-          ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Set-SnowUser">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [string]$HomePhone,
-
-        [parameter(Mandatory = $false)]
-        [int]$CalendarIntegration,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Country,
-
-        [parameter(Mandatory = $false)]
-        [string]$UserSecret,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$State,
-
-        [parameter(Mandatory = $false)]
-        [string]$FirstName,
-
-        [parameter(Mandatory = $false)]
-        [string]$MiddleName,
-
-        [parameter(Mandatory = $false)]
-        [string]$LastName,
-
-        [parameter(Mandatory = $false)]
-        [string]$EmployeeNumber,
-
-        [parameter(Mandatory = $false)]
-        [string]$Gender,
-            
-        [parameter(Mandatory = $false)]
-        [string]$UserName,
-            
-        [parameter(Mandatory = $false)]
-        [string]$DateFormat,
-            
-        [parameter(Mandatory = $false)]
-        [string]$TimeZone,
-
-        [parameter(Mandatory = $false)]
-        [string]$City,
-
-        [parameter(Mandatory = $false)]
-        [string]$Title,
-
-        [parameter(Mandatory = $false)]
-        [bool]$InternalIntegrationUser,
-
-        [parameter(Mandatory = $false)]
-        [string]$Street,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$Introduction,
-
-        [parameter(Mandatory = $false)]
-        [string]$PreferredLanguage,
-
-        [parameter(Mandatory = $false)]
-        [string]$Phone,
-
-        [parameter(Mandatory = $false)]
-        [string]$MobilePhone,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Notification,
-
-        [parameter(Mandatory = $false)]
-        [string]$Department,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [string]$TimeFormat,
-
-        [parameter(Mandatory = $false)]
-        [string]$Zip,
-
-        [parameter(Mandatory = $false)]
-        [string]$SsoSource,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Vip,
-
-        [parameter(Mandatory = $false)]
-        [bool]$EnableMultifactorAuthentication,
-
-        [parameter(Mandatory = $false)]
-        [bool]$LockedOut
-
-    )
-        
-    $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
-    $userUpdate = New-Object -TypeName ServiceNow.Graph.Models.User
-    $parameters = $MyInvocation.BoundParameters  
-    $userUpdate.Id = $Id
-            
-    if ($parameters.ContainsKey("Active")) {
-        $userUpdate.Active = $Active
-    }
-    if ($parameters.ContainsKey("LockedOut")) {
-        $userUpdate.LockedOut = $LockedOut
-    }    
-    if ($parameters.ContainsKey("HomePhone")) {
-        $userUpdate.HomePhone = $HomePhone
-    }
-    if ($parameters.ContainsKey("CalendarIntegration")) {
-        $userUpdate.CalendarIntegration = $CalendarIntegration
-    }
-    if ($parameters.ContainsKey("Country")) {
-        $userUpdate.Country = $Country
-    }
-    if ($parameters.ContainsKey("UserSecret")) {
-        $userUpdate.UserPassword = $UserSecret
-    }
-    if ($parameters.ContainsKey("Source")) {
-        $userUpdate.Source = $Source
-    }
-    if ($parameters.ContainsKey("State")) {
-        $userUpdate.State = $State
-    }
-    if ($parameters.ContainsKey("FirstName")) {
-        $userUpdate.FirstName = $FirstName
-    }
-    if ($parameters.ContainsKey("MiddleName")) {
-        $userUpdate.MiddleName = $MiddleName
-    }
-    if ($parameters.ContainsKey("LastName")) {
-        $userUpdate.LastName = $LastName
-    }       
-    if ($parameters.ContainsKey("EmployeeNumber")) {
-        $userUpdate.EmployeeNumber = $EmployeeNumber
-    } 
-    if ($parameters.ContainsKey("Gender")) {
-        $userUpdate.Gender = $Gender
-    } 
-    if ($parameters.ContainsKey("UserName")) {
-        $userUpdate.UserName = $UserName
-    } 
-    if ($parameters.ContainsKey("DateFormat")) {
-        $userUpdate.DateFormat = $DateFormat
-    } 
-    if ($parameters.ContainsKey("TimeZone")) {
-        $userUpdate.TimeZone = $TimeZone
-    } 
-    if ($parameters.ContainsKey("City")) {
-        $userUpdate.City = $City
-    } 
-    if ($parameters.ContainsKey("Title")) {
-        $userUpdate.Title = $Title
-    } 
-    if ($parameters.ContainsKey("InternalIntegrationUser")) {
-        $userUpdate.InternalIntegrationUser = $InternalIntegrationUser
-    } 
-    if ($parameters.ContainsKey("Street")) {
-        $userUpdate.Street = $Street
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $userUpdate.Email = $Email
-    } 
-    if ($parameters.ContainsKey("Introduction")) {
-        $userUpdate.Introduction = $Introduction
-    } 
-    if ($parameters.ContainsKey("PreferredLanguage")) {
-        $userUpdate.PreferredLanguage = $PreferredLanguage
-    } 
-    if ($parameters.ContainsKey("Phone")) {
-        $userUpdate.Phone = $Phone
-    } 
-    if ($parameters.ContainsKey("Division")) {
-       $userUpdate.Division = $Division
-    }    
-    if ($parameters.ContainsKey("MobilePhone")) {
-        $userUpdate.MobilePhone = $MobilePhone
-    } 
-    if ($parameters.ContainsKey("CostCenter")) {
-        $userUpdate.CostCenter = Get-ReferenceLink $CostCenter
-    } 
-    if ($parameters.ContainsKey("Manager")) {
-        $userUpdate.Manager = Get-ReferenceLink $Manager
-    } 
-    if ($parameters.ContainsKey("Notification")) {
-        $userUpdate.Notification = $Notification
-    } 
-    if ($parameters.ContainsKey("Company")) {
-        $userUpdate.Company = Get-ReferenceLink $Company
-    } 
-    if ($parameters.ContainsKey("Department")) {
-        $userUpdate.Department = Get-ReferenceLink $Department
-    } 
-    if ($parameters.ContainsKey("Location")) {
-        $userUpdate.Location = Get-ReferenceLink $Location
-    } 
-    if ($parameters.ContainsKey("TimeFormat")) {
-        $userUpdate.TimeFormat = $TimeFormat
-    } 
-    if ($parameters.ContainsKey("Zip")) {
-        $userUpdate.Zip = $Zip
-    } 
-    if ($parameters.ContainsKey("Vip")) {
-        $userUpdate.Vip = $Vip
-    } 
-    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
-        $userUpdate.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
-    } 
-
-   $userRequestBuilder.Request().UpdateAsync($userUpdate).GetAwaiter().GetResult()
-          ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="New-SnowUser">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [string]$HomePhone,
-
-        [parameter(Mandatory = $false)]
-        [int]$CalendarIntegration,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Country,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Division,
-
-        [parameter(Mandatory = $false)]
-        [string]$UserSecret,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$State,
-
-        [parameter(Mandatory = $false)]
-        [string]$FirstName,
-
-        [parameter(Mandatory = $false)]
-        [string]$MiddleName,
-
-        [parameter(Mandatory = $false)]
-        [string]$LastName,
-
-        [parameter(Mandatory = $false)]
-        [string]$EmployeeNumber,
-
-        [parameter(Mandatory = $false)]
-        [string]$Gender,
-            
-        [parameter(Mandatory = $false)]
-        [string]$UserName,
-            
-        [parameter(Mandatory = $false)]
-        [string]$DateFormat,
-            
-        [parameter(Mandatory = $false)]
-        [string]$TimeZone,
-
-        [parameter(Mandatory = $false)]
-        [string]$City,
-
-        [parameter(Mandatory = $false)]
-        [string]$Title,
-
-        [parameter(Mandatory = $false)]
-        [bool]$InternalIntegrationUser,
-
-        [parameter(Mandatory = $false)]
-        [string]$Street,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$Introduction,
-
-        [parameter(Mandatory = $false)]
-        [string]$PreferredLanguage,
-
-        [parameter(Mandatory = $false)]
-        [string]$Phone,
-
-        [parameter(Mandatory = $false)]
-        [string]$MobilePhone,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Notification,
-
-        [parameter(Mandatory = $false)]
-        [string]$Department,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [string]$TimeFormat,
-
-        [parameter(Mandatory = $false)]
-        [string]$Zip,
-
-        [parameter(Mandatory = $false)]
-        [string]$SsoSource,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Vip,
-
-        [parameter(Mandatory = $false)]
-        [bool]$EnableMultifactorAuthentication
-    )
-        
-    $userRequestBuilder = $ServiceNowClient.Users()
-    $user = New-Object -TypeName ServiceNow.Graph.Models.User
-    $parameters = $MyInvocation.BoundParameters  
-            
-
-    if ($parameters.ContainsKey("Active")) {
-        $user.Active = $Active
-    }
-    if ($parameters.ContainsKey("HomePhone")) {
-        $user.HomePhone = $HomePhone
-    }
-    if ($parameters.ContainsKey("CalendarIntegration")) {
-        $user.CalendarIntegration = $CalendarIntegration
-    }
-    if ($parameters.ContainsKey("Division")) {
-        $user.Division = $Division
-    }
-    if ($parameters.ContainsKey("Country")) {
-        $user.Country = $Country
-    }
-    if ($parameters.ContainsKey("UserSecret")) {
-        $user.UserPassword = $UserSecret
-    }
-    if ($parameters.ContainsKey("Source")) {
-        $user.Source = $Source
-    }
-    if ($parameters.ContainsKey("State")) {
-        $user.State = $State
-    }
-    if ($parameters.ContainsKey("FirstName")) {
-        $user.FirstName = $FirstName
-    }
-    if ($parameters.ContainsKey("MiddleName")) {
-        $user.MiddleName = $MiddleName
-    }
-    if ($parameters.ContainsKey("LastName")) {
-        $user.LastName = $LastName
-    }       
-    if ($parameters.ContainsKey("EmployeeNumber")) {
-        $user.EmployeeNumber = $EmployeeNumber
-    } 
-    if ($parameters.ContainsKey("Gender")) {
-        $user.Gender = $Gender
-    } 
-    if ($parameters.ContainsKey("UserName")) {
-        $user.UserName = $UserName
-    } 
-    if ($parameters.ContainsKey("DateFormat")) {
-        $user.DateFormat = $DateFormat
-    } 
-    if ($parameters.ContainsKey("TimeZone")) {
-        $user.TimeZone = $TimeZone
-    } 
-    if ($parameters.ContainsKey("City")) {
-        $user.City = $City
-    } 
-    if ($parameters.ContainsKey("Title")) {
-        $user.Title = $Title
-    } 
-    if ($parameters.ContainsKey("InternalIntegrationUser")) {
-        $user.InternalIntegrationUser = $InternalIntegrationUser
-    } 
-    if ($parameters.ContainsKey("Street")) {
-        $user.Street = $Street
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $user.Email = $Email
-    } 
-    if ($parameters.ContainsKey("Introduction")) {
-        $user.Introduction = $Introduction
-    } 
-    if ($parameters.ContainsKey("PreferredLanguage")) {
-        $user.PreferredLanguage = $PreferredLanguage
-    } 
-    if ($parameters.ContainsKey("Phone")) {
-        $user.Phone = $Phone
-    } 
-    if ($parameters.ContainsKey("MobilePhone")) {
-        $user.MobilePhone = $MobilePhone
-    } 
-    if ($parameters.ContainsKey("CostCenter")) {
-        $user.CostCenter = Get-ReferenceLink $CostCenter
-    } 
-    if ($parameters.ContainsKey("Manager")) {
-        $user.Manager = Get-ReferenceLink $Manager
-    } 
-    if ($parameters.ContainsKey("Notification")) {
-        $user.Notification = $Notification
-    } 
-    if ($parameters.ContainsKey("Company")) {
-        $user.Company = Get-ReferenceLink $Company
-    } 
-    if ($parameters.ContainsKey("Department")) {
-        $user.Department = Get-ReferenceLink $Department
-    } 
-    if ($parameters.ContainsKey("Location")) {
-        $user.Location = Get-ReferenceLink $Location
-    } 
-    if ($parameters.ContainsKey("TimeFormat")) {
-        $user.TimeFormat = $TimeFormat
-    } 
-    if ($parameters.ContainsKey("Zip")) {
-        $user.Zip = $Zip
-    } 
-    if ($parameters.ContainsKey("Vip")) {
-        $user.Vip = $Vip
-    } 
-    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
-        $user.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
-    } 
-
-     $userRequestBuilder.Request().AddAsync($user).GetAwaiter().GetResult()
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Remove-SnowUser">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-        
-    $ServiceNowClient.Users()[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
-            ]]>
-      </CustomCommand>
-
       <CustomCommand Name="Get-SnowGroup">
         <![CDATA[
     param (
@@ -5479,6 +4987,565 @@
     
     $ServiceNowClient.GroupHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
             ]]>
+      </CustomCommand>
+
+            <CustomCommand Name="Get-SnowUser">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowUser">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$Avatar,
+
+        [parameter(Mandatory = $false)]
+        [string]$Building,
+
+        [parameter(Mandatory = $false)]
+        [int]$CalendarIntegration,
+        
+        [parameter(Mandatory = $false)]
+        [string]$City,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+        
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [string]$DateFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$Department,
+
+        [parameter(Mandatory = $false)]
+        [string]$EduStatus,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [string]$EmployeeNumber,
+
+        [parameter(Mandatory = $false)]
+        [bool]$EnableMultifactorAuthentication,
+
+        [parameter(Mandatory = $false)]
+        [string]$FirstName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Gender,
+
+        [parameter(Mandatory = $false)]
+        [string]$HomePhone,
+
+        [parameter(Mandatory = $false)]
+        [bool]$InternalIntegrationUser,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Introduction,
+
+        [parameter(Mandatory = $false)]
+        [string]$LastName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$MiddleName,
+
+        [parameter(Mandatory = $false)]
+        [string]$MobilePhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notification,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Photo,
+
+        [parameter(Mandatory = $false)]
+        [string]$PreferredLanguage,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,        
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Title,
+            
+        [parameter(Mandatory = $false)]
+        [string]$UserName,
+            
+        [parameter(Mandatory = $false)]
+        [bool]$Vip,
+
+        [parameter(Mandatory = $false)]
+        [bool]$WebServiceAccessOnly,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip
+    )
+        
+    $userRequestBuilder = $ServiceNowClient.Users()
+    $user = New-Object -TypeName ServiceNow.Graph.Models.User
+    $parameters = $MyInvocation.BoundParameters  
+            
+    if ($parameters.ContainsKey("Active")) {
+        $user.Active = $Active
+    }
+    if ($parameters.ContainsKey("Avatar")) {
+        $user.Avatar = $Avatar
+    }
+    if ($parameters.ContainsKey("Building") -and $Building) {
+        $user.Building = Get-ReferenceLink $Building
+    }                      
+    if ($parameters.ContainsKey("CalendarIntegration")) {
+        $user.CalendarIntegration = $CalendarIntegration
+    }
+    if ($parameters.ContainsKey("City")) {
+        $user.City = $City
+    }     
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $user.Company = Get-ReferenceLink $Company
+    }     
+    if ($parameters.ContainsKey("CostCenter") -and $CostCenter) {
+        $user.CostCenter = Get-ReferenceLink $CostCenter
+    }     
+    if ($parameters.ContainsKey("Country")) {
+        $user.Country = $Country
+    }
+    if ($parameters.ContainsKey("DateFormat")) {
+        $user.DateFormat = $DateFormat
+    }     
+    if ($parameters.ContainsKey("Department") -and $Department) {
+        $user.Department = Get-ReferenceLink $Department
+    }
+    if ($parameters.ContainsKey("EduStatus")) {
+        $user.EduStatus = $EduStatus
+    }         
+    if ($parameters.ContainsKey("Email")) {
+        $user.Email = $Email
+    }     
+    if ($parameters.ContainsKey("EmployeeNumber")) {
+        $user.EmployeeNumber = $EmployeeNumber
+    }     
+    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
+        $user.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
+    }     
+    if ($parameters.ContainsKey("FirstName")) {
+        $user.FirstName = $FirstName
+    }
+    if ($parameters.ContainsKey("Gender")) {
+        $user.Gender = $Gender
+    } 
+    if ($parameters.ContainsKey("HomePhone")) {
+        $user.HomePhone = $HomePhone
+    }
+    if ($parameters.ContainsKey("InternalIntegrationUser")) {
+        $user.InternalIntegrationUser = $InternalIntegrationUser
+    } 
+    if ($parameters.ContainsKey("Introduction")) {
+        $user.Introduction = $Introduction
+    }     
+    if ($parameters.ContainsKey("LastName")) {
+        $user.LastName = $LastName
+    }       
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $user.Location = Get-ReferenceLink $Location
+    }   
+    if ($parameters.ContainsKey("Manager") -and $Manager) {
+        $user.Manager = Get-ReferenceLink $Manager
+    }       
+    if ($parameters.ContainsKey("MiddleName")) {
+        $user.MiddleName = $MiddleName
+    }
+    if ($parameters.ContainsKey("MobilePhone")) {
+        $user.MobilePhone = $MobilePhone
+    } 
+    if ($parameters.ContainsKey("Notification")) {
+        $user.Notification = $Notification
+    }     
+    if ($parameters.ContainsKey("Phone")) {
+        $user.Phone = $Phone
+    }     
+    if ($parameters.ContainsKey("Photo")) {
+        $user.Photo = $Photo
+    }     
+    if ($parameters.ContainsKey("PreferredLanguage")) {
+        $user.PreferredLanguage = $PreferredLanguage
+    }     
+    if ($parameters.ContainsKey("Source")) {
+        $user.Source = $Source
+    }
+    if ($parameters.ContainsKey("State")) {
+        $user.State = $State
+    }
+    if ($parameters.ContainsKey("Street")) {
+        $user.Street = $Street
+    } 
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $user.SysDomain = Get-ReferenceLink $SysDomain
+    } 
+    if ($parameters.ContainsKey("TimeFormat")) {
+        $user.TimeFormat = $TimeFormat
+    } 
+    if ($parameters.ContainsKey("TimeZone")) {
+        $user.TimeZone = $TimeZone
+    } 
+    if ($parameters.ContainsKey("Title")) {
+        $user.Title = $Title
+    } 
+    if ($parameters.ContainsKey("UserName")) {
+        $user.UserName = $UserName
+    } 
+    if ($parameters.ContainsKey("Vip")) {
+        $user.Vip = $Vip
+    } 
+    if ($parameters.ContainsKey("WebServiceAccessOnly")) {
+        $user.WebServiceAccessOnly = $WebServiceAccessOnly
+    } 
+    if ($parameters.ContainsKey("Zip")) {
+        $user.Zip = $Zip
+    } 
+
+     $userRequestBuilder.Request().AddAsync($user).GetAwaiter().GetResult()
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Remove-SnowUser">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id
+    )
+        
+    $ServiceNowClient.Users()[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
+            ]]>
+      </CustomCommand>
+
+  <CustomCommand Name="Set-SnowUser">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$Avatar,
+
+        [parameter(Mandatory = $false)]
+        [string]$Building,
+
+        [parameter(Mandatory = $false)]
+        [int]$CalendarIntegration,
+        
+        [parameter(Mandatory = $false)]
+        [string]$City,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+        
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [string]$DateFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$Department,
+
+        [parameter(Mandatory = $false)]
+        [string]$EduStatus,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [string]$EmployeeNumber,
+
+        [parameter(Mandatory = $false)]
+        [bool]$EnableMultifactorAuthentication,
+
+        [parameter(Mandatory = $false)]
+        [string]$FirstName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Gender,
+
+        [parameter(Mandatory = $false)]
+        [string]$HomePhone,
+
+        [parameter(Mandatory = $false)]
+        [bool]$InternalIntegrationUser,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Introduction,
+
+        [parameter(Mandatory = $false)]
+        [string]$LastName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [bool]$LockedOut,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$MiddleName,
+
+        [parameter(Mandatory = $false)]
+        [string]$MobilePhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notification,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Photo,
+
+        [parameter(Mandatory = $false)]
+        [string]$PreferredLanguage,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$TimeFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Title,
+            
+        [parameter(Mandatory = $false)]
+        [string]$UserName,
+            
+        [parameter(Mandatory = $false)]
+        [bool]$Vip,
+
+        [parameter(Mandatory = $false)]
+        [bool]$WebServiceAccessOnly,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip
+    )
+        
+    $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
+    $user = New-Object -TypeName ServiceNow.Graph.Models.User
+    $parameters = $MyInvocation.BoundParameters  
+    $user.Id = $Id
+            
+    if ($parameters.ContainsKey("Active")) {
+        $user.Active = $Active
+    }
+    if ($parameters.ContainsKey("Avatar")) {
+        $user.Avatar = $Avatar
+    }
+    if ($parameters.ContainsKey("Building")) {
+        if ($Building) {
+            $user.Building = Get-ReferenceLink $Building
+        }
+        else {
+            $user.Building = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("CalendarIntegration")) {
+        $user.CalendarIntegration = $CalendarIntegration
+    }
+    if ($parameters.ContainsKey("City")) {
+        $user.City = $City
+    }     
+    if ($parameters.ContainsKey("Company")) {
+        if ($Company) {
+            $user.Company = Get-ReferenceLink $Company
+        }
+        else {
+            $user.Company = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("CostCenter")) {
+        if ($CostCenter) {
+            $user.CostCenter = Get-ReferenceLink $CostCenter
+        }
+        else {
+            $user.CostCenter = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("Country")) {
+        $user.Country = $Country
+    }
+    if ($parameters.ContainsKey("DateFormat")) {
+        $user.DateFormat = $DateFormat
+    }     
+    if ($parameters.ContainsKey("Department")) {
+        if ($Department) {
+            $user.Department = Get-ReferenceLink $Department
+        }
+        else {
+            $user.Department = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("EduStatus")) {
+        $user.EduStatus = $EduStatus
+    }         
+    if ($parameters.ContainsKey("Email")) {
+        $user.Email = $Email
+    }     
+    if ($parameters.ContainsKey("EmployeeNumber")) {
+        $user.EmployeeNumber = $EmployeeNumber
+    }     
+    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
+        $user.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
+    }     
+    if ($parameters.ContainsKey("FirstName")) {
+        $user.FirstName = $FirstName
+    }
+    if ($parameters.ContainsKey("Gender")) {
+        $user.Gender = $Gender
+    } 
+    if ($parameters.ContainsKey("HomePhone")) {
+        $user.HomePhone = $HomePhone
+    }
+    if ($parameters.ContainsKey("InternalIntegrationUser")) {
+        $user.InternalIntegrationUser = $InternalIntegrationUser
+    } 
+    if ($parameters.ContainsKey("Introduction")) {
+        $user.Introduction = $Introduction
+    }     
+    if ($parameters.ContainsKey("LastName")) {
+        $user.LastName = $LastName
+    }       
+    if ($parameters.ContainsKey("Location")) {
+        if ($Location) {
+            $user.Location = Get-ReferenceLink $Location
+        }
+        else {
+            $user.Location = Get-ReferenceLink ""
+        }
+    }       
+    if ($parameters.ContainsKey("LockedOut")) {
+        $user.LockedOut = $LockedOut
+    }                          
+    if ($parameters.ContainsKey("Manager")) {
+        if ($Manager) {
+            $user.Manager = Get-ReferenceLink $Manager
+        }
+        else {
+            $user.Manager = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("MiddleName")) {
+        $user.MiddleName = $MiddleName
+    }
+    if ($parameters.ContainsKey("MobilePhone")) {
+        $user.MobilePhone = $MobilePhone
+    } 
+    if ($parameters.ContainsKey("Notification")) {
+        $user.Notification = $Notification
+    }     
+    if ($parameters.ContainsKey("Phone")) {
+        $user.Phone = $Phone
+    }     
+    if ($parameters.ContainsKey("Photo")) {
+        $user.Photo = $Photo
+    }     
+    if ($parameters.ContainsKey("PreferredLanguage")) {
+        $user.PreferredLanguage = $PreferredLanguage
+    }     
+    if ($parameters.ContainsKey("Source")) {
+        $user.Source = $Source
+    }
+    if ($parameters.ContainsKey("State")) {
+        $user.State = $State
+    }
+    if ($parameters.ContainsKey("Street")) {
+        $user.Street = $Street
+    } 
+    if ($parameters.ContainsKey("TimeFormat")) {
+        $user.TimeFormat = $TimeFormat
+    } 
+    if ($parameters.ContainsKey("TimeZone")) {
+        $user.TimeZone = $TimeZone
+    } 
+    if ($parameters.ContainsKey("Title")) {
+        $user.Title = $Title
+    } 
+    if ($parameters.ContainsKey("UserName")) {
+        $user.UserName = $UserName
+    } 
+    if ($parameters.ContainsKey("Vip")) {
+        $user.Vip = $Vip
+    } 
+    if ($parameters.ContainsKey("WebServiceAccessOnly")) {
+        $user.WebServiceAccessOnly = $WebServiceAccessOnly
+    } 
+    if ($parameters.ContainsKey("Zip")) {
+        $user.Zip = $Zip
+    } 
+
+   $userRequestBuilder.Request().UpdateAsync($user).GetAwaiter().GetResult()
+          ]]>
       </CustomCommand>
 
       <CustomCommand Name="New-SnowRoleHasUser">
@@ -8743,6 +8810,12 @@
           </CommandMappings>
         </Property>
 
+        <Property Name="RouteReason" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowIncident" Path="RouteReason" />
+          </ReturnBindings>
+        </Property>
+
         <Property Name="ServiceOffering" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowIncident" Path="ServiceOffering.ToString()" />
@@ -8817,6 +8890,12 @@
             <Map ToCommand="Set-SnowIncident" Parameter="SubCategory" />
             <Map ToCommand="New-SnowIncident" Parameter="SubCategory" />
           </CommandMappings>
+        </Property>
+
+        <Property Name="TaskEffectiveNumber" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowIncident" Path="TaskEffectiveNumber" />
+          </ReturnBindings>
         </Property>
 
         <Property Name="TimeWorked" DataType="String">
@@ -13341,12 +13420,6 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="EstimatedDelivery" DataType="DateTime">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogTask" Path="EstimatedDelivery" />
-          </ReturnBindings>
-        </Property>
-
         <Property Name="ExpectedStart" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogTask" Path="ExpectedStart" />
@@ -13592,12 +13665,6 @@
         <Property Name="SlaDue" DataType="DateTime">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowCatalogTask" Path="SlaDue" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Stage" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowCatalogTask" Path="Stage" />
           </ReturnBindings>
         </Property>
 
@@ -14128,22 +14195,9 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="DisplayName" DataType="String" IsDisplay="true" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Name" />
-          </ReturnBindings>
-        </Property>
-
         <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="ObjectType" />
-          </ReturnBindings>
-        </Property>
-
-
-        <Property Name="PasswordNeedsReset" DataType="Bool" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="PasswordNeedsReset" />
           </ReturnBindings>
         </Property>
 
@@ -14151,20 +14205,6 @@
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="CreatedBy" />
           </ReturnBindings>
-        </Property>
-
-        <Property Name="HomePhone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="HomePhone" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="HomePhone" />
-            <Map ToCommand="New-SnowUser" Parameter="HomePhone" />
-          </CommandMappings>
         </Property>
 
         <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
@@ -14179,10 +14219,52 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="LastLogin" DataType="DateTime" AccessConstraint="ReadOnly">
+        <Property Name="Active" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="LastLogin" />
+            <Bind CommandResultOf="Get-SnowUser" Path="Active" />
           </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Active" />
+            <Map ToCommand="New-SnowUser" Parameter="Active" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="AccumulatedRoles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="AccumulatedRoles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Avatar" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Avatar" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Avatar" />
+            <Map ToCommand="New-SnowUser" Parameter="Avatar" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Building" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Building.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Building" />
+            <Map ToCommand="New-SnowUser" Parameter="Building" />
+          </CommandMappings>
         </Property>
 
         <Property Name="CalendarIntegration" DataType="Int">
@@ -14196,182 +14278,6 @@
           <CommandMappings>
             <Map ToCommand="Set-SnowUser" Parameter="CalendarIntegration" />
             <Map ToCommand="New-SnowUser" Parameter="CalendarIntegration" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Country" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Country" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Country" />
-            <Map ToCommand="New-SnowUser" Parameter="Country" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="UserPassword" DataType="String" AccessConstraint="WriteOnly">
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUserPassword" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUserPassword" Parameter="Password" Converter="ToSecureString" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="LastLoginTime" DataType="DateTime" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="LastLoginTime" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Source" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Source" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="Set-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Source" />
-            <Map ToCommand="New-SnowUser" Parameter="Source" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Building" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Building.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="State" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="State" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="State" />
-            <Map ToCommand="New-SnowUser" Parameter="State" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="FirstName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="FirstName" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="FirstName" />
-            <Map ToCommand="New-SnowUser" Parameter="FirstName" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="MiddleName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="MiddleName" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="MiddleName" />
-            <Map ToCommand="New-SnowUser" Parameter="MiddleName" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="LastName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="LastName" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="LastName" />
-            <Map ToCommand="New-SnowUser" Parameter="LastName" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="EmployeeNumber" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="EmployeeNumber" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="EmployeeNumber" />
-            <Map ToCommand="New-SnowUser" Parameter="EmployeeNumber" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Gender" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Gender" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Gender" />
-            <Map ToCommand="New-SnowUser" Parameter="Gender" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="UserName" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="UserName" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="UserName" />
-            <Map ToCommand="New-SnowUser" Parameter="UserName" />
-          </CommandMappings>
-        </Property>
-
-
-        <Property Name="DateFormat" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="DateFormat" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="DateFormat" />
-            <Map ToCommand="New-SnowUser" Parameter="DateFormat" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="TimeZone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="TimeZone" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="TimeZone" />
-            <Map ToCommand="New-SnowUser" Parameter="TimeZone" />
           </CommandMappings>
         </Property>
 
@@ -14389,45 +14295,93 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="Title" DataType="String">
+        <Property Name="Company" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Title" />
+            <Bind CommandResultOf="Get-SnowUser" Path="Company.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowUser" Method="Update" />
             <ModBy Command="New-SnowUser" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Title" />
-            <Map ToCommand="New-SnowUser" Parameter="Title" />
+            <Map ToCommand="Set-SnowUser" Parameter="Company" />
+            <Map ToCommand="New-SnowUser" Parameter="Company" />
           </CommandMappings>
         </Property>
 
-        <Property Name="InternalIntegrationUser" DataType="Bool">
+        <Property Name="CostCenter" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="InternalIntegrationUser" />
+            <Bind CommandResultOf="Get-SnowUser" Path="CostCenter.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowUser" Method="Update" />
             <ModBy Command="New-SnowUser" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="InternalIntegrationUser" />
-            <Map ToCommand="New-SnowUser" Parameter="InternalIntegrationUser" />
+            <Map ToCommand="Set-SnowUser" Parameter="CostCenter" />
+            <Map ToCommand="New-SnowUser" Parameter="CostCenter" />
           </CommandMappings>
         </Property>
 
-        <Property Name="Street" DataType="String">
+        <Property Name="Country" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Street" />
+            <Bind CommandResultOf="Get-SnowUser" Path="Country" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowUser" Method="Update" />
             <ModBy Command="New-SnowUser" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Street" />
-            <Map ToCommand="New-SnowUser" Parameter="Street" />
+            <Map ToCommand="Set-SnowUser" Parameter="Country" />
+            <Map ToCommand="New-SnowUser" Parameter="Country" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="DateFormat" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="DateFormat" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="DateFormat" />
+            <Map ToCommand="New-SnowUser" Parameter="DateFormat" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="DefaultPerspective" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="DefaultPerspective.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Department" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Department.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Department" />
+            <Map ToCommand="New-SnowUser" Parameter="Department" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="EduStatus" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="EduStatus" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="EduStatus" />
+            <Map ToCommand="New-SnowUser" Parameter="EduStatus" />
           </CommandMappings>
         </Property>
 
@@ -14445,6 +14399,102 @@
           </CommandMappings>
         </Property>
 
+        <Property Name="EmployeeNumber" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="EmployeeNumber" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="EmployeeNumber" />
+            <Map ToCommand="New-SnowUser" Parameter="EmployeeNumber" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="EnableMultifactorAuthentication" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="EnableMultifactorAuthentication" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="EnableMultifactorAuthentication" />
+            <Map ToCommand="New-SnowUser" Parameter="EnableMultifactorAuthentication" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="FailedAttempts" DataType="Int" AccessConstraint="ReadOnly">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="FailedAttempts" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="FirstName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="FirstName" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="FirstName" />
+            <Map ToCommand="New-SnowUser" Parameter="FirstName" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Gender" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Gender" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Gender" />
+            <Map ToCommand="New-SnowUser" Parameter="Gender" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="HashedUserId" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="HashedUserId" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="HomePhone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="HomePhone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="HomePhone" />
+            <Map ToCommand="New-SnowUser" Parameter="HomePhone" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="InternalIntegrationUser" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="InternalIntegrationUser" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="InternalIntegrationUser" />
+            <Map ToCommand="New-SnowUser" Parameter="InternalIntegrationUser" />
+          </CommandMappings>
+        </Property>
+
         <Property Name="Introduction" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="Introduction" />
@@ -14459,177 +14509,47 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="PreferredLanguage" DataType="String">
+        <Property Name="LastLogin" DataType="DateTime">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="PreferredLanguage" />
+            <Bind CommandResultOf="Get-SnowUser" Path="LastLogin" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LastLoginTime" DataType="DateTime">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="LastLoginTime" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LastLoginDevice" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="LastLoginDevice" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="LastName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="LastName" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowUser" Method="Update" />
             <ModBy Command="New-SnowUser" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="PreferredLanguage" />
-            <Map ToCommand="New-SnowUser" Parameter="PreferredLanguage" />
+            <Map ToCommand="Set-SnowUser" Parameter="LastName" />
+            <Map ToCommand="New-SnowUser" Parameter="LastName" />
           </CommandMappings>
         </Property>
 
-        <Property Name="LockedOut" DataType="Bool">
+        <Property Name="LastPassword" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="LockedOut" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="LockedOut" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Phone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Phone" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Phone" />
-            <Map ToCommand="New-SnowUser" Parameter="Phone" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="MobilePhone" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="MobilePhone" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="MobilePhone" />
-            <Map ToCommand="New-SnowUser" Parameter="MobilePhone" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Avatar" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Avatar" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CostCenter" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="CostCenter.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="CostCenter" />
-            <Map ToCommand="New-SnowUser" Parameter="CostCenter" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Manager" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Manager.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Manager" />
-            <Map ToCommand="New-SnowUser" Parameter="Manager" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Active" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Active" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Active" />
-            <Map ToCommand="New-SnowUser" Parameter="Active" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Notification" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Notification" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Notification" />
-            <Map ToCommand="New-SnowUser" Parameter="Notification" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="FailedAttempts" DataType="Int" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="FailedAttempts" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Roles" DataType="String" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Roles" />
+            <Bind CommandResultOf="Get-SnowUser" Path="LastPassword" />
           </ReturnBindings>
         </Property>
 
         <Property Name="LdapServer" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowUser" Path="LdapServer.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Company" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Company.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Company" />
-            <Map ToCommand="New-SnowUser" Parameter="Company" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Department" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Department.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="Set-SnowUser" Method="Update" />
-            <ModBy Command="New-SnowUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Department" />
-            <Map ToCommand="New-SnowUser" Parameter="Department" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Photo" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Photo" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Schedule" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Schedule.ToString()" />
           </ReturnBindings>
         </Property>
 
@@ -14647,9 +14567,197 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="DefaultPerspective" DataType="String">
+        <Property Name="LockedOut" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="DefaultPerspective.ToString()" />
+            <Bind CommandResultOf="Get-SnowUser" Path="LockedOut" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="LockedOut" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Manager" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Manager.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Manager" />
+            <Map ToCommand="New-SnowUser" Parameter="Manager" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="MiddleName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="MiddleName" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="MiddleName" />
+            <Map ToCommand="New-SnowUser" Parameter="MiddleName" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="MobilePhone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="MobilePhone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="MobilePhone" />
+            <Map ToCommand="New-SnowUser" Parameter="MobilePhone" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="DisplayName" DataType="String" IsDisplay="true" AccessConstraint="ReadOnly">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Name" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Notification" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Notification" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Notification" />
+            <Map ToCommand="New-SnowUser" Parameter="Notification" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="PasswordNeedsReset" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="PasswordNeedsReset" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Phone" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Phone" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Phone" />
+            <Map ToCommand="New-SnowUser" Parameter="Phone" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Photo" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Photo" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Photo" />
+            <Map ToCommand="New-SnowUser" Parameter="Photo" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="PreferredLanguage" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="PreferredLanguage" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="PreferredLanguage" />
+            <Map ToCommand="New-SnowUser" Parameter="PreferredLanguage" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Roles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Roles" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Schedule" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Schedule.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Source" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Source" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="Set-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Source" />
+            <Map ToCommand="New-SnowUser" Parameter="Source" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="State" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="State" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="State" />
+            <Map ToCommand="New-SnowUser" Parameter="State" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Street" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="Street" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Street" />
+            <Map ToCommand="New-SnowUser" Parameter="Street" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="SysDomain" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="SysDomain.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowUser" Parameter="SysDomain" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="SysDomainPath" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="SysDomainPath" />
           </ReturnBindings>
         </Property>
 
@@ -14667,31 +14775,54 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="SsoSource" DataType="String">
+        <Property Name="TimeZone" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="SsoSource" />
+            <Bind CommandResultOf="Get-SnowUser" Path="TimeZone" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowUser" Method="Update" />
             <ModBy Command="New-SnowUser" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="SsoSource" />
-            <Map ToCommand="New-SnowUser" Parameter="SsoSource" />
+            <Map ToCommand="Set-SnowUser" Parameter="TimeZone" />
+            <Map ToCommand="New-SnowUser" Parameter="TimeZone" />
           </CommandMappings>
         </Property>
 
-        <Property Name="Zip" DataType="String">
+        <Property Name="Title" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="Zip" />
+            <Bind CommandResultOf="Get-SnowUser" Path="Title" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowUser" Method="Update" />
             <ModBy Command="New-SnowUser" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="Zip" />
-            <Map ToCommand="New-SnowUser" Parameter="Zip" />
+            <Map ToCommand="Set-SnowUser" Parameter="Title" />
+            <Map ToCommand="New-SnowUser" Parameter="Title" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="UserName" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowUser" Path="UserName" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="UserName" />
+            <Map ToCommand="New-SnowUser" Parameter="UserName" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="UserPassword" DataType="String" AccessConstraint="WriteOnly">
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUserPassword" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUserPassword" Parameter="Password" Converter="ToSecureString" />
           </CommandMappings>
         </Property>
 
@@ -14709,39 +14840,40 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="EnableMultifactorAuthentication" DataType="Bool">
+        <Property Name="WebServiceAccessOnly" DataType="Bool">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="EnableMultifactorAuthentication" />
+            <Bind CommandResultOf="Get-SnowUser" Path="WebServiceAccessOnly" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="Set-SnowUser" Method="Update" />
             <ModBy Command="New-SnowUser" Method="Insert" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowUser" Parameter="EnableMultifactorAuthentication" />
-            <Map ToCommand="New-SnowUser" Parameter="EnableMultifactorAuthentication" />
+            <Map ToCommand="Set-SnowUser" Parameter="WebServiceAccessOnly" />
+            <Map ToCommand="New-SnowUser" Parameter="WebServiceAccessOnly" />
           </CommandMappings>
         </Property>
-        <!--
-        <Property Name="LdapUpdated" DataType="DateTime" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="LdapUpdated"/>
-          </ReturnBindings>
-        </Property>
 
-        <Property Name="LdapId" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="Zip" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowUser" Path="LdapId" />
+            <Bind CommandResultOf="Get-SnowUser" Path="Zip" />
           </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Set-SnowUser" Method="Update" />
+            <ModBy Command="New-SnowUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowUser" Parameter="Zip" />
+            <Map ToCommand="New-SnowUser" Parameter="Zip" />
+          </CommandMappings>
         </Property>
--->
       </Properties>
 
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowUser">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,name,sys_class_name,location,manager,department,cost_center,company" />
+                        Value="sys_id,sys_updated_on,name,sys_class_name" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sys_user_filter" />
         </ListingCommand>
         <CommandSequence>

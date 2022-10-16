@@ -447,7 +447,7 @@ namespace ServiceNow.Graph.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "task_effective_number", Required = Required.Default)]
         public string TaskEffectiveNumber
         {
-            get; set;
+            get;
         }
 
     }

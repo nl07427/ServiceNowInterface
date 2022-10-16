@@ -4358,6 +4358,558 @@ function Remove-SnowRoleHasGroup {
     
     $ServiceNowClient.GroupHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
+
+function Get-SnowUser {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+}
+
+function New-SnowUser {
+    param (
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$Avatar,
+
+        [parameter(Mandatory = $false)]
+        [string]$Building,
+
+        [parameter(Mandatory = $false)]
+        [int]$CalendarIntegration,
+        
+        [parameter(Mandatory = $false)]
+        [string]$City,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+        
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [string]$DateFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$Department,
+
+        [parameter(Mandatory = $false)]
+        [string]$EduStatus,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [string]$EmployeeNumber,
+
+        [parameter(Mandatory = $false)]
+        [bool]$EnableMultifactorAuthentication,
+
+        [parameter(Mandatory = $false)]
+        [string]$FirstName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Gender,
+
+        [parameter(Mandatory = $false)]
+        [string]$HomePhone,
+
+        [parameter(Mandatory = $false)]
+        [bool]$InternalIntegrationUser,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Introduction,
+
+        [parameter(Mandatory = $false)]
+        [string]$LastName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$MiddleName,
+
+        [parameter(Mandatory = $false)]
+        [string]$MobilePhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notification,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Photo,
+
+        [parameter(Mandatory = $false)]
+        [string]$PreferredLanguage,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$SysDomain,        
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Title,
+            
+        [parameter(Mandatory = $false)]
+        [string]$UserName,
+            
+        [parameter(Mandatory = $false)]
+        [bool]$Vip,
+
+        [parameter(Mandatory = $false)]
+        [bool]$WebServiceAccessOnly,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip
+    )
+        
+    $userRequestBuilder = $ServiceNowClient.Users()
+    $user = New-Object -TypeName ServiceNow.Graph.Models.User
+    $parameters = $MyInvocation.BoundParameters  
+            
+    if ($parameters.ContainsKey("Active")) {
+        $user.Active = $Active
+    }
+    if ($parameters.ContainsKey("Avatar")) {
+        $user.Avatar = $Avatar
+    }
+    if ($parameters.ContainsKey("Building") -and $Building) {
+        $user.Building = Get-ReferenceLink $Building
+    }                      
+    if ($parameters.ContainsKey("CalendarIntegration")) {
+        $user.CalendarIntegration = $CalendarIntegration
+    }
+    if ($parameters.ContainsKey("City")) {
+        $user.City = $City
+    }     
+    if ($parameters.ContainsKey("Company") -and $Company) {
+        $user.Company = Get-ReferenceLink $Company
+    }     
+    if ($parameters.ContainsKey("CostCenter") -and $CostCenter) {
+        $user.CostCenter = Get-ReferenceLink $CostCenter
+    }     
+    if ($parameters.ContainsKey("Country")) {
+        $user.Country = $Country
+    }
+    if ($parameters.ContainsKey("DateFormat")) {
+        $user.DateFormat = $DateFormat
+    }     
+    if ($parameters.ContainsKey("Department") -and $Department) {
+        $user.Department = Get-ReferenceLink $Department
+    }
+    if ($parameters.ContainsKey("EduStatus")) {
+        $user.EduStatus = $EduStatus
+    }         
+    if ($parameters.ContainsKey("Email")) {
+        $user.Email = $Email
+    }     
+    if ($parameters.ContainsKey("EmployeeNumber")) {
+        $user.EmployeeNumber = $EmployeeNumber
+    }     
+    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
+        $user.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
+    }     
+    if ($parameters.ContainsKey("FirstName")) {
+        $user.FirstName = $FirstName
+    }
+    if ($parameters.ContainsKey("Gender")) {
+        $user.Gender = $Gender
+    } 
+    if ($parameters.ContainsKey("HomePhone")) {
+        $user.HomePhone = $HomePhone
+    }
+    if ($parameters.ContainsKey("InternalIntegrationUser")) {
+        $user.InternalIntegrationUser = $InternalIntegrationUser
+    } 
+    if ($parameters.ContainsKey("Introduction")) {
+        $user.Introduction = $Introduction
+    }     
+    if ($parameters.ContainsKey("LastName")) {
+        $user.LastName = $LastName
+    }       
+    if ($parameters.ContainsKey("Location") -and $Location) {
+        $user.Location = Get-ReferenceLink $Location
+    }   
+    if ($parameters.ContainsKey("Manager") -and $Manager) {
+        $user.Manager = Get-ReferenceLink $Manager
+    }       
+    if ($parameters.ContainsKey("MiddleName")) {
+        $user.MiddleName = $MiddleName
+    }
+    if ($parameters.ContainsKey("MobilePhone")) {
+        $user.MobilePhone = $MobilePhone
+    } 
+    if ($parameters.ContainsKey("Notification")) {
+        $user.Notification = $Notification
+    }     
+    if ($parameters.ContainsKey("Phone")) {
+        $user.Phone = $Phone
+    }     
+    if ($parameters.ContainsKey("Photo")) {
+        $user.Photo = $Photo
+    }     
+    if ($parameters.ContainsKey("PreferredLanguage")) {
+        $user.PreferredLanguage = $PreferredLanguage
+    }     
+    if ($parameters.ContainsKey("Source")) {
+        $user.Source = $Source
+    }
+    if ($parameters.ContainsKey("State")) {
+        $user.State = $State
+    }
+    if ($parameters.ContainsKey("Street")) {
+        $user.Street = $Street
+    } 
+    if ($parameters.ContainsKey("SysDomain") -and $SysDomain) {
+        $user.SysDomain = Get-ReferenceLink $SysDomain
+    } 
+    if ($parameters.ContainsKey("TimeFormat")) {
+        $user.TimeFormat = $TimeFormat
+    } 
+    if ($parameters.ContainsKey("TimeZone")) {
+        $user.TimeZone = $TimeZone
+    } 
+    if ($parameters.ContainsKey("Title")) {
+        $user.Title = $Title
+    } 
+    if ($parameters.ContainsKey("UserName")) {
+        $user.UserName = $UserName
+    } 
+    if ($parameters.ContainsKey("Vip")) {
+        $user.Vip = $Vip
+    } 
+    if ($parameters.ContainsKey("WebServiceAccessOnly")) {
+        $user.WebServiceAccessOnly = $WebServiceAccessOnly
+    } 
+    if ($parameters.ContainsKey("Zip")) {
+        $user.Zip = $Zip
+    } 
+
+     $userRequestBuilder.Request().AddAsync($user).GetAwaiter().GetResult()
+}     
+
+function Remove-SnowUser {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id
+    )
+        
+    $ServiceNowClient.Users()[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
+}         
+
+function Set-SnowUser {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$Avatar,
+
+        [parameter(Mandatory = $false)]
+        [string]$Building,
+
+        [parameter(Mandatory = $false)]
+        [int]$CalendarIntegration,
+        
+        [parameter(Mandatory = $false)]
+        [string]$City,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Company,
+        
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$Country,
+
+        [parameter(Mandatory = $false)]
+        [string]$DateFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$Department,
+
+        [parameter(Mandatory = $false)]
+        [string]$EduStatus,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [string]$EmployeeNumber,
+
+        [parameter(Mandatory = $false)]
+        [bool]$EnableMultifactorAuthentication,
+
+        [parameter(Mandatory = $false)]
+        [string]$FirstName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Gender,
+
+        [parameter(Mandatory = $false)]
+        [string]$HomePhone,
+
+        [parameter(Mandatory = $false)]
+        [bool]$InternalIntegrationUser,
+        
+        [parameter(Mandatory = $false)]
+        [string]$Introduction,
+
+        [parameter(Mandatory = $false)]
+        [string]$LastName,
+
+        [parameter(Mandatory = $false)]
+        [string]$Location,
+
+        [parameter(Mandatory = $false)]
+        [bool]$LockedOut,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$MiddleName,
+
+        [parameter(Mandatory = $false)]
+        [string]$MobilePhone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Notification,
+
+        [parameter(Mandatory = $false)]
+        [string]$Phone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Photo,
+
+        [parameter(Mandatory = $false)]
+        [string]$PreferredLanguage,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$State,
+
+        [parameter(Mandatory = $false)]
+        [string]$Street,
+        
+        [parameter(Mandatory = $false)]
+        [string]$TimeFormat,
+
+        [parameter(Mandatory = $false)]
+        [string]$TimeZone,
+
+        [parameter(Mandatory = $false)]
+        [string]$Title,
+            
+        [parameter(Mandatory = $false)]
+        [string]$UserName,
+            
+        [parameter(Mandatory = $false)]
+        [bool]$Vip,
+
+        [parameter(Mandatory = $false)]
+        [bool]$WebServiceAccessOnly,
+
+        [parameter(Mandatory = $false)]
+        [string]$Zip
+    )
+        
+    $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
+    $user = New-Object -TypeName ServiceNow.Graph.Models.User
+    $parameters = $MyInvocation.BoundParameters  
+    $user.Id = $Id
+            
+    if ($parameters.ContainsKey("Active")) {
+        $user.Active = $Active
+    }
+    if ($parameters.ContainsKey("Avatar")) {
+        $user.Avatar = $Avatar
+    }
+    if ($parameters.ContainsKey("Building")) {
+        if ($Building) {
+            $user.Building = Get-ReferenceLink $Building
+        }
+        else {
+            $user.Building = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("CalendarIntegration")) {
+        $user.CalendarIntegration = $CalendarIntegration
+    }
+    if ($parameters.ContainsKey("City")) {
+        $user.City = $City
+    }     
+    if ($parameters.ContainsKey("Company")) {
+        if ($Company) {
+            $user.Company = Get-ReferenceLink $Company
+        }
+        else {
+            $user.Company = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("CostCenter")) {
+        if ($CostCenter) {
+            $user.CostCenter = Get-ReferenceLink $CostCenter
+        }
+        else {
+            $user.CostCenter = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("Country")) {
+        $user.Country = $Country
+    }
+    if ($parameters.ContainsKey("DateFormat")) {
+        $user.DateFormat = $DateFormat
+    }     
+    if ($parameters.ContainsKey("Department")) {
+        if ($Department) {
+            $user.Department = Get-ReferenceLink $Department
+        }
+        else {
+            $user.Department = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("EduStatus")) {
+        $user.EduStatus = $EduStatus
+    }         
+    if ($parameters.ContainsKey("Email")) {
+        $user.Email = $Email
+    }     
+    if ($parameters.ContainsKey("EmployeeNumber")) {
+        $user.EmployeeNumber = $EmployeeNumber
+    }     
+    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
+        $user.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
+    }     
+    if ($parameters.ContainsKey("FirstName")) {
+        $user.FirstName = $FirstName
+    }
+    if ($parameters.ContainsKey("Gender")) {
+        $user.Gender = $Gender
+    } 
+    if ($parameters.ContainsKey("HomePhone")) {
+        $user.HomePhone = $HomePhone
+    }
+    if ($parameters.ContainsKey("InternalIntegrationUser")) {
+        $user.InternalIntegrationUser = $InternalIntegrationUser
+    } 
+    if ($parameters.ContainsKey("Introduction")) {
+        $user.Introduction = $Introduction
+    }     
+    if ($parameters.ContainsKey("LastName")) {
+        $user.LastName = $LastName
+    }       
+    if ($parameters.ContainsKey("Location")) {
+        if ($Location) {
+            $user.Location = Get-ReferenceLink $Location
+        }
+        else {
+            $user.Location = Get-ReferenceLink ""
+        }
+    }       
+    if ($parameters.ContainsKey("LockedOut")) {
+        $user.LockedOut = $LockedOut
+    }                          
+    if ($parameters.ContainsKey("Manager")) {
+        if ($Manager) {
+            $user.Manager = Get-ReferenceLink $Manager
+        }
+        else {
+            $user.Manager = Get-ReferenceLink ""
+        }
+    }                      
+    if ($parameters.ContainsKey("MiddleName")) {
+        $user.MiddleName = $MiddleName
+    }
+    if ($parameters.ContainsKey("MobilePhone")) {
+        $user.MobilePhone = $MobilePhone
+    } 
+    if ($parameters.ContainsKey("Notification")) {
+        $user.Notification = $Notification
+    }     
+    if ($parameters.ContainsKey("Phone")) {
+        $user.Phone = $Phone
+    }     
+    if ($parameters.ContainsKey("Photo")) {
+        $user.Photo = $Photo
+    }     
+    if ($parameters.ContainsKey("PreferredLanguage")) {
+        $user.PreferredLanguage = $PreferredLanguage
+    }     
+    if ($parameters.ContainsKey("Source")) {
+        $user.Source = $Source
+    }
+    if ($parameters.ContainsKey("State")) {
+        $user.State = $State
+    }
+    if ($parameters.ContainsKey("Street")) {
+        $user.Street = $Street
+    } 
+    if ($parameters.ContainsKey("TimeFormat")) {
+        $user.TimeFormat = $TimeFormat
+    } 
+    if ($parameters.ContainsKey("TimeZone")) {
+        $user.TimeZone = $TimeZone
+    } 
+    if ($parameters.ContainsKey("Title")) {
+        $user.Title = $Title
+    } 
+    if ($parameters.ContainsKey("UserName")) {
+        $user.UserName = $UserName
+    } 
+    if ($parameters.ContainsKey("Vip")) {
+        $user.Vip = $Vip
+    } 
+    if ($parameters.ContainsKey("WebServiceAccessOnly")) {
+        $user.WebServiceAccessOnly = $WebServiceAccessOnly
+    } 
+    if ($parameters.ContainsKey("Zip")) {
+        $user.Zip = $Zip
+    } 
+
+   $userRequestBuilder.Request().UpdateAsync($user).GetAwaiter().GetResult()
+}     
+
 function Get-SnowRoleHasUser {
     param (
         [parameter(Mandatory = $false)]
@@ -4589,514 +5141,7 @@ function Get-ReferenceLink {
     }
     $refLink
 }
-
-function Get-SnowUser {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.Users() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-}
-
-function New-SnowUser {
-    param (
-        [parameter(Mandatory = $false)]
-        [string]$ApprovalThreshold,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [string]$HomePhone,
-
-        [parameter(Mandatory = $false)]
-        [int]$CalendarIntegration,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Country,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Division,
-
-        [parameter(Mandatory = $false)]
-        [string]$UserSecret,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$State,
-
-        [parameter(Mandatory = $false)]
-        [string]$FirstName,
-
-        [parameter(Mandatory = $false)]
-        [string]$MiddleName,
-
-        [parameter(Mandatory = $false)]
-        [string]$LastName,
-
-        [parameter(Mandatory = $false)]
-        [string]$EmployeeNumber,
-
-        [parameter(Mandatory = $false)]
-        [string]$Gender,
-            
-        [parameter(Mandatory = $false)]
-        [string]$UserName,
-            
-        [parameter(Mandatory = $false)]
-        [string]$DateFormat,
-            
-        [parameter(Mandatory = $false)]
-        [string]$TimeZone,
-
-        [parameter(Mandatory = $false)]
-        [string]$City,
-
-        [parameter(Mandatory = $false)]
-        [string]$Title,
-
-        [parameter(Mandatory = $false)]
-        [bool]$InternalIntegrationUser,
-
-        [parameter(Mandatory = $false)]
-        [string]$Street,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$Introduction,
-
-        [parameter(Mandatory = $false)]
-        [string]$PreferredLanguage,
-
-        [parameter(Mandatory = $false)]
-        [string]$Phone,
-
-        [parameter(Mandatory = $false)]
-        [string]$MobilePhone,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Notification,
-
-        [parameter(Mandatory = $false)]
-        [string]$Department,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [string]$TimeFormat,
-
-        [parameter(Mandatory = $false)]
-        [string]$Zip,
-
-        [parameter(Mandatory = $false)]
-        [string]$SsoSource,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Vip,
-
-        [parameter(Mandatory = $false)]
-        [bool]$EnableMultifactorAuthentication,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContractType
-    )
-        
-    $userRequestBuilder = $ServiceNowClient.Users()
-    $user = New-Object -TypeName ServiceNow.Graph.Models.User
-    $parameters = $MyInvocation.BoundParameters  
-            
-    if ($parameters.ContainsKey("ApprovalThreshold")) {
-        $user.ApprovalThreshold = $ApprovalThreshold
-    } 
-    if ($parameters.ContainsKey("Active")) {
-        $user.Active = $Active
-    }
-    if ($parameters.ContainsKey("HomePhone")) {
-        $user.HomePhone = $HomePhone
-    }
-    if ($parameters.ContainsKey("CalendarIntegration")) {
-        $user.CalendarIntegration = $CalendarIntegration
-    }
-    if ($parameters.ContainsKey("Division")) {
-        $user.Division = $Division
-    }
-    if ($parameters.ContainsKey("Country")) {
-        $user.Country = $Country
-    }
-    if ($parameters.ContainsKey("UserSecret")) {
-        $user.UserPassword = $UserSecret
-    }
-    if ($parameters.ContainsKey("Source")) {
-        $user.Source = $Source
-    }
-    if ($parameters.ContainsKey("State")) {
-        $user.State = $State
-    }
-    if ($parameters.ContainsKey("FirstName")) {
-        $user.FirstName = $FirstName
-    }
-    if ($parameters.ContainsKey("MiddleName")) {
-        $user.MiddleName = $MiddleName
-    }
-    if ($parameters.ContainsKey("LastName")) {
-        $user.LastName = $LastName
-    }       
-    if ($parameters.ContainsKey("EmployeeNumber")) {
-        $user.EmployeeNumber = $EmployeeNumber
-    } 
-    if ($parameters.ContainsKey("Gender")) {
-        $user.Gender = $Gender
-    } 
-    if ($parameters.ContainsKey("UserName")) {
-        $user.UserName = $UserName
-    } 
-    if ($parameters.ContainsKey("DateFormat")) {
-        $user.DateFormat = $DateFormat
-    } 
-    if ($parameters.ContainsKey("TimeZone")) {
-        $user.TimeZone = $TimeZone
-    } 
-    if ($parameters.ContainsKey("City")) {
-        $user.City = $City
-    } 
-    if ($parameters.ContainsKey("Title")) {
-        $user.Title = $Title
-    } 
-    if ($parameters.ContainsKey("InternalIntegrationUser")) {
-        $user.InternalIntegrationUser = $InternalIntegrationUser
-    } 
-    if ($parameters.ContainsKey("Street")) {
-        $user.Street = $Street
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $user.Email = $Email
-    } 
-    if ($parameters.ContainsKey("Introduction")) {
-        $user.Introduction = $Introduction
-    } 
-    if ($parameters.ContainsKey("PreferredLanguage")) {
-        $user.PreferredLanguage = $PreferredLanguage
-    } 
-    if ($parameters.ContainsKey("Phone")) {
-        $user.Phone = $Phone
-    } 
-    if ($parameters.ContainsKey("MobilePhone")) {
-        $user.MobilePhone = $MobilePhone
-    } 
-    if ($parameters.ContainsKey("CostCenter")) {
-        $user.CostCenter = Get-ReferenceLink $CostCenter
-    } 
-    if ($parameters.ContainsKey("Manager")) {
-        $user.Manager = Get-ReferenceLink $Manager
-    } 
-    if ($parameters.ContainsKey("Notification")) {
-        $user.Notification = $Notification
-    } 
-    if ($parameters.ContainsKey("Company")) {
-        $user.Company = Get-ReferenceLink $Company
-    } 
-    if ($parameters.ContainsKey("Department")) {
-        $user.Department = Get-ReferenceLink $Department
-    } 
-    if ($parameters.ContainsKey("Location")) {
-        $user.Location = Get-ReferenceLink $Location
-    } 
-    if ($parameters.ContainsKey("TimeFormat")) {
-        $user.TimeFormat = $TimeFormat
-    } 
-    if ($parameters.ContainsKey("Zip")) {
-        $user.Zip = $Zip
-    } 
-    if ($parameters.ContainsKey("Vip")) {
-        $user.Vip = $Vip
-    } 
-    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
-        $user.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
-    } 
-
-     $userRequestBuilder.Request().AddAsync($user).GetAwaiter().GetResult()
-}     
-
-function Remove-SnowUser {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-        
-    $ServiceNowClient.Users()[$id].DeleteAsync().GetAwaiter().GetResult() | Out-Null
-}         
-
-function Set-SnowUser {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [string]$ApprovalThreshold,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [string]$HomePhone,
-
-        [parameter(Mandatory = $false)]
-        [int]$CalendarIntegration,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Country,
-
-        [parameter(Mandatory = $false)]
-        [string]$UserSecret,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$State,
-
-        [parameter(Mandatory = $false)]
-        [string]$FirstName,
-
-        [parameter(Mandatory = $false)]
-        [string]$MiddleName,
-
-        [parameter(Mandatory = $false)]
-        [string]$LastName,
-
-        [parameter(Mandatory = $false)]
-        [string]$EmployeeNumber,
-
-        [parameter(Mandatory = $false)]
-        [string]$Gender,
-            
-        [parameter(Mandatory = $false)]
-        [string]$UserName,
-            
-        [parameter(Mandatory = $false)]
-        [string]$DateFormat,
-            
-        [parameter(Mandatory = $false)]
-        [string]$TimeZone,
-
-        [parameter(Mandatory = $false)]
-        [string]$City,
-
-        [parameter(Mandatory = $false)]
-        [string]$Title,
-
-        [parameter(Mandatory = $false)]
-        [bool]$InternalIntegrationUser,
-
-        [parameter(Mandatory = $false)]
-        [string]$Street,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$Introduction,
-
-        [parameter(Mandatory = $false)]
-        [string]$PreferredLanguage,
-
-        [parameter(Mandatory = $false)]
-        [string]$Phone,
-
-        [parameter(Mandatory = $false)]
-        [string]$MobilePhone,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter,
-            
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Notification,
-
-        [parameter(Mandatory = $false)]
-        [string]$Department,
-
-        [parameter(Mandatory = $false)]
-        [string]$Company,
-
-        [parameter(Mandatory = $false)]
-        [string]$Location,
-
-        [parameter(Mandatory = $false)]
-        [string]$TimeFormat,
-
-        [parameter(Mandatory = $false)]
-        [string]$Zip,
-
-        [parameter(Mandatory = $false)]
-        [string]$SsoSource,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Vip,
-
-        [parameter(Mandatory = $false)]
-        [bool]$EnableMultifactorAuthentication,
-
-        [parameter(Mandatory = $false)]
-        [string]$ContractType,
-
-        [parameter(Mandatory = $false)]
-        [string]$Division,
-
-        [parameter(Mandatory = $false)]
-        [bool]$LockedOut
-
-    )
-        
-    $userRequestBuilder = $ServiceNowClient.Users()[$Id] 
-    $userUpdate = New-Object -TypeName ServiceNow.Graph.Models.User
-    $parameters = $MyInvocation.BoundParameters  
-    $userUpdate.Id = $Id
-            
-    if ($parameters.ContainsKey("ApprovalThreshold")) {
-        $userUpdate.ApprovalThreshold = $ApprovalThreshold
-    } 
-    if ($parameters.ContainsKey("Active")) {
-        $userUpdate.Active = $Active
-    }
-    if ($parameters.ContainsKey("LockedOut")) {
-        $userUpdate.LockedOut = $LockedOut
-    }    
-    if ($parameters.ContainsKey("HomePhone")) {
-        $userUpdate.HomePhone = $HomePhone
-    }
-    if ($parameters.ContainsKey("ContractType")) {
-        $userUpdate.ContractType = $ContractType
-    }
-    if ($parameters.ContainsKey("CalendarIntegration")) {
-        $userUpdate.CalendarIntegration = $CalendarIntegration
-    }
-    if ($parameters.ContainsKey("Country")) {
-        $userUpdate.Country = $Country
-    }
-    if ($parameters.ContainsKey("UserSecret")) {
-        $userUpdate.UserPassword = $UserSecret
-    }
-    if ($parameters.ContainsKey("Source")) {
-        $userUpdate.Source = $Source
-    }
-    if ($parameters.ContainsKey("State")) {
-        $userUpdate.State = $State
-    }
-    if ($parameters.ContainsKey("FirstName")) {
-        $userUpdate.FirstName = $FirstName
-    }
-    if ($parameters.ContainsKey("MiddleName")) {
-        $userUpdate.MiddleName = $MiddleName
-    }
-    if ($parameters.ContainsKey("LastName")) {
-        $userUpdate.LastName = $LastName
-    }       
-    if ($parameters.ContainsKey("EmployeeNumber")) {
-        $userUpdate.EmployeeNumber = $EmployeeNumber
-    } 
-    if ($parameters.ContainsKey("Gender")) {
-        $userUpdate.Gender = $Gender
-    } 
-    if ($parameters.ContainsKey("UserName")) {
-        $userUpdate.UserName = $UserName
-    } 
-    if ($parameters.ContainsKey("DateFormat")) {
-        $userUpdate.DateFormat = $DateFormat
-    } 
-    if ($parameters.ContainsKey("TimeZone")) {
-        $userUpdate.TimeZone = $TimeZone
-    } 
-    if ($parameters.ContainsKey("City")) {
-        $userUpdate.City = $City
-    } 
-    if ($parameters.ContainsKey("Title")) {
-        $userUpdate.Title = $Title
-    } 
-    if ($parameters.ContainsKey("InternalIntegrationUser")) {
-        $userUpdate.InternalIntegrationUser = $InternalIntegrationUser
-    } 
-    if ($parameters.ContainsKey("Street")) {
-        $userUpdate.Street = $Street
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $userUpdate.Email = $Email
-    } 
-    if ($parameters.ContainsKey("Introduction")) {
-        $userUpdate.Introduction = $Introduction
-    } 
-    if ($parameters.ContainsKey("PreferredLanguage")) {
-        $userUpdate.PreferredLanguage = $PreferredLanguage
-    } 
-    if ($parameters.ContainsKey("Phone")) {
-        $userUpdate.Phone = $Phone
-    } 
-    if ($parameters.ContainsKey("Division")) {
-        $userUpdate.Division = $Division
-    }    
-    if ($parameters.ContainsKey("MobilePhone")) {
-        $userUpdate.MobilePhone = $MobilePhone
-    } 
-    if ($parameters.ContainsKey("CostCenter")) {
-        $userUpdate.CostCenter = Get-ReferenceLink $CostCenter
-    } 
-    if ($parameters.ContainsKey("Manager")) {
-        $userUpdate.Manager = Get-ReferenceLink $Manager
-    } 
-    if ($parameters.ContainsKey("Notification")) {
-        $userUpdate.Notification = $Notification
-    } 
-    if ($parameters.ContainsKey("Company")) {
-        $userUpdate.Company = Get-ReferenceLink $Company
-    } 
-    if ($parameters.ContainsKey("Department")) {
-        $userUpdate.Department = Get-ReferenceLink $Department
-    } 
-    if ($parameters.ContainsKey("Location")) {
-        $userUpdate.Location = Get-ReferenceLink $Location
-    } 
-    if ($parameters.ContainsKey("TimeFormat")) {
-        $userUpdate.TimeFormat = $TimeFormat
-    } 
-    if ($parameters.ContainsKey("Zip")) {
-        $userUpdate.Zip = $Zip
-    } 
-    if ($parameters.ContainsKey("Vip")) {
-        $userUpdate.Vip = $Vip
-    } 
-    if ($parameters.ContainsKey("EnableMultifactorAuthentication")) {
-        $userUpdate.EnableMultifactorAuthentication = $EnableMultifactorAuthentication
-    } 
-
-   $userRequestBuilder.Request().UpdateAsync($userUpdate).GetAwaiter().GetResult()
-}     
-   
+  
 function Get-SnowGroup {
     param (
         [parameter(Mandatory = $false)]
