@@ -4910,6 +4910,299 @@ function Set-SnowUser {
    $userRequestBuilder.Request().UpdateAsync($user).GetAwaiter().GetResult()
 }     
 
+function Get-SnowGroup {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+    
+        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+}    
+
+function New-SnowGroup {
+    param (
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$DefaultAssignee,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [bool]$ExcludeManager,
+
+        [parameter(Mandatory = $false)]
+        [bool]$IncludeMembers,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Roles,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$Type
+    )
+    
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()
+    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
+    $parameters = $MyInvocation.BoundParameters  
+
+    if ($parameters.ContainsKey("Active")) {
+        $group.Active = $Active
+    }
+    if ($parameters.ContainsKey("CostCenter") -and $CostCenter) {
+        $group.CostCenter = Get-ReferenceLink $CostCenter
+    }     
+    if ($parameters.ContainsKey("DefaultAssignee") -and $DefaultAssignee) {
+        $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
+    }         
+    if ($parameters.ContainsKey("Description")) {
+        $group.Description = $Description
+    } 
+    if ($parameters.ContainsKey("Email")) {
+        $group.Email = $Email
+    } 
+    if ($parameters.ContainsKey("ExcludeManager")) {
+        $group.ExcludeManager = $ExcludeManager
+    }
+    if ($parameters.ContainsKey("IncludeMembers")) {
+        $group.IncludeMembers = $IncludeMembers
+    }
+    if ($parameters.ContainsKey("Manager") -and $Manager) {
+        $group.Manager = Get-ReferenceLink $Manager
+    }             
+    if ($parameters.ContainsKey("Name")) {
+        $group.Name = $Name
+    }
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $group.Parent = Get-ReferenceLink $Parent
+    }                 
+    if ($parameters.ContainsKey("Roles")) {
+        $group.Roles = $Roles
+    } 
+    if ($parameters.ContainsKey("Source")) {
+        $group.Source = $Source
+    }
+    if ($parameters.ContainsKey("Type")) {
+        $group.Type = $Type
+    }
+
+    $groupRequestBuilder.Request().AddAsync($group).GetAwaiter().GetResult()
+}         
+
+function Remove-SnowGroup {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id
+    )
+    
+    $ServiceNowClient.UserGroups()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+}         
+
+function Set-SnowGroup {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$DefaultAssignee,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [bool]$ExcludeManager,
+
+        [parameter(Mandatory = $false)]
+        [bool]$IncludeMembers,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Roles,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$Type
+    )
+        
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()[$Id] 
+    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
+    $parameters = $MyInvocation.BoundParameters  
+    $group.Id = $Id
+
+
+    if ($parameters.ContainsKey("Active")) {
+        $group.Active = $Active
+    }
+    if ($parameters.ContainsKey("CostCenter")) {
+        if ($CostCenter) {
+            $group.CostCenter = Get-ReferenceLink $CostCenter
+        }
+        else {
+            $group.CostCenter = Get-ReferenceLink ""
+        }
+    }                          
+    if ($parameters.ContainsKey("DefaultAssignee")) {
+        if ($DefaultAssignee) {
+            $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
+        }
+        else {
+            $group.DefaultAssignee = Get-ReferenceLink ""
+        }
+    }                                  
+    if ($parameters.ContainsKey("Description")) {
+        $group.Description = $Description
+    } 
+    if ($parameters.ContainsKey("Email")) {
+        $group.Email = $Email
+    } 
+    if ($parameters.ContainsKey("ExcludeManager")) {
+        $group.ExcludeManager = $ExcludeManager
+    }
+    if ($parameters.ContainsKey("IncludeMembers")) {
+        $group.IncludeMembers = $IncludeMembers
+    }
+    if ($parameters.ContainsKey("Manager")) {
+        if ($Manager) {
+            $group.Manager = Get-ReferenceLink $Manager
+        }
+        else {
+            $group.Manager = Get-ReferenceLink ""
+        }
+    }                                      
+    if ($parameters.ContainsKey("Name")) {
+        $group.Name = $Name
+    }
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $group.Parent = Get-ReferenceLink $Parent
+        }
+        else {
+            $group.Parent = Get-ReferenceLink ""
+        }
+    }                                      
+    if ($parameters.ContainsKey("Roles")) {
+        $group.Roles = $Roles
+    } 
+
+    if ($parameters.ContainsKey("Source")) {
+        $group.Source = $Source
+    }
+    if ($parameters.ContainsKey("Type")) {
+        $group.Type = $Type
+    }
+
+    $groupRequestBuilder.Request().UpdateAsync($group).GetAwaiter().GetResult()
+}         
+
+function Get-SnowGroupMembership {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+        
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+        
+        
+    )
+   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+}        
+
+function New-SnowGroupMembership {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Group,
+
+        [parameter(Mandatory = $true)]
+        [string]$User
+    )
+    $membershipsRequestBuilder = $ServiceNowClient.Memberships
+    $membership = New-Object -TypeName ServiceNow.Graph.Models.UserGroupMembership
+
+    $membership.User = Get-ReferenceLink $User
+    $membership.Group = Get-ReferenceLink $Group
+
+    $membershipsRequestBuilder.Request().AddAsync($membership).GetAwaiter().GetResult()
+}         
+
+function Remove-SnowGroupMembership {
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id
+    )
+    
+    $ServiceNowClient.Memberships()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+}     
+function Get-SnowRole {
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+  
+        Get-Entity -CollectionBuilder $ServiceNowClient.Roles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+}
+
 function Get-SnowRoleHasUser {
     param (
         [parameter(Mandatory = $false)]
@@ -4959,24 +5252,6 @@ function Remove-SnowRoleHasUser {
     
     $ServiceNowClient.UserHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
 }         
-
-function Get-SnowRole {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-  
-        Get-Entity -CollectionBuilder $ServiceNowClient.Roles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-}
 
 function Get-SnowRoleHasRole {
     param (
@@ -5142,315 +5417,7 @@ function Get-ReferenceLink {
     $refLink
 }
   
-function Get-SnowGroup {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
 
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-    
-        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-}    
-
-function Set-SnowGroup {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [string]$DefaultAssignee,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [bool]$ExcludeManager,
-
-        [parameter(Mandatory = $false)]
-        [string]$HourlyRate,
-            
-        [parameter(Mandatory = $false)]
-        [bool]$IncludeMembers,
-
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Name,
-
-        [parameter(Mandatory = $false)]
-        [string]$ParentGroup,
-
-        [parameter(Mandatory = $false)]
-        [string]$Roles,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$Type,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter
-    )
-        
-    $groupRequestBuilder = $ServiceNowClient.UserGroups()[$Id] 
-    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
-    $parameters = $MyInvocation.BoundParameters  
-    $group.Id = $Id
-
-
-    if ($parameters.ContainsKey("Active")) {
-        $group.Active = $Active
-    }
-    if ($parameters.ContainsKey("CostCenter")) {
-        if (-not [string]::IsNullOrEmpty($CostCenter)) {
-            $group.CostCenter = Get-ReferenceLink $CostCenter
-        }
-        else {
-            $group.CostCenter = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $group.Description = $Description
-    } 
-    if ($parameters.ContainsKey("DefaultAssignee")) {
-        if (-not [string]::IsNullOrEmpty($DefaultAssignee)) {
-            $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
-        }
-        else {
-            $group.DefaultAssignee = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $group.Email = $Email
-    } 
-    if ($parameters.ContainsKey("ExcludeManager")) {
-        $group.ExcludeManager = $ExcludeManager
-    }
-    if ($parameters.ContainsKey("HourlyRate")) {
-        $group.HourlyRate = $HourlyRate
-    }
-    if ($parameters.ContainsKey("IncludeMembers")) {
-        $group.IncludeMembers = $IncludeMembers
-    }
-    if ($parameters.ContainsKey("Name")) {
-        $group.Name = $Name
-    }
-    if ($parameters.ContainsKey("Manager")) {
-        if (-not [string]::IsNullOrEmpty($Manager)) {
-            $group.Manager = Get-ReferenceLink $Manager
-        }
-        else {
-            $group.Manager = Get-ReferenceLink ""
-        }
-    } 
-    if ($parameters.ContainsKey("Roles")) {
-        $group.Roles = $Roles
-    } 
-    if ($parameters.ContainsKey("ParentGroup")) {
-        if (-not [string]::IsNullOrEmpty($ParentGroup)) {
-            $group.Parent = Get-ReferenceLink $ParentGroup
-        }
-        else {
-            $group.Parent = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Source")) {
-        $group.Source = $Source
-    }
-    if ($parameters.ContainsKey("Type")) {
-        $group.Type = $Type
-    }
-
-    $groupRequestBuilder.Request().UpdateAsync($group).GetAwaiter().GetResult()
-}         
-
-function New-SnowGroup {
-    param (
-        [parameter(Mandatory = $false)]
-        [string]$DefaultAssignee,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [bool]$ExcludeManager,
-
-        [parameter(Mandatory = $false)]
-        [string]$HourlyRate,
-        
-        [parameter(Mandatory = $false)]
-        [bool]$IncludeMembers,
-
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Name,
-
-        [parameter(Mandatory = $false)]
-        [string]$ParentGroup,
-
-        [parameter(Mandatory = $false)]
-        [string]$Roles,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$Type,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter
-    )
-    
-    $groupRequestBuilder = $ServiceNowClient.UserGroups()
-    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
-    $parameters = $MyInvocation.BoundParameters  
-
-    if ($parameters.ContainsKey("Active")) {
-        $group.Active = $Active
-    }
-    if ($parameters.ContainsKey("CostCenter")) {
-        if (-not [string]::IsNullOrEmpty($CostCenter)) {
-            $group.CostCenter = Get-ReferenceLink $CostCenter
-        }
-        else {
-            $group.CostCenter = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $group.Description = $Description
-    } 
-    if ($parameters.ContainsKey("DefaultAssignee")) {
-        if (-not [string]::IsNullOrEmpty($DefaultAssignee)) {
-            $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
-        }
-        else {
-            $group.DefaultAssignee = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $group.Email = $Email
-    } 
-    if ($parameters.ContainsKey("ExcludeManager")) {
-        $group.ExcludeManager = $ExcludeManager
-    }
-    if ($parameters.ContainsKey("HourlyRate")) {
-        $group.HourlyRate = $HourlyRate
-    }
-    if ($parameters.ContainsKey("IncludeMembers")) {
-        $group.IncludeMembers = $IncludeMembers
-    }
-    if ($parameters.ContainsKey("Name")) {
-        $group.Name = $Name
-    }
-    if ($parameters.ContainsKey("Manager")) {
-        if (-not [string]::IsNullOrEmpty($Manager)) {
-            $group.Manager = Get-ReferenceLink $Manager
-        }
-        else {
-            $group.Manager = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Roles")) {
-        $group.Roles = $Roles
-    } 
-    if ($parameters.ContainsKey("ParentGroup")) {
-        if (-not [string]::IsNullOrEmpty($ParentGroup)) {
-            $group.Parent = Get-ReferenceLink $ParentGroup
-        }
-        else {
-            $group.Parent = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Source")) {
-        $group.Source = $Source
-    }
-    if ($parameters.ContainsKey("Type")) {
-        $group.Type = $Type
-    }
-
-    $groupRequestBuilder.Request().AddAsync($group).GetAwaiter().GetResult()
-}         
-
-function Remove-SnowGroup {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-    
-    $ServiceNowClient.UserGroups()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
-}         
-
-function Get-SnowGroupMembership {
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-        
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-        
-        
-    )
-        
-   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-}        
-
-function New-SnowGroupMembership {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Group,
-
-        [parameter(Mandatory = $true)]
-        [string]$User
-    )
-    
-    $membershipsRequestBuilder = $ServiceNowClient.Memberships
-    $membership = New-Object -TypeName ServiceNow.Graph.Models.UserGroupMembership
-
-
-    $membership.User = Get-ReferenceLink $User
-    $membership.Group = Get-ReferenceLink $Group
-
-    $membershipsRequestBuilder.Request().AddAsync($membership).GetAwaiter().GetResult()
-}         
-
-function Remove-SnowGroupMembership {
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-    
-    $ServiceNowClient.Memberships()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
-}         
 function Get-ServiceNowClient {
     param (
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false)]

@@ -17,15 +17,15 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
-        /// Parent role, reference to sys_user_role
+        /// Role, reference to sys_user_role
         /// </summary>
         [JsonProperty(PropertyName = "role", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Parent { get; set; }
+        public ReferenceLink Role { get; set; }
 
         /// <summary>
-        /// Child role, reference to sys_user_role
+        /// Contained role, reference to sys_user_role
         /// </summary>
         [JsonProperty(PropertyName = "contains", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Child { get; set; }
+        public ReferenceLink Contains { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <PowershellConnectorDefinition Id="ServiceNow" Version="1.0" Description="Powershell connector for ServiceNow">
   <PluginAssemblies>
     <!--<Assembly Path=""/>-->
@@ -2373,276 +2372,6 @@
           ]]>
       </CustomCommand>
 
-      <CustomCommand Name="Get-SnowGroup">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-    
-        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-          ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Remove-SnowGroup">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-    
-    $ServiceNowClient.UserGroups()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="New-SnowGroup">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [string]$DefaultAssignee,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [bool]$ExcludeManager,
-
-        [parameter(Mandatory = $false)]
-        [string]$HourlyRate,
-        
-        [parameter(Mandatory = $false)]
-        [bool]$IncludeMembers,
-
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Name,
-
-        [parameter(Mandatory = $false)]
-        [string]$ParentGroup,
-
-        [parameter(Mandatory = $false)]
-        [string]$Roles,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$Type,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter
-    )
-    
-    $groupRequestBuilder = $ServiceNowClient.UserGroups()
-    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
-    $parameters = $MyInvocation.BoundParameters  
-
-    if ($parameters.ContainsKey("Active")) {
-        $group.Active = $Active
-    }
-    if ($parameters.ContainsKey("CostCenter")) {
-        if (-not [string]::IsNullOrEmpty($CostCenter)) {
-            $group.CostCenter = Get-ReferenceLink $CostCenter
-        }
-        else {
-            $group.CostCenter = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $group.Description = $Description
-    } 
-    if ($parameters.ContainsKey("DefaultAssignee")) {
-        if (-not [string]::IsNullOrEmpty($DefaultAssignee)) {
-            $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
-        }
-        else {
-            $group.DefaultAssignee = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $group.Email = $Email
-    } 
-    if ($parameters.ContainsKey("ExcludeManager")) {
-        $group.ExcludeManager = $ExcludeManager
-    }
-    if ($parameters.ContainsKey("HourlyRate")) {
-        $group.HourlyRate = $HourlyRate
-    }
-    if ($parameters.ContainsKey("IncludeMembers")) {
-        $group.IncludeMembers = $IncludeMembers
-    }
-    if ($parameters.ContainsKey("Name")) {
-        $group.Name = $Name
-    }
-    if ($parameters.ContainsKey("Manager")) {
-        if (-not [string]::IsNullOrEmpty($Manager)) {
-            $group.Manager = Get-ReferenceLink $Manager
-        }
-        else {
-            $group.Manager = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Roles")) {
-        $group.Roles = $Roles
-    } 
-    if ($parameters.ContainsKey("ParentGroup")) {
-        if (-not [string]::IsNullOrEmpty($ParentGroup)) {
-            $group.Parent = Get-ReferenceLink $ParentGroup
-        }
-        else {
-            $group.Parent = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Source")) {
-        $group.Source = $Source
-    }
-    if ($parameters.ContainsKey("Type")) {
-        $group.Type = $Type
-    }
-
-    $groupRequestBuilder.Request().AddAsync($group).GetAwaiter().GetResult()
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Set-SnowGroup">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id,
-
-        [parameter(Mandatory = $false)]
-        [string]$DefaultAssignee,
-
-        [parameter(Mandatory = $false)]
-        [string]$Description,
-
-        [parameter(Mandatory = $false)]
-        [bool]$Active,            
-
-        [parameter(Mandatory = $false)]
-        [bool]$ExcludeManager,
-
-        [parameter(Mandatory = $false)]
-        [string]$HourlyRate,
-            
-        [parameter(Mandatory = $false)]
-        [bool]$IncludeMembers,
-
-        [parameter(Mandatory = $false)]
-        [string]$Manager,
-
-        [parameter(Mandatory = $false)]
-        [string]$Name,
-
-        [parameter(Mandatory = $false)]
-        [string]$ParentGroup,
-
-        [parameter(Mandatory = $false)]
-        [string]$Roles,
-
-        [parameter(Mandatory = $false)]
-        [string]$Source,
-
-        [parameter(Mandatory = $false)]
-        [string]$Type,
-
-        [parameter(Mandatory = $false)]
-        [string]$Email,
-
-        [parameter(Mandatory = $false)]
-        [string]$CostCenter
-    )
-        
-    $groupRequestBuilder = $ServiceNowClient.UserGroups()[$Id] 
-    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
-    $parameters = $MyInvocation.BoundParameters  
-    $group.Id = $Id
-
-
-    if ($parameters.ContainsKey("Active")) {
-        $group.Active = $Active
-    }
-    if ($parameters.ContainsKey("CostCenter")) {
-        if (-not [string]::IsNullOrEmpty($CostCenter)) {
-            $group.CostCenter = Get-ReferenceLink $CostCenter
-        }
-        else {
-            $group.CostCenter = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Description")) {
-        $group.Description = $Description
-    } 
-    if ($parameters.ContainsKey("DefaultAssignee")) {
-        if (-not [string]::IsNullOrEmpty($DefaultAssignee)) {
-            $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
-        }
-        else {
-            $group.DefaultAssignee = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Email")) {
-        $group.Email = $Email
-    } 
-    if ($parameters.ContainsKey("ExcludeManager")) {
-        $group.ExcludeManager = $ExcludeManager
-    }
-    if ($parameters.ContainsKey("HourlyRate")) {
-        $group.HourlyRate = $HourlyRate
-    }
-    if ($parameters.ContainsKey("IncludeMembers")) {
-        $group.IncludeMembers = $IncludeMembers
-    }
-    if ($parameters.ContainsKey("Name")) {
-        $group.Name = $Name
-    }
-    if ($parameters.ContainsKey("Manager")) {
-        if (-not [string]::IsNullOrEmpty($Manager)) {
-            $group.Manager = Get-ReferenceLink $Manager
-        }
-        else {
-            $group.Manager = Get-ReferenceLink ""
-        }
-    } 
-    if ($parameters.ContainsKey("Roles")) {
-        $group.Roles = $Roles
-    } 
-    if ($parameters.ContainsKey("ParentGroup")) {
-        if (-not [string]::IsNullOrEmpty($ParentGroup)) {
-            $group.Parent = Get-ReferenceLink $ParentGroup
-        }
-        else {
-            $group.Parent = [ServiceNow.Graph.Models.ReferenceLink]$null
-        }
-    } 
-    if ($parameters.ContainsKey("Source")) {
-        $group.Source = $Source
-    }
-    if ($parameters.ContainsKey("Type")) {
-        $group.Type = $Type
-    }
-
-    $groupRequestBuilder.Request().UpdateAsync($group).GetAwaiter().GetResult()
-            ]]>
-      </CustomCommand>
-
       <CustomCommand Name="Get-SnowServiceCatalog">
         <![CDATA[
     param (
@@ -2662,59 +2391,9 @@
         Get-Entity -CollectionBuilder $ServiceNowClient.ServiceCatalogs() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy    
           ]]>
       </CustomCommand>
-      <CustomCommand Name="Get-SnowGroupMembership">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-        
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-        
-        
-    )
-        
-   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-          ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="New-SnowGroupMembership">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Group,
-
-        [parameter(Mandatory = $true)]
-        [string]$User
-    )
-    
-    $membershipsRequestBuilder = $ServiceNowClient.Memberships()
-    $membership = New-Object -TypeName ServiceNow.Graph.Models.UserGroupMembership
 
 
-    $membership.User = Get-ReferenceLink $User
-    $membership.Group = Get-ReferenceLink $Group
 
-    $membershipsRequestBuilder.Request().AddAsync($membership).GetAwaiter().GetResult()
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Remove-SnowGroupMembership">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-    
-    $ServiceNowClient.Memberships()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
-            ]]>
-      </CustomCommand>
 
       <CustomCommand Name="Get-SnowTask">
         <![CDATA[
@@ -4960,34 +4639,6 @@
       </CustomCommand>
 
 
-      <CustomCommand Name="New-SnowRoleHasGroup">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Role,
-
-        [parameter(Mandatory = $true)]
-        [string]$Group       
-    )
-    $membership = New-Object -TypeName ServiceNow.Graph.Models.GroupHasRole
-
-    $membership.Group = Get-ReferenceLink $Group
-    $membership.Role = Get-ReferenceLink $Role
-
-    $ServiceNowClient.GroupHasRoles().Request().AddAsync($membership).GetAwaiter().GetResult()
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Remove-SnowRoleHasGroup">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-    
-    $ServiceNowClient.GroupHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
-            ]]>
-      </CustomCommand>
 
             <CustomCommand Name="Get-SnowUser">
         <![CDATA[
@@ -5548,6 +5199,386 @@
           ]]>
       </CustomCommand>
 
+      <CustomCommand Name="Get-SnowGroup">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+    
+        Get-Entity -CollectionBuilder $ServiceNowClient.UserGroups() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowGroup">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$DefaultAssignee,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [bool]$ExcludeManager,
+
+        [parameter(Mandatory = $false)]
+        [bool]$IncludeMembers,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Roles,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$Type
+    )
+    
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()
+    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
+    $parameters = $MyInvocation.BoundParameters  
+
+    if ($parameters.ContainsKey("Active")) {
+        $group.Active = $Active
+    }
+    if ($parameters.ContainsKey("CostCenter") -and $CostCenter) {
+        $group.CostCenter = Get-ReferenceLink $CostCenter
+    }     
+    if ($parameters.ContainsKey("DefaultAssignee") -and $DefaultAssignee) {
+        $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
+    }         
+    if ($parameters.ContainsKey("Description")) {
+        $group.Description = $Description
+    } 
+    if ($parameters.ContainsKey("Email")) {
+        $group.Email = $Email
+    } 
+    if ($parameters.ContainsKey("ExcludeManager")) {
+        $group.ExcludeManager = $ExcludeManager
+    }
+    if ($parameters.ContainsKey("IncludeMembers")) {
+        $group.IncludeMembers = $IncludeMembers
+    }
+    if ($parameters.ContainsKey("Manager") -and $Manager) {
+        $group.Manager = Get-ReferenceLink $Manager
+    }             
+    if ($parameters.ContainsKey("Name")) {
+        $group.Name = $Name
+    }
+    if ($parameters.ContainsKey("Parent") -and $Parent) {
+        $group.Parent = Get-ReferenceLink $Parent
+    }                 
+    if ($parameters.ContainsKey("Roles")) {
+        $group.Roles = $Roles
+    } 
+    if ($parameters.ContainsKey("Source")) {
+        $group.Source = $Source
+    }
+    if ($parameters.ContainsKey("Type")) {
+        $group.Type = $Type
+    }
+
+    $groupRequestBuilder.Request().AddAsync($group).GetAwaiter().GetResult()
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Remove-SnowGroup">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id
+    )
+    
+    $ServiceNowClient.UserGroups()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Set-SnowGroup">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id,
+
+        [parameter(Mandatory = $false)]
+        [bool]$Active,            
+
+        [parameter(Mandatory = $false)]
+        [string]$CostCenter,
+
+        [parameter(Mandatory = $false)]
+        [string]$DefaultAssignee,
+
+        [parameter(Mandatory = $false)]
+        [string]$Description,
+
+        [parameter(Mandatory = $false)]
+        [string]$Email,
+
+        [parameter(Mandatory = $false)]
+        [bool]$ExcludeManager,
+
+        [parameter(Mandatory = $false)]
+        [bool]$IncludeMembers,
+
+        [parameter(Mandatory = $false)]
+        [string]$Manager,
+
+        [parameter(Mandatory = $false)]
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [string]$Parent,
+
+        [parameter(Mandatory = $false)]
+        [string]$Roles,
+
+        [parameter(Mandatory = $false)]
+        [string]$Source,
+
+        [parameter(Mandatory = $false)]
+        [string]$Type
+    )
+        
+    $groupRequestBuilder = $ServiceNowClient.UserGroups()[$Id] 
+    $group = New-Object -TypeName ServiceNow.Graph.Models.UserGroup
+    $parameters = $MyInvocation.BoundParameters  
+    $group.Id = $Id
+
+
+    if ($parameters.ContainsKey("Active")) {
+        $group.Active = $Active
+    }
+    if ($parameters.ContainsKey("CostCenter")) {
+        if ($CostCenter) {
+            $group.CostCenter = Get-ReferenceLink $CostCenter
+        }
+        else {
+            $group.CostCenter = Get-ReferenceLink ""
+        }
+    }                          
+    if ($parameters.ContainsKey("DefaultAssignee")) {
+        if ($DefaultAssignee) {
+            $group.DefaultAssignee = Get-ReferenceLink $DefaultAssignee
+        }
+        else {
+            $group.DefaultAssignee = Get-ReferenceLink ""
+        }
+    }                                  
+    if ($parameters.ContainsKey("Description")) {
+        $group.Description = $Description
+    } 
+    if ($parameters.ContainsKey("Email")) {
+        $group.Email = $Email
+    } 
+    if ($parameters.ContainsKey("ExcludeManager")) {
+        $group.ExcludeManager = $ExcludeManager
+    }
+    if ($parameters.ContainsKey("IncludeMembers")) {
+        $group.IncludeMembers = $IncludeMembers
+    }
+    if ($parameters.ContainsKey("Manager")) {
+        if ($Manager) {
+            $group.Manager = Get-ReferenceLink $Manager
+        }
+        else {
+            $group.Manager = Get-ReferenceLink ""
+        }
+    }                                      
+    if ($parameters.ContainsKey("Name")) {
+        $group.Name = $Name
+    }
+    if ($parameters.ContainsKey("Parent")) {
+        if ($Parent) {
+            $group.Parent = Get-ReferenceLink $Parent
+        }
+        else {
+            $group.Parent = Get-ReferenceLink ""
+        }
+    }                                      
+    if ($parameters.ContainsKey("Roles")) {
+        $group.Roles = $Roles
+    } 
+
+    if ($parameters.ContainsKey("Source")) {
+        $group.Source = $Source
+    }
+    if ($parameters.ContainsKey("Type")) {
+        $group.Type = $Type
+    }
+
+    $groupRequestBuilder.Request().UpdateAsync($group).GetAwaiter().GetResult()
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Get-SnowGroupMembership">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+        
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+        
+        
+    )
+   Get-Entity -CollectionBuilder $ServiceNowClient.Memberships() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+          ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowGroupMembership">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Group,
+
+        [parameter(Mandatory = $true)]
+        [string]$User
+    )
+    $membershipsRequestBuilder = $ServiceNowClient.Memberships
+    $membership = New-Object -TypeName ServiceNow.Graph.Models.UserGroupMembership
+
+    $membership.User = Get-ReferenceLink $User
+    $membership.Group = Get-ReferenceLink $Group
+
+    $membershipsRequestBuilder.Request().AddAsync($membership).GetAwaiter().GetResult()
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Remove-SnowGroupMembership">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id
+    )
+    
+    $ServiceNowClient.Memberships()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Get-SnowRole">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+  
+        Get-Entity -CollectionBuilder $ServiceNowClient.Roles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+            ]]>
+      </CustomCommand>
+
+
+      <CustomCommand Name="Get-SnowRoleHasGroup">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+
+    Get-Entity -CollectionBuilder $ServiceNowClient.GroupHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="New-SnowRoleHasGroup">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Role,
+
+        [parameter(Mandatory = $true)]
+        [string]$Group       
+    )
+    $membership = New-Object -TypeName ServiceNow.Graph.Models.GroupHasRole
+
+    $membership.Group = Get-ReferenceLink $Group
+    $membership.Role = Get-ReferenceLink $Role
+
+    $ServiceNowClient.GroupHasRoles().Request().AddAsync($membership).GetAwaiter().GetResult()
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Remove-SnowRoleHasGroup">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $true)]
+        [string]$Id
+    )
+    
+    $ServiceNowClient.GroupHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
+            ]]>
+      </CustomCommand>
+
+      <CustomCommand Name="Get-SnowRoleHasUser">
+        <![CDATA[
+    param (
+        [parameter(Mandatory = $false)]
+        [String]$Id,
+
+        [parameter(Mandatory = $false)]
+        [String]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [String]$Select,
+
+        [parameter(Mandatory = $false)]
+        [String]$OrderBy
+    )
+        
+        Get-Entity -CollectionBuilder $ServiceNowClient.UserHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+            ]]>
+      </CustomCommand>
+
       <CustomCommand Name="New-SnowRoleHasUser">
         <![CDATA[
     param (
@@ -5573,44 +5604,14 @@
             ]]>
       </CustomCommand>
 
-
-      <CustomCommand Name="Get-SnowRole">
+      <CustomCommand Name="Remove-SnowRoleHasUser">
         <![CDATA[
     param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
+        [parameter(Mandatory = $true)]
+        [string]$Id
     )
-  
-        Get-Entity -CollectionBuilder $ServiceNowClient.Roles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Get-SnowRoleHasGroup">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-
-    Get-Entity -CollectionBuilder $ServiceNowClient.GroupHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
+    
+    $ServiceNowClient.UserHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
             ]]>
       </CustomCommand>
 
@@ -5633,42 +5634,6 @@
         Get-Entity -CollectionBuilder $ServiceNowClient.RoleHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
             ]]>
       </CustomCommand>
-
-      <CustomCommand Name="Get-SnowRoleHasUser">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $false)]
-        [String]$Id,
-
-        [parameter(Mandatory = $false)]
-        [String]$Filter,
-
-        [parameter(Mandatory = $false)]
-        [String]$Select,
-
-        [parameter(Mandatory = $false)]
-        [String]$OrderBy
-    )
-        
-        Get-Entity -CollectionBuilder $ServiceNowClient.UserHasRoles() -Id $Id -Filter $Filter -Select $Select -OrderBy $OrderBy
-            ]]>
-      </CustomCommand>
-
-      <CustomCommand Name="Remove-SnowRoleHasUser">
-        <![CDATA[
-    param (
-        [parameter(Mandatory = $true)]
-        [string]$Id
-    )
-    
-    $ServiceNowClient.UserHasRoles()[$id].Request().DeleteAsync().GetAwaiter().GetResult() | Out-Null
-            ]]>
-      </CustomCommand>
-
-
-
-
-
 
       <CustomCommand Name="Get-ServiceNowClient">
         <![CDATA[
@@ -14065,37 +14030,31 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true" AccessConstraint="ReadOnly">
+        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="WhenUpdated" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="WhenCreated" DataType="DateTime" AccessConstraint="ReadOnly">
+        <Property Name="WhenCreated" DataType="DateTime">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="WhenCreated" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="ObjectType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CreatedBy" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="CreatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="UpdatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="SysModCount" DataType="Int" AccessConstraint="ReadOnly">
+        <Property Name="SysModCount" DataType="Int">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasGroup" Path="SysModCount" />
           </ReturnBindings>
@@ -14929,45 +14888,27 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="User" DataType="String" IsDisplay="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroupMembership" Path="User.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroupMembership" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="New-SnowGroupMembership" Parameter="User" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="ObjectType" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroupMembership" Path="ObjectType" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="CreatedBy" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="CreatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroupMembership" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="UpdatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroupMembership" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="SysModCount" DataType="Int" AccessConstraint="ReadOnly">
+        <Property Name="SysModCount" DataType="Int">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroupMembership" Path="SysModCount" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="SysTags" DataType="String" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroupMembership" Path="SysTags" />
           </ReturnBindings>
         </Property>
 
@@ -14983,6 +14924,17 @@
           </CommandMappings>
         </Property>
 
+        <Property Name="User" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroupMembership" Path="User.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroupMembership" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowGroupMembership" Parameter="User" />
+          </CommandMappings>
+        </Property>
       </Properties>
 
       <!-- Configuration items for readable types -->
@@ -15008,7 +14960,6 @@
           </CommandSequence>
         </Method>
       </MethodConfiguration>
-
     </Class>
 
     <Class Name="SysUserGroup">
@@ -15030,129 +14981,42 @@
         <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="WhenUpdated" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="WhenUpdated" />
-            <Bind CommandResultOf="New-SnowGroup" Path="WhenUpdated" />
           </ReturnBindings>
         </Property>
 
         <Property Name="WhenCreated" DataType="DateTime" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="WhenCreated" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="WhenCreated" />
-            <Bind CommandResultOf="New-SnowGroup" Path="WhenCreated" />
           </ReturnBindings>
         </Property>
-
-        <Property Name="Name" DataType="String" IsDisplay="true">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="Name" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Name" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Name" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="Name" />
-            <Map ToCommand="New-SnowGroup" Parameter="Name" />
-          </CommandMappings>
-        </Property>
-
 
         <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="ObjectType" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="ObjectType" />
-            <Bind CommandResultOf="New-SnowGroup" Path="ObjectType" />
           </ReturnBindings>
         </Property>
 
         <Property Name="CreatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="CreatedBy" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="CreatedBy" />
-            <Bind CommandResultOf="New-SnowGroup" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="UpdatedBy" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="UpdatedBy" />
-            <Bind CommandResultOf="New-SnowGroup" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
 
         <Property Name="SysModCount" DataType="Int" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="SysModCount" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="SysModCount" />
-            <Bind CommandResultOf="New-SnowGroup" Path="SysModCount" />
           </ReturnBindings>
-        </Property>
-
-        <Property Name="SysTags" DataType="String" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="SysTags" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="SysTags" />
-            <Bind CommandResultOf="New-SnowGroup" Path="SysTags" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Description" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="Description" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Description" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Description" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="Description" />
-            <Map ToCommand="New-SnowGroup" Parameter="Description" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Type" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="Type" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Type" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Type" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="Type" />
-            <Map ToCommand="New-SnowGroup" Parameter="Type" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="HourlyRate" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="HourlyRate" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="HourlyRate" />
-            <Bind CommandResultOf="New-SnowGroup" Path="HourlyRate" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="HourlyRate" />
-            <Map ToCommand="New-SnowGroup" Parameter="HourlyRate" />
-          </CommandMappings>
         </Property>
 
         <Property Name="Active" DataType="Bool">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="Active" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Active" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Active" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowGroup" Method="Insert" />
@@ -15164,43 +15028,9 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="ExcludeManager" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="ExcludeManager" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="ExcludeManager" />
-            <Bind CommandResultOf="New-SnowGroup" Path="ExcludeManager" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="ExcludeManager" />
-            <Map ToCommand="New-SnowGroup" Parameter="ExcludeManager" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="DefaultAssignee" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="DefaultAssignee.ToString()" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="DefaultAssignee.ToString()" />
-            <Bind CommandResultOf="New-SnowGroup" Path="DefaultAssignee.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="DefaultAssignee" />
-            <Map ToCommand="New-SnowGroup" Parameter="DefaultAssignee" />
-          </CommandMappings>
-        </Property>
-
         <Property Name="CostCenter" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="CostCenter.ToString()" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="CostCenter.ToString()" />
-            <Bind CommandResultOf="New-SnowGroup" Path="CostCenter.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowGroup" Method="Insert" />
@@ -15212,91 +15042,37 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="Source" DataType="String">
+        <Property Name="DefaultAssignee" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="Source" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Source" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Source" />
+            <Bind CommandResultOf="Get-SnowGroup" Path="DefaultAssignee.ToString()" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowGroup" Method="Insert" />
             <ModBy Command="Set-SnowGroup" Method="Update" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="Source" />
-            <Map ToCommand="New-SnowGroup" Parameter="Source" />
+            <Map ToCommand="Set-SnowGroup" Parameter="DefaultAssignee" />
+            <Map ToCommand="New-SnowGroup" Parameter="DefaultAssignee" />
           </CommandMappings>
         </Property>
 
-        <Property Name="Roles" DataType="String">
+        <Property Name="Description" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="Roles" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Roles" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Roles" />
+            <Bind CommandResultOf="Get-SnowGroup" Path="Description" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowGroup" Method="Insert" />
             <ModBy Command="Set-SnowGroup" Method="Update" />
           </ModifiedBy>
           <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="Roles" />
-            <Map ToCommand="New-SnowGroup" Parameter="Roles" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="Manager" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="Manager.ToString()" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Manager.ToString()" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Manager.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="Manager" />
-            <Map ToCommand="New-SnowGroup" Parameter="Manager" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="ParentGroup" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="Parent.ToString()" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Parent.ToString()" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Parent.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="Parent" />
-            <Map ToCommand="New-SnowGroup" Parameter="Parent" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="IncludeMembers" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowGroup" Path="IncludeMembers" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="IncludeMembers" />
-            <Bind CommandResultOf="New-SnowGroup" Path="IncludeMembers" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowGroup" Method="Insert" />
-            <ModBy Command="Set-SnowGroup" Method="Update" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="Set-SnowGroup" Parameter="IncludeMembers" />
-            <Map ToCommand="New-SnowGroup" Parameter="IncludeMembers" />
+            <Map ToCommand="Set-SnowGroup" Parameter="Description" />
+            <Map ToCommand="New-SnowGroup" Parameter="Description" />
           </CommandMappings>
         </Property>
 
         <Property Name="Email" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowGroup" Path="Email" />
-            <Bind CommandResultOf="Set-SnowGroup" Path="Email" />
-            <Bind CommandResultOf="New-SnowGroup" Path="Email" />
           </ReturnBindings>
           <ModifiedBy>
             <ModBy Command="New-SnowGroup" Method="Insert" />
@@ -15308,13 +15084,124 @@
           </CommandMappings>
         </Property>
 
+        <Property Name="ExcludeManager" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="ExcludeManager" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="ExcludeManager" />
+            <Map ToCommand="New-SnowGroup" Parameter="ExcludeManager" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="IncludeMembers" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="IncludeMembers" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="IncludeMembers" />
+            <Map ToCommand="New-SnowGroup" Parameter="IncludeMembers" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Manager" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="Manager.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="Manager" />
+            <Map ToCommand="New-SnowGroup" Parameter="Manager" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Name" DataType="String" IsDisplay="true">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="Name" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="Name" />
+            <Map ToCommand="New-SnowGroup" Parameter="Name" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Parent" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="Parent.ToString()" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="Parent" />
+            <Map ToCommand="New-SnowGroup" Parameter="Parent" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Roles" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="Roles" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="Roles" />
+            <Map ToCommand="New-SnowGroup" Parameter="Roles" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Source" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="Source" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="Source" />
+            <Map ToCommand="New-SnowGroup" Parameter="Source" />
+          </CommandMappings>
+        </Property>
+
+        <Property Name="Type" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowGroup" Path="Type" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowGroup" Method="Insert" />
+            <ModBy Command="Set-SnowGroup" Method="Update" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="Set-SnowGroup" Parameter="Type" />
+            <Map ToCommand="New-SnowGroup" Parameter="Type" />
+          </CommandMappings>
+        </Property>
       </Properties>
 
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowGroup">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,name,sys_class_name,parent,manager,default_assignee,cost_center" />
+                        Value="sys_id,sys_updated_on,name" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sys_user_group_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -15356,51 +15243,69 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true" AccessConstraint="ReadOnly">
+        <Property Name="WhenUpdated" DataType="DateTime" IsRevision="true">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasUser" Path="WhenUpdated" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="WhenCreated" DataType="DateTime" AccessConstraint="ReadOnly">
+        <Property Name="WhenCreated" DataType="DateTime">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasUser" Path="WhenCreated" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="User" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="User.ToString()" />
-          </ReturnBindings>
-          <ModifiedBy>
-            <ModBy Command="New-SnowRoleHasUser" Method="Insert" />
-          </ModifiedBy>
-          <CommandMappings>
-            <Map ToCommand="New-SnowRoleHasUser" Parameter="User" />
-          </CommandMappings>
-        </Property>
-
-        <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="ObjectType" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="CreatedBy" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="CreatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasUser" Path="CreatedBy" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="UpdatedBy" DataType="String" AccessConstraint="ReadOnly">
+        <Property Name="UpdatedBy" DataType="String">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasUser" Path="UpdatedBy" />
           </ReturnBindings>
         </Property>
 
-        <Property Name="SysModCount" DataType="Int" AccessConstraint="ReadOnly">
+        <Property Name="SysModCount" DataType="Int">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasUser" Path="SysModCount" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="GrantedBy" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="GrantedBy.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="IncludedInRole" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="IncludedInRole.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="IncludedInRoleInstance" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="IncludedInRoleInstance.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Inherited" DataType="Bool">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="Inherited" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="InhCount" DataType="Int">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="InhCount" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="InhMap" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="InhMap" />
           </ReturnBindings>
         </Property>
 
@@ -15428,42 +15333,17 @@
           </CommandMappings>
         </Property>
 
-        <Property Name="InheritanceMap" DataType="String">
+        <Property Name="User" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="InheritanceMap" />
+            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="User.ToString()" />
           </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="New-SnowRoleHasUser" Method="Insert" />
+          </ModifiedBy>
+          <CommandMappings>
+            <Map ToCommand="New-SnowRoleHasUser" Parameter="User" />
+          </CommandMappings>
         </Property>
-
-        <Property Name="IncludedInRole" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="IncludedInRole.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="IncludedInRoleInstance" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="IncludedInRoleInstance.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="InheritanceCount" DataType="Int">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="InheritanceCount" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="GrantedBy" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="GrantedBy.ToString()" />
-          </ReturnBindings>
-        </Property>
-
-        <Property Name="Inherited" DataType="Bool">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasUser" Path="Inherited" />
-          </ReturnBindings>
-        </Property>
-
       </Properties>
 
       <!-- Configuration items for readable types -->
@@ -15668,12 +15548,6 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Parent" DataType="String">
-          <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasRole" Path="Parent.ToString()" />
-          </ReturnBindings>
-        </Property>
-
         <Property Name="ObjectType" DataType="String" AccessConstraint="ReadOnly">
           <ReturnBindings>
             <Bind CommandResultOf="Get-SnowRoleHasRole" Path="ObjectType" />
@@ -15698,9 +15572,15 @@
           </ReturnBindings>
         </Property>
 
-        <Property Name="Child" DataType="String">
+        <Property Name="Role" DataType="String">
           <ReturnBindings>
-            <Bind CommandResultOf="Get-SnowRoleHasRole" Path="Child.ToString()" />
+            <Bind CommandResultOf="Get-SnowRoleHasRole" Path="Role.ToString()" />
+          </ReturnBindings>
+        </Property>
+
+        <Property Name="Contains" DataType="String">
+          <ReturnBindings>
+            <Bind CommandResultOf="Get-SnowRoleHasRole" Path="Contains.ToString()" />
           </ReturnBindings>
         </Property>
 

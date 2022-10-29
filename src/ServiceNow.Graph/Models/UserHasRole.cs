@@ -17,16 +17,10 @@ namespace ServiceNow.Graph.Models
         }
 
         /// <summary>
-        /// Role, reference to sys_user_role table
+        /// Granted by group, reference to sys_user_group table
         /// </summary>
-        [JsonProperty(PropertyName = "role", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink Role { get; set; }
-
-        /// <summary>
-        /// Inheritance Map, UI Action List type, X255
-        /// </summary>
-        [JsonProperty(PropertyName = "inh_map", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public string InheritanceMap { get; set; }
+        [JsonProperty(PropertyName = "granted_by", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink GrantedBy { get; set ; }
 
         /// <summary>
         /// Included in role, reference to sys_user_has_role table
@@ -41,22 +35,29 @@ namespace ServiceNow.Graph.Models
         public ReferenceLink IncludedInRoleInstance { get; set; }
 
         /// <summary>
-        /// Inheritance Count, integer
-        /// </summary>
-        [JsonProperty(PropertyName = "inh_count", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public int? InheritanceCount { get; set; }
-
-        /// <summary>
-        /// Granted by group, reference to sys_user_group table
-        /// </summary>
-        [JsonProperty(PropertyName = "granted_by", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
-        public ReferenceLink GrantedBy { get; set ; }
-
-        /// <summary>
         /// Inherited, boolean
         /// </summary>
         [JsonProperty(PropertyName = "inherited", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
         public bool? Inherited { get; set; }
+
+
+        /// <summary>
+        /// Inheritance Count, integer
+        /// </summary>
+        [JsonProperty(PropertyName = "inh_count", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public int? InhCount { get; set; }
+
+        /// <summary>
+        /// Inheritance Map, UI Action List type, X255
+        /// </summary>
+        [JsonProperty(PropertyName = "inh_map", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public string InhMap { get; set; }
+
+        /// <summary>
+        /// Role, reference to sys_user_role table
+        /// </summary>
+        [JsonProperty(PropertyName = "role", NullValueHandling = NullValueHandling.Ignore, Required = Required.Default)]
+        public ReferenceLink Role { get; set; }
 
         /// <summary>
         /// State, X40
