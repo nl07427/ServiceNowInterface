@@ -5168,7 +5168,7 @@ function New-SnowGroupMembership {
         [parameter(Mandatory = $true)]
         [string]$User
     )
-    $membershipsRequestBuilder = $ServiceNowClient.Memberships
+    $membershipsRequestBuilder = $ServiceNowClient.Memberships()
     $membership = New-Object -TypeName ServiceNow.Graph.Models.UserGroupMembership
 
     $membership.User = Get-ReferenceLink $User
