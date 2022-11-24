@@ -13,6 +13,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using ServiceNow.Graph.Extensions;
+using ServiceNow.Graph.Requests.Middleware.Options;
 
 namespace ServiceNow.Graph.Test.Requests
 {
@@ -51,5 +53,114 @@ namespace ServiceNow.Graph.Test.Requests
             Assert.Equal(expectedUrl, requestMessage.RequestUri.AbsoluteUri);
         }
 
+        [Fact]
+        public void BaseRequest_InitializeWithQueryStringAndOptions()
+        {
+            var baseUrl = string.Concat(this.baseUrl, "/me/drive/items/id");
+            var requestUrl = baseUrl + "?key=value&key2";
+
+            var options = new List<Option>
+            {
+                new QueryOption("key3", "value3"),
+                new HeaderOption("header", "value"),
+            };
+
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient, options);
+
+            Assert.Equal(new Uri(baseUrl), new Uri(baseRequest.RequestUrl));
+            Assert.Equal(3, baseRequest.QueryOptions.Count);
+            Assert.True(baseRequest.QueryOptions[0].Name.Equals("key") && baseRequest.QueryOptions[0].Value.Equals("value"));
+            Assert.True(baseRequest.QueryOptions[1].Name.Equals("key2") && string.IsNullOrEmpty(baseRequest.QueryOptions[1].Value));
+            Assert.True(baseRequest.QueryOptions[2].Name.Equals("key3") && baseRequest.QueryOptions[2].Value.Equals("value3"));
+            Assert.Equal(1, baseRequest.Headers.Count);
+            Assert.True(baseRequest.Headers[0].Name.Equals("header") && baseRequest.Headers[0].Value.Equals("value"));
+            Assert.NotNull(baseRequest.Client.AuthenticationProvider);
+            Assert.NotNull(baseRequest.GetHttpRequestMessage().GetRequestContext().ClientRequestId);
+            Assert.Equal(baseRequest.GetHttpRequestMessage().GetMiddlewareOption<AuthenticationHandlerOption>().AuthenticationProvider, baseRequest.Client.AuthenticationProvider);
+        }
+
+        [Fact]
+        public void GetWebRequestWithHeadersAndQueryOptions()
+        {
+            var requestUrl = string.Concat(this.baseUrl, "/me/drive/items/id");
+
+            var options = new List<Option>
+            {
+                new HeaderOption("header1", "value1"),
+                new HeaderOption("header2", "value2"),
+                new QueryOption("query1", "value1"),
+                new QueryOption("query2", "value2"),
+            };
+
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient, options) { Method = "PUT" };
+
+            var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+            Assert.Equal(HttpMethod.Put, httpRequestMessage.Method);
+            Assert.Equal(requestUrl + "?query1=value1&query2=value2",
+                httpRequestMessage.RequestUri.GetComponents(UriComponents.AbsoluteUri & ~UriComponents.Port, UriFormat.Unescaped));
+            Assert.Equal("value1", httpRequestMessage.Headers.GetValues("header1").First());
+            Assert.Equal("value2", httpRequestMessage.Headers.GetValues("header2").First());
+            Assert.NotNull(baseRequest.GetHttpRequestMessage().GetRequestContext().ClientRequestId);
+        }
+
+        [Fact]
+        public void GetRequestContextWithClientRequestIdHeader()
+        {
+            string requestUrl = string.Concat(this.baseUrl, "foo/bar");
+            string clientRequestId = "foobar";
+            var headers = new List<HeaderOption>
+            {
+                new HeaderOption(Constants.Headers.ClientRequestId, clientRequestId)
+            };
+
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient, headers) { Method = "PUT" };
+
+            var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+
+            Assert.Equal(HttpMethod.Put, httpRequestMessage.Method);
+            Assert.Same(clientRequestId, httpRequestMessage.GetRequestContext().ClientRequestId);
+        }
+
+        [Fact]
+        public void GetRequestContextWithClientRequestId()
+        {
+            string requestUrl = string.Concat(this.baseUrl, "foo/bar");
+
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient) { Method = "PUT" };
+
+            var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+
+            Assert.Equal(HttpMethod.Put, httpRequestMessage.Method);
+            Assert.NotNull(httpRequestMessage.GetRequestContext().ClientRequestId);
+        }
+
+        [Fact]
+        public void GetRequestNoAuthProvider()
+        {
+            string requestUrl = string.Concat(this.baseUrl, "foo/bar");
+
+            var client = new BaseClient(domain: this.baseUrl, authenticationProvider: null);
+            var baseRequest = new BaseRequest(requestUrl, client) { Method = "PUT"};
+
+            var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+
+            Assert.Equal(HttpMethod.Put, httpRequestMessage.Method);
+            Assert.NotNull(httpRequestMessage.GetRequestContext().ClientRequestId);
+            Assert.Null(httpRequestMessage.GetMiddlewareOption<AuthenticationHandlerOption>().AuthenticationProvider);
+        }
+
+        [Fact]
+        public void GetWebRequestNoOptions()
+        {
+            var requestUrl = string.Concat(this.baseUrl, "/me/drive/items/id");
+
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient) { Method = "DELETE" };
+
+            var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+            Assert.Equal(HttpMethod.Delete, httpRequestMessage.Method);
+            Assert.Equal(requestUrl,
+                httpRequestMessage.RequestUri.GetComponents(UriComponents.AbsoluteUri & ~UriComponents.Port, UriFormat.Unescaped));
+            Assert.Empty(httpRequestMessage.Headers);
+        }
     }
 }
