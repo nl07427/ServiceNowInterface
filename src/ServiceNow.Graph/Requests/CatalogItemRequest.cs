@@ -130,7 +130,7 @@ namespace ServiceNow.Graph.Requests
         /// <returns>The request object to send.</returns>
         public ICatalogItemRequest Select(string value)
         {
-            QueryOptions.Add(new QueryOption("sysparm_fields", WebUtility.UrlEncode(value)));
+            QueryOptions.Add(new QueryOption("sysparm_fields", value));
             return this;
         }
 

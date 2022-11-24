@@ -95,7 +95,7 @@ namespace ServiceNow.Graph.Requests
         /// <returns>The request object to send.</returns>
         public IOrderGuidesCollectionRequest Select(string value)
         {
-            QueryOptions.Add(new QueryOption("sysparm_fields", WebUtility.UrlEncode(value)));
+            QueryOptions.Add(new QueryOption("sysparm_fields", value));
             return this;
         }
 
@@ -117,7 +117,7 @@ namespace ServiceNow.Graph.Requests
         /// <returns>The request object to send.</returns>
         public IOrderGuidesCollectionRequest Filter(string value)
         {
-            QueryOptions.Add(new QueryOption("sysparm_query", WebUtility.UrlEncode(value)));
+            QueryOptions.Add(new QueryOption("sysparm_query", value));
             return this;
         }
 

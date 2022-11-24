@@ -377,8 +377,13 @@ namespace ServiceNow.Graph.Requests
 
             foreach (var queryOption in QueryOptions)
             {
+                // Escape any special uri characters in the queryOption data 
+                // We first decode/escape the string in case the user has already encoded it to prevent double encoding
+                var unescapedData = Uri.UnescapeDataString(queryOption.Value);
+                var escapedOptionValue = Uri.EscapeDataString(unescapedData);
+
                 stringBuilder.AppendFormat(stringBuilder.Length == 0 ? "?{0}={1}" : "&{0}={1}", queryOption.Name,
-                    queryOption.Value);
+                    escapedOptionValue);
             }
 
             return stringBuilder.ToString();
