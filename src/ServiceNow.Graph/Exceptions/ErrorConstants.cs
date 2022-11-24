@@ -1,4 +1,6 @@
-﻿namespace ServiceNow.Graph.Exceptions
+﻿using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("ServiceNow.Graph.Test")]
+namespace ServiceNow.Graph.Exceptions
 {
     internal static class ErrorConstants
     {
