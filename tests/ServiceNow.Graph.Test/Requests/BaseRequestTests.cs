@@ -288,5 +288,44 @@ namespace ServiceNow.Graph.Test.Requests
                 Assert.NotNull(baseRequest.Client.AuthenticationProvider);
             }
         }
+
+        [Fact]
+        public async Task SendAsync_NullResponseBody()
+        {
+            var requestUrl = string.Concat(this.baseUrl, "/me/drive/items/id");
+
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient) { ContentType = "application/json"};
+
+            using (var httpResponseMessage = new HttpResponseMessage())
+            using (var responseStream = new MemoryStream())
+            {
+                this.httpProvider.Setup(
+                    provider => provider.SendAsync(
+                        It.Is<HttpRequestMessage>(
+                            request =>
+                                string.Equals(request.Content.Headers.ContentType.ToString(), "application/json")
+                               && request.RequestUri.ToString().Equals(requestUrl)),
+                        HttpCompletionOption.ResponseContentRead,
+                        CancellationToken.None))
+                    .Returns(Task.FromResult(httpResponseMessage));
+
+                this.serializer.Setup(
+                    serializer => serializer.SerializeObject(It.IsAny<string>()))
+                    .Returns(string.Empty);
+
+                this.serializer.Setup(
+                    serializer => serializer.DeserializeObject<DerivedTypeClass>(It.IsAny<String>()))
+                    .Returns((string responseString) => {
+                        if (String.IsNullOrEmpty(responseString))
+                            return default(DerivedTypeClass);
+                        else
+                            return new DerivedTypeClass { Id = "id" };
+                    });
+
+                var instance = await baseRequest.SendAsync<DerivedTypeClass>("string", CancellationToken.None);
+
+                Assert.Null(instance);
+            }
+        }
     }
 }
