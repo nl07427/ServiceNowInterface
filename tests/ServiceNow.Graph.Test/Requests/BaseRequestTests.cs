@@ -327,5 +327,45 @@ namespace ServiceNow.Graph.Test.Requests
                 Assert.Null(instance);
             }
         }
+
+        [Fact]
+        public async Task SendAsync_RequestUrlNotSet()
+        {
+            var baseRequest = new BaseRequest("https://localhost", this.baseClient);
+            baseRequest.RequestUrl = null;
+
+            ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await baseRequest.SendAsync<DerivedTypeClass>("string", CancellationToken.None));
+            Assert.Equal(ErrorConstants.Codes.InvalidRequest, exception.Error.ErrorDetail.Message);
+            Assert.Equal(ErrorConstants.Messages.RequestUrlMissing, exception.Error.ErrorDetail.DetailedMessage);
+        }
+
+        [Fact]
+        public async Task SendStreamRequestAsync()
+        {
+            var requestUrl = string.Concat(this.baseUrl, "/me/photo/$value");
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient) { ContentType = "application/json", Method = "PUT" };
+
+            using (var requestStream = new MemoryStream())
+            using (var httpResponseMessage = new HttpResponseMessage())
+            using (var responseStream = new MemoryStream())
+            using (var streamContent = new StreamContent(responseStream))
+            {
+                httpResponseMessage.Content = streamContent;
+
+                this.httpProvider.Setup(
+                    provider => provider.SendAsync(
+                        It.Is<HttpRequestMessage>(
+                            request => request.RequestUri.ToString().StartsWith(requestUrl)
+                                && request.Method == HttpMethod.Put),
+                        HttpCompletionOption.ResponseContentRead,
+                        CancellationToken.None))
+                    .Returns(Task.FromResult(httpResponseMessage));
+
+                using (var returnedResponseStream = await baseRequest.SendStreamRequestAsync(requestStream, CancellationToken.None))
+                {
+                    Assert.Equal(await httpResponseMessage.Content.ReadAsStreamAsync(), returnedResponseStream);
+                }
+            }
+        }
     }
 }
