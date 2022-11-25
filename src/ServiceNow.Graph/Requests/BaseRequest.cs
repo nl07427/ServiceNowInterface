@@ -258,7 +258,7 @@ namespace ServiceNow.Graph.Requests
 
                 if (!string.IsNullOrEmpty(ContentType))
                 {
-                    request.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType);
+                    request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(ContentType);
                 }
 
                 return await Client.HttpProvider.SendAsync(request, completionOption, cancellationToken)
