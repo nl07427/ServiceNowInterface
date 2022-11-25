@@ -15349,7 +15349,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowRoleHasUser">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,user,role" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sys_user_has_role_filter" />
         </ListingCommand>
         <CommandSequence>
