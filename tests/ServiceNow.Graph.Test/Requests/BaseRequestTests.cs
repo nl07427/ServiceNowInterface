@@ -202,5 +202,49 @@ namespace ServiceNow.Graph.Test.Requests
                     baseRequest.Client.AuthenticationProvider);
             }
         }
+
+        [Fact]
+        public async Task SendAsyncSupportsContentTypeWithParameters()
+        {
+            // Arrange
+            var requestUrl = string.Concat(this.baseUrl, "/me/drive/items/id");
+
+            // Create a request that has content type with parameters 
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient) { ContentType = "application/json; odata=verbose" };
+
+            using (var httpResponseMessage = new HttpResponseMessage())
+            using (var responseStream = new MemoryStream())
+            using (var streamContent = new StreamContent(responseStream))
+            {
+                httpResponseMessage.Content = streamContent;
+
+                this.httpProvider.Setup(
+                    provider => provider.SendAsync(
+                        It.Is<HttpRequestMessage>(
+                            request =>
+                                string.Equals(request.Content.Headers.ContentType.ToString(), "application/json; odata=verbose")
+                               && request.RequestUri.ToString().Equals(requestUrl)),
+                        HttpCompletionOption.ResponseContentRead,
+                        CancellationToken.None))
+                        .Returns(Task.FromResult(httpResponseMessage));
+
+                var expectedResponseItem = new DerivedTypeClass { Id = "id" };
+                this.serializer.Setup(
+                    serializer => serializer.DeserializeObject<DerivedTypeClass>(It.IsAny<String>()))
+                    .Returns(expectedResponseItem);
+
+                // Act
+                var responseItem = await baseRequest.SendAsync<DerivedTypeClass>("string", CancellationToken.None);
+
+                // Assert
+                Assert.NotNull(responseItem);
+                Assert.Equal(expectedResponseItem.Id, responseItem.Id);
+                Assert.NotNull(baseRequest.Client.AuthenticationProvider);
+                Assert.NotNull(baseRequest.GetHttpRequestMessage().GetRequestContext().ClientRequestId);
+                Assert.Equal(baseRequest.GetHttpRequestMessage().GetMiddlewareOption<AuthenticationHandlerOption>().AuthenticationProvider,
+                    baseRequest.Client.AuthenticationProvider);
+                Assert.Equal("application/json; odata=verbose", baseRequest.ContentType);
+            }
+        }
     }
 }
