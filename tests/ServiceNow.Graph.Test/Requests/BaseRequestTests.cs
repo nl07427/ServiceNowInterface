@@ -246,5 +246,47 @@ namespace ServiceNow.Graph.Test.Requests
                 Assert.Equal("application/json; odata=verbose", baseRequest.ContentType);
             }
         }
+        
+        [Fact]
+        public async Task SendAsync_AuthenticationProviderNotSetWithCustomIHttpProvider()
+        {
+            var client = new BaseClient("https://localhost", null, this.httpProvider.Object);
+            var baseRequest = new BaseRequest("https://localhost", client);
+            ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await baseRequest.SendAsync<DerivedTypeClass>("string", CancellationToken.None));
+            Assert.Equal(ErrorConstants.Codes.InvalidRequest, exception.Error.ErrorDetail.Message);
+            Assert.Equal(ErrorConstants.Messages.AuthenticationProviderMissing, exception.Error.ErrorDetail.DetailedMessage);
+        }
+
+        [Fact]
+        public async Task SendAsync_NoReturnObject()
+        {
+            var requestUrl = string.Concat(this.baseUrl, "/me/drive/items/id");
+
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient) { ContentType = "application/json" };
+
+            using (var httpResponseMessage = new HttpResponseMessage())
+            using (var responseStream = new MemoryStream())
+            using (var streamContent = new StreamContent(responseStream))
+            {
+                httpResponseMessage.Content = streamContent;
+
+                this.httpProvider.Setup(
+                    provider => provider.SendAsync(
+                        It.Is<HttpRequestMessage>(
+                            request =>
+                                string.Equals(request.Content.Headers.ContentType.ToString(), "application/json")
+                               && request.RequestUri.ToString().Equals(requestUrl)),
+                        HttpCompletionOption.ResponseContentRead,
+                        CancellationToken.None))
+                    .Returns(Task.FromResult(httpResponseMessage));
+
+                this.serializer.Setup(
+                    serializer => serializer.SerializeObject(It.IsAny<string>()))
+                    .Returns(string.Empty);
+
+                await baseRequest.SendAsync("string", CancellationToken.None);
+                Assert.NotNull(baseRequest.Client.AuthenticationProvider);
+            }
+        }
     }
 }
