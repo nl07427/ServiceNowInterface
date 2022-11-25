@@ -16,6 +16,8 @@ using Xunit;
 using ServiceNow.Graph.Extensions;
 using ServiceNow.Graph.Requests.Middleware.Options;
 using ServiceNow.Graph.Test.TestModels;
+using ServiceNow.Graph.Authentication;
+using ServiceNow.Graph.Serialization;
 
 namespace ServiceNow.Graph.Test.Requests
 {
@@ -387,6 +389,77 @@ namespace ServiceNow.Graph.Test.Requests
                 Assert.NotNull(returnedResponse.RequestMessage.Headers);
                 Assert.Equal("Default-Token", returnedResponse.RequestMessage.Headers.Authorization.Parameter);
             }
+        }
+
+        [Fact]
+        public void BuildQueryString_NullQueryOptions()
+        {
+            var baseRequest = new BaseRequest("https://localhost", this.baseClient);
+
+            baseRequest.QueryOptions = null;
+
+            var queryString = baseRequest.BuildQueryString();
+
+            Assert.Null(queryString);
+        }
+
+        [Fact]
+        public async Task BaseRequest_Should_Call_HttpProvider_Concurrently()
+        {
+            var tasks = Enumerable.Range(1, 50).Select(index =>
+            {
+                return Task.Run(async () =>
+                {
+
+                    string expectedToken = Guid.NewGuid().ToString();
+                    var authProviderTriggered = 0;
+                    var authProvider = new DelegateAuthenticationProvider(message =>
+                    {
+                        authProviderTriggered++;
+                        message.Headers.Authorization = new AuthenticationHeaderValue("bearer", expectedToken);
+                        return Task.CompletedTask;
+                    });
+
+                    var validationHandlerTriggered = 0;
+                    var validationHandler = new TestHttpMessageHandler(message =>
+                    {
+                        validationHandlerTriggered++;
+                        Assert.Equal(expectedToken, message.Headers?.Authorization?.Parameter);
+                        Assert.Equal("https://test/users", message.RequestUri.AbsoluteUri);
+                    });
+
+                    var httpProvider = new HttpProvider(
+                        validationHandler,
+                        true,
+                        "local",
+                        new Serializer());
+
+                    var client = new BaseClient("https://Test", authProvider, httpProvider);
+                    var baseRequest = new BaseRequest("https://Test/users", client);
+                    await baseRequest.SendAsync(new object(), CancellationToken.None);
+
+                    Assert.Equal(1, validationHandlerTriggered);
+                    Assert.Equal(1, authProviderTriggered);
+                });
+            });
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public void BaseRequest_Should_Set_ResponseHandler()
+        {
+            // Arrange
+            var requestUrl = string.Concat(this.baseUrl, "/me/drive/items/id");
+            var baseRequest = new BaseRequest(requestUrl, this.baseClient);
+            var customResponseHandler = new ResponseHandler(this.serializer.Object);
+            // Act
+
+            baseRequest.WithResponseHandler<BaseRequest>(customResponseHandler);
+
+            // Assert
+            Assert.NotNull(baseRequest.ResponseHandler);
+            Assert.Equal(customResponseHandler, baseRequest.ResponseHandler);
         }
     }
 }
