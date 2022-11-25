@@ -367,5 +367,26 @@ namespace ServiceNow.Graph.Test.Requests
                 }
             }
         }
+
+        [Fact]
+        public async Task SendAsync_WithCustomHttpProvider()
+        {
+            using (var httpResponseMessage = new HttpResponseMessage())
+            using (TestHttpMessageHandler testHttpMessageHandler = new TestHttpMessageHandler())
+            {
+                string requestUrl = "https://localhost/";
+                testHttpMessageHandler.AddResponseMapping(requestUrl, httpResponseMessage);
+                MockCustomHttpProvider customHttpProvider = new MockCustomHttpProvider(testHttpMessageHandler);
+
+                BaseClient client = new BaseClient(requestUrl, authenticationProvider.Object, customHttpProvider);
+                BaseRequest baseRequest = new BaseRequest(requestUrl, client);
+
+                HttpResponseMessage returnedResponse = await baseRequest.SendRequestAsync("string", CancellationToken.None);
+
+                Assert.Equal(httpResponseMessage, returnedResponse);
+                Assert.NotNull(returnedResponse.RequestMessage.Headers);
+                Assert.Equal("Default-Token", returnedResponse.RequestMessage.Headers.Authorization.Parameter);
+            }
+        }
     }
 }
