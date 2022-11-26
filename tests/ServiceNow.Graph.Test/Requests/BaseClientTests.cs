@@ -39,7 +39,7 @@ namespace ServiceNow.Graph.Test.Requests
         {
             ServiceException exception = Assert.Throws<ServiceException>(() => new BaseClient(null, this.authenticationProvider.Object));
             Assert.Equal(ErrorConstants.Codes.InvalidRequest, exception.Error.ErrorDetail.Message);
-            Assert.Equal(ErrorConstants.Messages.BaseUrlMissing, exception.Error.ErrorDetail.DetailedMessage);
+            Assert.Equal(ErrorConstants.Messages.DomainMissing, exception.Error.ErrorDetail.DetailedMessage);
         }
     }
 }
