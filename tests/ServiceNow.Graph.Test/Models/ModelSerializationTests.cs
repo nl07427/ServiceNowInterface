@@ -41,9 +41,36 @@ namespace ServiceNow.Graph.Test.Models
 
             var entity = this.serializer.DeserializeObject<Entity>(stringToDeserialize);
 
-            Assert.Equal(now.Year, entity.WhenCreated.Year);
-            Assert.Equal(now.Month, entity.WhenCreated.Month);
-            Assert.Equal(now.Day, entity.WhenCreated.Day);
+            Assert.Equal(now.Year, entity.WhenCreated.GetValueOrDefault().Year);
+            Assert.Equal(now.Month, entity.WhenCreated.GetValueOrDefault().Month);
+            Assert.Equal(now.Day, entity.WhenCreated.GetValueOrDefault().Day);
+        }
+
+        [Fact]
+        public void SerializeAndDeserializeKnownEnumValue()
+        {
+            var entity = new Entity
+            {
+                ObjectType = "servicenow.graph.entity",
+                Id = "entity",
+                SysModCount = 3,
+            };
+
+            var expectedSerializedStream = string.Format(
+                "{{\"sys_class_name\":\"servicenow.graph.entity\",\"sys_id\":\"{0}\",\"sys_mod_count\":{1}}}",
+                entity.Id,
+                entity.SysModCount);
+
+            var serializedValue = this.serializer.SerializeObject(entity);
+
+            Assert.Equal(expectedSerializedStream, serializedValue);
+
+            var newEntity = this.serializer.DeserializeObject<Entity>(serializedValue);
+
+            Assert.NotNull(newEntity);
+            Assert.Equal(entity.Id, newEntity.Id);
+            Assert.Equal(entity.SysModCount, newEntity.SysModCount);
+            Assert.Null(entity.CreatedBy);
         }
     }
 }
