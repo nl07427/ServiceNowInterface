@@ -72,5 +72,22 @@ namespace ServiceNow.Graph.Test.Models
             Assert.Equal(entity.SysModCount, newEntity.SysModCount);
             Assert.Null(entity.CreatedBy);
         }
+
+        [Fact]
+        public void SerializeDateValue()
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            var expectedSerializedString = string.Format("{{\"sys_created_on\":\"{0}\"}}", now.ToString("yyyy-MM-ddT00:00:00"));
+
+            var entity = new Entity
+            {
+                WhenCreated = new DateTime(now.Year, now.Month, now.Day),
+            };
+
+            var serializedString = this.serializer.SerializeObject(entity);
+
+            Assert.Equal(expectedSerializedString, serializedString);
+        }
     }
 }
