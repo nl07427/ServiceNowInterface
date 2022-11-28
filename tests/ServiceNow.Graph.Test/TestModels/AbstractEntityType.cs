@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using ServiceNow.Graph.Serialization;
 
 namespace ServiceNow.Graph.Test.TestModels
@@ -18,7 +18,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets id.
         /// </summary>
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id
         {
             get; set;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using ServiceNow.Graph.Serialization;
 
 namespace ServiceNow.Graph.Test.TestModels
@@ -13,7 +13,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets enumType.
         /// </summary>
-        [JsonPropertyName("enumType")]
+        [JsonProperty("enumType")]
         public EnumType? EnumType
         {
             get; set;
@@ -22,7 +22,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets id.
         /// </summary>
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         public string Name
         {
             get; set;
@@ -31,7 +31,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets link.
         /// </summary>
-        [JsonPropertyName("link")]
+        [JsonProperty("link")]
         public string WebUrl
         {
             get; set;

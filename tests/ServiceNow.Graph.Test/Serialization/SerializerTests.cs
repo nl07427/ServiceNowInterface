@@ -24,7 +24,11 @@ namespace ServiceNow.Graph.Test.Serialization
         public void AbstractClassDeserializationFailure()
         {
             var stringToDeserialize = "{\"jsonKey\":\"jsonValue\"}";
-            JsonSerializationException exception = Assert.Throws<JsonSerializationException>(() => this.serializer.DeserializeObject<AbstractClass>(stringToDeserialize));
+            ServiceException exception = Assert.Throws<ServiceException>(() => this.serializer.DeserializeObject<AbstractClass>(stringToDeserialize));
+      
+            Assert.Equal(
+                string.Format(ErrorConstants.Messages.UnableToCreateInstanceOfTypeFormatString, typeof(AbstractClass).FullName),
+                exception.Error.ErrorDetail.DetailedMessage);
         }
 
         [Fact]
