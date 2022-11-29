@@ -41,25 +41,30 @@ namespace ServiceNow.Graph.Test.Models
 
             var entity = this.serializer.DeserializeObject<Entity>(stringToDeserialize);
 
-            Assert.Equal(now.Year, entity.WhenCreated.GetValueOrDefault().Year);
-            Assert.Equal(now.Month, entity.WhenCreated.GetValueOrDefault().Month);
-            Assert.Equal(now.Day, entity.WhenCreated.GetValueOrDefault().Day);
+            Assert.Equal(now.Year, entity.WhenCreated.Year);
+            Assert.Equal(now.Month, entity.WhenCreated.Month);
+            Assert.Equal(now.Day, entity.WhenCreated.Day);
         }
 
         [Fact]
         public void SerializeAndDeserializeKnownEnumValue()
         {
+            var now = DateTime.UtcNow;
+
             var entity = new Entity
             {
                 ObjectType = "servicenow.graph.entity",
                 Id = "entity",
                 SysModCount = 3,
+                WhenUpdated = now,
             };
 
             var expectedSerializedStream = string.Format(
-                "{{\"sys_class_name\":\"servicenow.graph.entity\",\"sys_id\":\"{0}\",\"sys_mod_count\":{1}}}",
+                "{{\"sys_class_name\":\"servicenow.graph.entity\",\"sys_created_on\":\"{0}\",\"sys_id\":\"{1}\",\"sys_mod_count\":{2},\"sys_updated_on\":\"{3}\"}}",
+                "0001-01-01T00:00:00",
                 entity.Id,
-                entity.SysModCount);
+                entity.SysModCount,
+                now.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"));
 
             var serializedValue = this.serializer.SerializeObject(entity);
 
@@ -78,7 +83,9 @@ namespace ServiceNow.Graph.Test.Models
         {
             var now = DateTimeOffset.UtcNow;
 
-            var expectedSerializedString = string.Format("{{\"sys_created_on\":\"{0}\"}}", now.ToString("yyyy-MM-ddT00:00:00"));
+            var expectedSerializedString = string.Format("{{\"sys_created_on\":\"{0}\",\"sys_updated_on\":\"{1}\"}}",
+                now.ToString("yyyy-MM-ddT00:00:00"),
+                "0001-01-01T00:00:00");
 
             var entity = new Entity
             {
