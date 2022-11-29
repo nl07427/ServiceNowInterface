@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using ServiceNow.Graph.Exceptions;
 using ServiceNow.Graph.Serialization;
 using ServiceNow.Graph.Test.TestModels;
+using ServiceNow.Graph.Test.TestModels.ServiceModels;
 using Xunit;
 
 namespace ServiceNow.Graph.Test.Serialization
@@ -200,6 +201,53 @@ namespace ServiceNow.Graph.Test.Serialization
             var serializedValue = this.serializer.SerializeObject(enumValueWithFlags);
 
             Assert.Equal(expectedSerializedValue, serializedValue);
+        }
+
+        [Fact]
+        public void DerivedTypeConverterIgnoresPropertyWithJsonIgnore()
+        {
+
+            var date = new DerivedTypeClass
+            {
+                Name = "name",
+                IgnoredNumber = 230 // we shouldn't see this value
+            };
+
+            var expectedSerializedString = string.Format("{{\"name\":\"{0}\"}}", date.Name);
+
+            var serializedString = this.serializer.SerializeObject(date);
+
+            Assert.Equal(expectedSerializedString, serializedString);
+        }
+
+        [Fact]
+        public void SerializeObjectWithAdditionalDataWithDerivedTypeConverter()
+        {
+            // This example class uses the derived type converter
+            // Arrange
+            TestItemBody testItemBody = new TestItemBody
+            {
+                Content = "Example Content",
+                ContentType = EnumTypeWithFlags.FirstValue,
+                AdditionalData = new Dictionary<string, object>
+                {
+                    { "length" , "100" },
+                    { "extraProperty", null }
+                }
+            };
+            var expectedSerializedString = "{" +
+                                               "\"contentType\":\"firstValue\"," +
+                                               "\"content\":\"Example Content\"," +
+                                               "\"@odata.type\":\"microsoft.graph.itemBody\"," +
+                                               "\"length\":\"100\"," + // should be at the same level as other properties
+                                               "\"extraProperty\":null" +
+                                           "}";
+
+            // Act
+            var serializedString = this.serializer.SerializeObject(testItemBody);
+
+            //Assert
+            Assert.Equal(expectedSerializedString, serializedString);
         }
     }
 }

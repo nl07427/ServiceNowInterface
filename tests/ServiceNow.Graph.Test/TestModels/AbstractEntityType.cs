@@ -18,7 +18,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets id.
         /// </summary>
-        [JsonProperty("id")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id", Required = Required.Default)]
         public string Id
         {
             get; set;

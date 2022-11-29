@@ -13,7 +13,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets enumType.
         /// </summary>
-        [JsonProperty("enumType")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "enumType", Required = Required.Default)]
         public EnumType? EnumType
         {
             get; set;
@@ -33,6 +33,12 @@ namespace ServiceNow.Graph.Test.TestModels
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "link", Required = Required.Default)]
         public string WebUrl
+        {
+            get; set;
+        }
+
+        [JsonIgnore]
+        public int IgnoredNumber
         {
             get; set;
         }
