@@ -249,5 +249,26 @@ namespace ServiceNow.Graph.Test.Serialization
             //Assert
             Assert.Equal(expectedSerializedString, serializedString);
         }
+
+        [Fact]
+        public void SerializeInterfaceProperty()
+        {
+            // Arrange
+            var user = new TestUser()
+            {
+                EventDeltas = new TestEventDeltaCollectionPage()
+                {
+                    new TestEvent() { Id = "id" }
+
+                }
+            };
+            var expectedSerializedString = "{\"@odata.type\":\"microsoft.graph.user\",\"eventDeltas\":[{\"id\":\"id\",\"@odata.type\":\"microsoft.graph.event\"}]}";
+
+            // Act
+            var serializedString = this.serializer.SerializeObject(user);
+
+            // Assert that the interface properties respect the json serializer options
+            Assert.Equal(expectedSerializedString, serializedString);
+        }
     }
 }
