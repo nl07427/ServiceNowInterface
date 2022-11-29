@@ -163,5 +163,43 @@ namespace ServiceNow.Graph.Test.Serialization
             Assert.Equal("id2", deserializedPage[2].Id);
             Assert.Equal("id3", deserializedPage[3].Id);
         }
+        
+        [Fact]
+        public void SerializeAndDeserializeKnownEnumValue()
+        {
+            var instance = new DerivedTypeClass
+            {
+                Id = "id",
+                EnumType = EnumType.Value,
+            };
+
+            var expectedSerializedStream = string.Format(
+                "{{\"enumType\":\"{0}\",\"id\":\"{1}\"}}",
+                "value",
+                instance.Id);
+
+            var serializedValue = this.serializer.SerializeObject(instance);
+
+            Assert.Equal(expectedSerializedStream, serializedValue);
+
+            var newInstance = this.serializer.DeserializeObject<DerivedTypeClass>(serializedValue);
+
+            Assert.NotNull(newInstance);
+            Assert.Equal(instance.Id, instance.Id);
+            Assert.Equal(EnumType.Value, instance.EnumType);
+            Assert.Null(instance.AdditionalData);
+        }
+
+        [Fact]
+        public void SerializeEnumValueWithFlags()
+        {
+            EnumTypeWithFlags enumValueWithFlags = EnumTypeWithFlags.FirstValue | EnumTypeWithFlags.SecondValue;
+
+            var expectedSerializedValue = "\"firstValue, secondValue\""; // All values should be camelCased
+
+            var serializedValue = this.serializer.SerializeObject(enumValueWithFlags);
+
+            Assert.Equal(expectedSerializedValue, serializedValue);
+        }
     }
 }

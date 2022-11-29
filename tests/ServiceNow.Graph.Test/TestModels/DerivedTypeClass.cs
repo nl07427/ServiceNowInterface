@@ -22,7 +22,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets id.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "name", Required = Required.Default)]
         public string Name
         {
             get; set;
@@ -31,7 +31,7 @@ namespace ServiceNow.Graph.Test.TestModels
         /// <summary>
         /// Gets or sets link.
         /// </summary>
-        [JsonProperty("link")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "link", Required = Required.Default)]
         public string WebUrl
         {
             get; set;

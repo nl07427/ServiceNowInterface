@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Newtonsoft.Json.Converters;
 using ServiceNow.Graph.Serialization;
+using Newtonsoft.Json;
 
 namespace ServiceNow.Graph.Test.TestModels
 {
@@ -7,8 +8,11 @@ namespace ServiceNow.Graph.Test.TestModels
     /// Enum for testing enum serialization and deserialization.
     /// </summary>
     [JsonConverter(typeof(EnumConverter))]
-    public enum EnumType
+    [System.Flags]
+    public enum EnumTypeWithFlags
     {
-        Value,
+        FirstValue = 1,
+
+        SecondValue = 2
     }
 }
