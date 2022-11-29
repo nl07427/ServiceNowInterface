@@ -26,7 +26,8 @@ namespace ServiceNow.Graph.Test.Serialization
         {
             var stringToDeserialize = "{\"jsonKey\":\"jsonValue\"}";
             ServiceException exception = Assert.Throws<ServiceException>(() => this.serializer.DeserializeObject<AbstractClass>(stringToDeserialize));
-      
+
+            Assert.Equal(ErrorConstants.Codes.GeneralException, exception.Error.ErrorDetail.Message);
             Assert.Equal(
                 string.Format(ErrorConstants.Messages.UnableToCreateInstanceOfTypeFormatString, typeof(AbstractClass).FullName),
                 exception.Error.ErrorDetail.DetailedMessage);
@@ -104,6 +105,40 @@ namespace ServiceNow.Graph.Test.Serialization
             // Asset empty string deserializes to null
             var stringInstance = this.serializer.DeserializeObject<DerivedTypeClass>(stringToDeserialize);
             Assert.Null(stringInstance);
+        }
+
+        [Fact]
+        public void DeserializeUnknownEnumValue()
+        {
+            var enumValue = "newValue";
+            var id = "id";
+
+            var stringToDeserialize = string.Format(
+                "{{\"enumType\":\"{0}\",\"id\":\"{1}\"}}",
+                enumValue,
+                id);
+
+            var instance = this.serializer.DeserializeObject<DerivedTypeClass>(stringToDeserialize);
+
+            Assert.NotNull(instance);
+            Assert.Equal(id, instance.Id);
+            Assert.Null(instance.EnumType);
+            Assert.NotNull(instance.AdditionalData);
+            Assert.Equal(enumValue, instance.AdditionalData["enumType"].ToString());
+        }
+
+        [Fact]
+        public void DerivedTypeWithoutDefaultConstructor()
+        {
+            var stringToDeserialize = "{\"jsonKey\":\"jsonValue\"}";
+            ServiceException exception = Assert.Throws<ServiceException>(() => this.serializer.DeserializeObject<NoDefaultConstructor>(stringToDeserialize));
+
+            Assert.Equal(ErrorConstants.Codes.GeneralException, exception.Error.ErrorDetail.Message);
+            Assert.Equal(
+                string.Format(
+                    ErrorConstants.Messages.UnableToCreateInstanceOfTypeFormatString,
+                    typeof(NoDefaultConstructor).AssemblyQualifiedName),
+                exception.Error.ErrorDetail.DetailedMessage);
         }
     }
 }
