@@ -140,5 +140,28 @@ namespace ServiceNow.Graph.Test.Serialization
                     typeof(NoDefaultConstructor).AssemblyQualifiedName),
                 exception.Error.ErrorDetail.DetailedMessage);
         }
+
+        [Fact]
+        public void SerializeAndDeserializeCollectionPage()
+        {
+            var collectionPage = new CollectionPageInstance
+            {
+                new DerivedTypeClass { Id = "id" },
+                new DerivedTypeClass { Id = "id1" },
+                new DerivedTypeClass { Id = "id2" },
+                new DerivedTypeClass { Id = "id3" },
+
+            };
+
+            var serializedString = this.serializer.SerializeObject(collectionPage);
+
+            var deserializedPage = this.serializer.DeserializeObject<CollectionPageInstance>(serializedString);
+            Assert.IsType<CollectionPageInstance>(deserializedPage);
+            Assert.Equal(4, deserializedPage.Count);
+            Assert.Equal("id", deserializedPage[0].Id);
+            Assert.Equal("id1", deserializedPage[1].Id);
+            Assert.Equal("id2", deserializedPage[2].Id);
+            Assert.Equal("id3", deserializedPage[3].Id);
+        }
     }
 }
