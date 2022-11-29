@@ -41,7 +41,7 @@ namespace ServiceNow.Graph.Test.Serialization
             var name = "name";
 
             var stringToDeserialize = string.Format(
-                "{{\"id\":\"{0}\", \"@odata.type\":\"#microsoft.graph.dotnetCore.core.test.testModels.derivedTypeClass\", \"name\":\"{1}\"}}",
+                "{{\"id\":\"{0}\", \"@odata.type\":\"#serviceNow.graph.dotnetCore.core.test.testModels.derivedTypeClass\", \"name\":\"{1}\"}}",
                 id,
                 name);
 
@@ -238,7 +238,7 @@ namespace ServiceNow.Graph.Test.Serialization
             var expectedSerializedString = "{" +
                                                "\"contentType\":\"firstValue\"," +
                                                "\"content\":\"Example Content\"," +
-                                               "\"@odata.type\":\"microsoft.graph.itemBody\"," +
+                                               "\"@odata.type\":\"serviceNow.graph.itemBody\"," +
                                                "\"length\":\"100\"," + // should be at the same level as other properties
                                                "\"extraProperty\":null" +
                                            "}";
@@ -262,13 +262,56 @@ namespace ServiceNow.Graph.Test.Serialization
 
                 }
             };
-            var expectedSerializedString = "{\"@odata.type\":\"microsoft.graph.user\",\"eventDeltas\":[{\"id\":\"id\",\"@odata.type\":\"microsoft.graph.event\"}]}";
+            var expectedSerializedString = "{\"@odata.type\":\"serviceNow.graph.user\",\"eventDeltas\":[{\"id\":\"id\",\"@odata.type\":\"serviceNow.graph.event\"}]}";
 
             // Act
             var serializedString = this.serializer.SerializeObject(user);
 
             // Assert that the interface properties respect the json serializer options
             Assert.Equal(expectedSerializedString, serializedString);
+        }
+
+        [Fact]
+        public void SerializeObjectWithAdditionalDataWithoutDerivedTypeConverter()
+        {
+            // This example class does NOT use the derived type converter to act as a control
+            // Arrange
+            TestEmailAddress testEmailAddress = new TestEmailAddress
+            {
+                Name = "Larry Lemon",
+                Address = "larry@lemon.com",
+                AdditionalData = new Dictionary<string, object>
+                {
+                    { "alias" , "larrylemon" }
+                }
+            };
+            var expectedSerializedString = "{" +
+                                               "\"name\":\"Larry Lemon\"," +
+                                               "\"address\":\"larry@lemon.com\"," +
+                                               "\"@odata.type\":\"serviceNow.graph.emailAddress\"," +
+                                               "\"alias\":\"larrylemon\"" + // should be at the same level as other properties
+                                           "}";
+
+            // Act
+            var serializedString = this.serializer.SerializeObject(testEmailAddress);
+
+            // Assert
+            Assert.Equal(expectedSerializedString, serializedString);
+        }
+
+        [Theory]
+        [InlineData("2016-11-20T18:23:45.9356913+00:00", "\"2016-11-20T18:23:45.9356913+00:00\"")]
+        [InlineData("1992-10-26T08:30:15.1456919+07:00", "\"1992-10-26T08:30:15.1456919+07:00\"")]// make sure different offset is okay as well
+        public void SerializeDateTimeOffsetValue(string dateTimeOffsetString, string expectedJsonValue)
+        {
+            // Arrange
+            var dateTimeOffset = DateTimeOffset.Parse(dateTimeOffsetString);
+            // Act
+            var serializedString = this.serializer.SerializeObject(dateTimeOffset);
+
+            // Assert
+            // Expect the string to be ISO 8601-1:2019 format
+            Assert.Equal(expectedJsonValue, serializedString);
         }
     }
 }

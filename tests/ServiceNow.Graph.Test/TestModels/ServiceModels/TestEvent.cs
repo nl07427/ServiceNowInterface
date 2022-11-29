@@ -19,7 +19,7 @@ namespace ServiceNow.Graph.Test.TestModels.ServiceModels
         ///</summary>
         public TestEvent()
         {
-            this.ODataType = "microsoft.graph.event";
+            this.ODataType = "serviceNow.graph.event";
         }
 
         /// <summary>

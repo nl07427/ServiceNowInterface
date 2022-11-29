@@ -10,7 +10,7 @@ namespace ServiceNow.Graph.Test.TestModels.ServiceModels
         /// </summary>
         public TestRecipient()
         {
-            this.ODataType = "microsoft.graph.recipient";
+            this.ODataType = "serviceNow.graph.recipient";
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace ServiceNow.Graph.Test.TestModels.ServiceModels
         /// </summary>
         public TestEmailAddress()
         {
-            this.ODataType = "microsoft.graph.emailAddress";
+            this.ODataType = "serviceNow.graph.emailAddress";
         }
 
         /// <summary>

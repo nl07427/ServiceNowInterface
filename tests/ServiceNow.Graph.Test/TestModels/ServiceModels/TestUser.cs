@@ -14,7 +14,7 @@ namespace ServiceNow.Graph.Test.TestModels.ServiceModels
         ///</summary>
         public TestUser()
         {
-            this.ODataType = "microsoft.graph.user";
+            this.ODataType = "serviceNow.graph.user";
         }
 
         /// <summary>

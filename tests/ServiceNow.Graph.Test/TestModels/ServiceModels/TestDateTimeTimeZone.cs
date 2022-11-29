@@ -15,7 +15,7 @@ namespace ServiceNow.Graph.Test.TestModels.ServiceModels
         /// </summary>
         public TestDateTimeTimeZone()
         {
-            this.ODataType = "microsoft.graph.dateTimeTimeZone";
+            this.ODataType = "serviceNow.graph.dateTimeTimeZone";
         }
 
         /// <summary>

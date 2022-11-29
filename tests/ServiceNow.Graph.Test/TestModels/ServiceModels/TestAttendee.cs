@@ -7,7 +7,7 @@
         /// </summary>
         public TestAttendee()
         {
-            this.ODataType = "microsoft.graph.attendee";
+            this.ODataType = "serviceNow.graph.attendee";
         }
 
     }

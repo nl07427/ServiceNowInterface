@@ -15,7 +15,7 @@ namespace ServiceNow.Graph.Test.TestModels.ServiceModels
         /// </summary>
         public TestItemBody()
         {
-            this.ODataType = "microsoft.graph.itemBody";
+            this.ODataType = "serviceNow.graph.itemBody";
         }
 
         /// <summary>
