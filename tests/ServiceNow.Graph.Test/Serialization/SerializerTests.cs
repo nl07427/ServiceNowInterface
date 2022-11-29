@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,62 @@ namespace ServiceNow.Graph.Test.Serialization
             Assert.NotNull(derivedType);
             Assert.Equal(id, derivedType.Id);
             Assert.Equal(name, derivedType.Name);
+        }
+
+        [Fact]
+        public void DerivedTypeConverterFollowsNamingProperty()
+        {
+            var id = "id";
+            var givenName = "name";
+            var link = "localhost.com"; // this property name does not match the object name
+
+            var stringToDeserialize = string.Format(
+                "{{\"id\":\"{0}\", \"givenName\":\"{1}\", \"link\":\"{2}\"}}",
+                id,
+                givenName,
+                link);
+
+            var instance = this.serializer.DeserializeObject<DerivedTypeClass>(stringToDeserialize);
+
+            Assert.NotNull(instance);
+            Assert.Equal(id, instance.Id);
+            Assert.Equal(link, instance.WebUrl);
+            Assert.NotNull(instance.AdditionalData);
+            Assert.Equal(givenName, instance.AdditionalData["givenName"].ToString());
+        }
+
+        [Fact]
+        public void DeserializeStream()
+        {
+            var id = "id";
+
+            var stringToDeserialize = string.Format("{{\"id\":\"{0}\"}}", id);
+
+            using (var serializedStream = new MemoryStream(Encoding.UTF8.GetBytes(stringToDeserialize)))
+            {
+                var instance = this.serializer.DeserializeObject<DerivedTypeClass>(serializedStream);
+
+                Assert.NotNull(instance);
+                Assert.Equal(id, instance.Id);
+                Assert.Null(instance.AdditionalData);
+            }
+        }
+
+        [Fact]
+        public void DeserializeEmptyStringOrStream()
+        {
+            var stringToDeserialize = string.Empty;
+
+            // Asset empty stream deserializes to null
+            using (var serializedStream = new MemoryStream(Encoding.UTF8.GetBytes(stringToDeserialize)))
+            {
+                var instance = this.serializer.DeserializeObject<DerivedTypeClass>(serializedStream);
+                Assert.Null(instance);
+            }
+
+            // Asset empty string deserializes to null
+            var stringInstance = this.serializer.DeserializeObject<DerivedTypeClass>(stringToDeserialize);
+            Assert.Null(stringInstance);
         }
     }
 }
