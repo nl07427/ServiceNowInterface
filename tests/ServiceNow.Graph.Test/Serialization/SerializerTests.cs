@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ServiceNow.Graph.Exceptions;
 using ServiceNow.Graph.Requests;
 using ServiceNow.Graph.Serialization;
@@ -291,8 +292,8 @@ namespace ServiceNow.Graph.Test.Serialization
             var user = this.serializer.DeserializeObject<TestUser>(serializedString);
 
             // Assert that the interface properties respect the json serializer options
-            Assert.Equal(1, user.EventDeltas.Count);
-            Assert.Equal("id", user.EventDeltas[0].Id);
+            Assert.Equal(expectedUser.EventDeltas.Count, user.EventDeltas.Count);
+            Assert.Equal(expectedUser.EventDeltas[0].Id, user.EventDeltas[0].Id);
             Assert.Null(user.EventDeltas[0].Body);
             Assert.Null(user.EventDeltas[0].Subject);
             Assert.Null(user.Id);
@@ -339,6 +340,55 @@ namespace ServiceNow.Graph.Test.Serialization
             // Assert
             // Expect the string to be ISO 8601-1:2019 format
             Assert.Equal(expectedJsonValue, serializedString);
+        }
+
+        [Fact]
+        public void DeserializeNestedObjectWithReferenceLinkValue()
+        {
+            var expectedCollectionResponse = new TestEventDeltaCollectionResponse
+            {
+                ReferenceLink = new ReferenceLink
+                {
+                    Value = "test.link",
+                },
+                AdditionalData = new Dictionary<string, object>
+                {
+                    { "sys_context" , "context" },
+                },
+                Value = new TestEventDeltaCollectionPage
+                {
+                    new TestEvent 
+                    {
+                        AdditionalData = new Dictionary<string, object>
+                        {
+                            { "@removed" , JObject.FromObject(new Dictionary<string, object>
+                                {
+                                    { "reason", "removed" }
+                                })
+                            },
+                        },
+                        Id = "AAMkADVxTAAA="
+                    }
+                }
+            };
+            // Arrange
+            var eventCollectionResponseString =
+                "{" +
+                    "\"sys_context\":\"context\"," +
+                    "\"referenceLink\":\"" + "test.link" + "\"," +
+                     "\"value\":[{\"@removed\":{\"reason\":\"removed\"},\"id\":\"AAMkADVxTAAA=\"}]" +
+                "}";
+
+            // Act
+            var collectionResponse = this.serializer.DeserializeObject<TestEventDeltaCollectionResponse>(eventCollectionResponseString);
+                
+            // Assert
+            Assert.Equal(expectedCollectionResponse.ReferenceLink.Value, collectionResponse.ReferenceLink.Value);
+            Assert.Equal(expectedCollectionResponse.AdditionalData, collectionResponse.AdditionalData);
+            Assert.Equal(expectedCollectionResponse.Value.Count, collectionResponse.Value.Count);
+            Assert.Equal(expectedCollectionResponse.Value[0].AdditionalData["@removed"], collectionResponse.Value[0].AdditionalData["@removed"]);
+            Assert.Equal(expectedCollectionResponse.Value[0].Id, collectionResponse.Value[0].Id);
+            Assert.Null(collectionResponse.Value[0].Attendees);
         }
     }
 }
