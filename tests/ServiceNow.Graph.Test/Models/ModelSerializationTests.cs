@@ -56,7 +56,7 @@ namespace ServiceNow.Graph.Test.Models
                 ObjectType = "servicenow.graph.entity",
                 Id = "entity",
                 SysModCount = 3,
-                WhenUpdated = now,
+                WhenUpdated = new DateTime(now.Year, now.Month, now.Day),
             };
 
             var expectedSerializedStream = string.Format(
@@ -64,7 +64,7 @@ namespace ServiceNow.Graph.Test.Models
                 "0001-01-01T00:00:00",
                 entity.Id,
                 entity.SysModCount,
-                now.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"));
+                now.ToString("yyyy-MM-ddT00:00:00"));
 
             var serializedValue = this.serializer.SerializeObject(entity);
 

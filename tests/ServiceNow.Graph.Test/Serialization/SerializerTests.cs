@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ServiceNow.Graph.Exceptions;
+using ServiceNow.Graph.Requests;
 using ServiceNow.Graph.Serialization;
+using ServiceNow.Graph.Models;
 using ServiceNow.Graph.Test.TestModels;
 using ServiceNow.Graph.Test.TestModels.ServiceModels;
 using Xunit;
@@ -269,6 +272,30 @@ namespace ServiceNow.Graph.Test.Serialization
 
             // Assert that the interface properties respect the json serializer options
             Assert.Equal(expectedSerializedString, serializedString);
+        }
+
+        [Fact]
+        public void DeserializeInterfaceProperty()
+        {
+            // Arrange
+            var expectedUser = new TestUser()
+            {
+                EventDeltas = new TestEventDeltaCollectionPage()
+                {
+                    new TestEvent() { Id = "id" }
+                }
+            };
+            var serializedString = "{\"@odata.type\":\"serviceNow.graph.user\",\"eventDeltas\":[{\"id\":\"id\",\"@odata.type\":\"serviceNow.graph.event\"}]}";
+
+            // Act
+            var user = this.serializer.DeserializeObject<TestUser>(serializedString);
+
+            // Assert that the interface properties respect the json serializer options
+            Assert.Equal(1, user.EventDeltas.Count);
+            Assert.Equal("id", user.EventDeltas[0].Id);
+            Assert.Null(user.EventDeltas[0].Body);
+            Assert.Null(user.EventDeltas[0].Subject);
+            Assert.Null(user.Id);
         }
 
         [Fact]

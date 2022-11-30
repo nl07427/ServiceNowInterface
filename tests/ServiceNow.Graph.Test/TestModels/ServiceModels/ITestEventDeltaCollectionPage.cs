@@ -7,6 +7,7 @@ namespace ServiceNow.Graph.Test.TestModels.ServiceModels
     /// <summary>
     /// The interface IUserEventsCollectionPage.
     /// </summary>
+    [JsonConverter(typeof(InterfaceConverter<TestEventDeltaCollectionPage>))]
     public interface ITestEventDeltaCollectionPage : ICollectionPage<TestEvent>
     {
         /// <summary>
