@@ -343,13 +343,37 @@ namespace ServiceNow.Graph.Test.Serialization
         }
 
         [Fact]
+        public void DeserializeReferenceLinkLinkAndValue()
+        {
+            // Arrange
+            var testLink = new ReferenceLink
+            {
+                Link = "test.link",
+                Value = "referenced_sys_id",
+            };
+            
+            var eventCollectionResponseString =
+                "{" +
+                    "\"referenceLink\":{\"link\":\"" + testLink.Link + "\",\"value\":\"" + testLink.Value + "\"}" + 
+                "}";
+
+            // Act
+            var collectionResponse = this.serializer.DeserializeObject<TestEventDeltaCollectionResponse>(eventCollectionResponseString);
+
+            // Assert
+            Assert.Equal(testLink.Link, collectionResponse.ReferenceLink.Link);
+            Assert.Equal(testLink.Value, collectionResponse.ReferenceLink.Value);
+        }
+
+        [Fact]
         public void DeserializeNestedObjectWithReferenceLinkValue()
         {
+            // Arrange
             var expectedCollectionResponse = new TestEventDeltaCollectionResponse
             {
                 ReferenceLink = new ReferenceLink
                 {
-                    Value = "test.link",
+                    Value = "referenced_sys_id",
                 },
                 AdditionalData = new Dictionary<string, object>
                 {
@@ -371,11 +395,10 @@ namespace ServiceNow.Graph.Test.Serialization
                     }
                 }
             };
-            // Arrange
             var eventCollectionResponseString =
                 "{" +
                     "\"sys_context\":\"context\"," +
-                    "\"referenceLink\":\"" + "test.link" + "\"," +
+                    "\"referenceLink\":\"" + "referenced_sys_id" + "\"," +
                      "\"value\":[{\"@removed\":{\"reason\":\"removed\"},\"id\":\"AAMkADVxTAAA=\"}]" +
                 "}";
 
