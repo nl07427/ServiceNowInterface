@@ -73,6 +73,16 @@ namespace ServiceNow.Graph.Test.Extensions
         }
 
         [Fact]
+        public void WithResponseHandler_ShouldAddResponseHandler()
+        {
+            var baseRequest = new BaseRequest(requestUrl, baseClient);
+            var newResponseHandler = new ResponseHandler(serializer.Object);
+            baseRequest.WithResponseHandler(newResponseHandler);
+
+            Assert.Same(newResponseHandler, baseRequest.ResponseHandler);
+        }
+
+        [Fact]
         public void WithPerRequestAuthProvider_ShouldAddPerRequestAuthProviderToAuthHandlerOption()
         {
             var requestMockAuthProvider = new MockAuthenticationProvider("PerRequest-Token");
