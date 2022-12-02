@@ -4,6 +4,7 @@ using ServiceNow.Graph.Extensions;
 using ServiceNow.Graph.Test.Mocks;
 using System.Net.Http;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace ServiceNow.Graph.Test.Extensions
@@ -27,7 +28,7 @@ namespace ServiceNow.Graph.Test.Extensions
             var defaultHandlers = ServiceNowClientFactory.CreateDefaultHandlers(defaultAuthProvider.Object);
             var pipeline = ServiceNowClientFactory.CreatePipeline(defaultHandlers, this.testHttpMessageHandler);
 
-            httpProvider = new HttpProvider(domain, serializer.Object);
+            httpProvider = new HttpProvider(pipeline, true, domain, serializer.Object);
             baseClient = new BaseClient(domain, defaultAuthProvider.Object, httpProvider);
         }
 
@@ -69,6 +70,87 @@ namespace ServiceNow.Graph.Test.Extensions
 
             Assert.IsType<ServiceNowRequestContext>(baseRequest.GetHttpRequestMessage().Properties[typeof(ServiceNowRequestContext).ToString()]);
             Assert.Equal(4, baseRequest.GetHttpRequestMessage().GetMiddlewareOption<RedirectHandlerOption>().MaxRedirect);
+        }
+
+        [Fact]
+        public void WithPerRequestAuthProvider_ShouldAddPerRequestAuthProviderToAuthHandlerOption()
+        {
+            var requestMockAuthProvider = new MockAuthenticationProvider("PerRequest-Token");
+
+            var baseRequest = new BaseRequest(requestUrl, baseClient);
+            baseRequest.Client.PerRequestAuthProvider = () => requestMockAuthProvider.Object;
+            baseRequest.WithPerRequestAuthProvider();
+            var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+
+            Assert.IsType<ServiceNowRequestContext>(baseRequest.GetHttpRequestMessage().Properties[typeof(ServiceNowRequestContext).ToString()]);
+            Assert.NotSame(baseClient.AuthenticationProvider, httpRequestMessage.GetMiddlewareOption<AuthenticationHandlerOption>().AuthenticationProvider);
+            Assert.Same(requestMockAuthProvider.Object, httpRequestMessage.GetMiddlewareOption<AuthenticationHandlerOption>().AuthenticationProvider);
+        }
+
+        [Fact]
+        public async Task WithPerRequestAuthProvider_ShouldUsePerRequestAuthProviderAsync()
+        {
+            string authorizationHeader = "PerRequest-Token";
+            var requestMockAuthProvider = new MockAuthenticationProvider(authorizationHeader);
+
+            var baseRequest = new BaseRequest(requestUrl, baseClient);
+            baseRequest.Client.PerRequestAuthProvider = () => requestMockAuthProvider.Object;
+            baseRequest.WithPerRequestAuthProvider();
+
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+                testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+
+                var returnedResponseMessage = await httpProvider.SendAsync(httpRequestMessage);
+
+                Assert.Equal(httpResponseMessage, returnedResponseMessage);
+                Assert.Equal(authorizationHeader, returnedResponseMessage.RequestMessage.Headers.Authorization.Parameter);
+            }
+        }
+
+        [Fact]
+        public async Task WithPerRequestAuthProvider_ShouldUseDefaultAuthProviderAsync()
+        {
+            string perRequestAutHeader = "PerRequest-Token";
+            var requestMockAuthProvider = new MockAuthenticationProvider(perRequestAutHeader);
+
+            var baseRequest = new BaseRequest(requestUrl, baseClient);
+            baseRequest.Client.PerRequestAuthProvider = () => requestMockAuthProvider.Object;
+
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+                testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+
+                var returnedResponseMessage = await httpProvider.SendAsync(httpRequestMessage);
+
+                Assert.Equal(httpResponseMessage, returnedResponseMessage);
+                Assert.NotEqual(perRequestAutHeader, returnedResponseMessage.RequestMessage.Headers.Authorization.Parameter);
+                Assert.Equal(defaultAuthHeader, returnedResponseMessage.RequestMessage.Headers.Authorization.Parameter);
+            }
+        }
+
+        [Fact]
+        public async Task WithDefaultAuthProvider_ShouldUseDefaultAuthProviderAsync()
+        {
+            string perRequestAutHeader = "PerRequest-Token";
+            var requestMockAuthProvider = new MockAuthenticationProvider(perRequestAutHeader);
+
+            var baseRequest = new BaseRequest(requestUrl, baseClient);
+            baseRequest.Client.PerRequestAuthProvider = () => requestMockAuthProvider.Object;
+            baseRequest.WithDefaultAuthProvider();
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                var httpRequestMessage = baseRequest.GetHttpRequestMessage();
+                testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+
+                var returnedResponseMessage = await httpProvider.SendAsync(httpRequestMessage);
+
+                Assert.Equal(httpResponseMessage, returnedResponseMessage);
+                Assert.NotEqual(perRequestAutHeader, returnedResponseMessage.RequestMessage.Headers.Authorization.Parameter);
+                Assert.Equal(defaultAuthHeader, returnedResponseMessage.RequestMessage.Headers.Authorization.Parameter);
+            }
         }
     }
 }
