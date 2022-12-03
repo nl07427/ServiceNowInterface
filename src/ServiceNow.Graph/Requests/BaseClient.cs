@@ -20,7 +20,7 @@ namespace ServiceNow.Graph.Requests
         /// <param name="domain">The domain. For example, customer.service-now.com"</param>
         /// <param name="authenticationProvider">The <see cref="IAuthenticationProvider"/> for authenticating request messages.</param>
         /// <param name="httpProvider">The <see cref="IHttpProvider"/> for sending requests.</param>
-        protected BaseClient(string domain,
+        public BaseClient(string domain,
             IAuthenticationProvider authenticationProvider,
             IHttpProvider httpProvider = null)
         {

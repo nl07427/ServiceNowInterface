@@ -102,7 +102,7 @@ namespace ServiceNow.Graph.Requests
         /// <returns>The request object to send.</returns>
         public IMembershipsCollectionRequest Filter(string value)
         {
-            QueryOptions.Add(new QueryOption("sysparm_query", WebUtility.UrlEncode(value)));
+            QueryOptions.Add(new QueryOption("sysparm_query", value));
             return this;
         }
 
