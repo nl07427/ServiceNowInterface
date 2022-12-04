@@ -223,5 +223,75 @@ namespace ServiceNow.Graph.Test.Requests
                 Assert.NotSame(httpRequestMessage, response.RequestMessage);
             }
         }
+
+        [Fact]
+        public async Task SendRequest_UnauthorizedWithAuthenticationProvider()
+        {
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, "https://example.com/bar");
+            httpRequestMessage.Content = new StringContent("Hello World");
+
+            var unauthorizedResponse = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            var okResponse = new HttpResponseMessage(HttpStatusCode.OK);
+
+            testHttpMessageHandler.SetHttpResponse(unauthorizedResponse, okResponse);
+
+            using (HttpClient client = ServiceNowClientFactory.Create(handlers: handlers, this.domain, finalHandler: this.testHttpMessageHandler))
+            {
+                var response = await client.SendAsync(httpRequestMessage, new CancellationToken());
+                Assert.Same(response, okResponse);
+                Assert.Equal(response.RequestMessage.Headers.Authorization, new AuthenticationHeaderValue(Constants.Headers.Bearer, expectedAccessToken));
+            }
+        }
+
+        [Fact]
+        public void CreateClient_WithHandlersHasExceptions()
+        {
+            var pipelineHandlers = ServiceNowClientFactory.CreateDefaultHandlers(testAuthenticationProvider.Object).ToArray();
+            pipelineHandlers[pipelineHandlers.Length - 1] = null;
+            try
+            {
+                HttpClient client = ServiceNowClientFactory.Create(handlers: pipelineHandlers, this.domain);
+            }
+            catch (ArgumentNullException exception)
+            {
+                Assert.IsType<ArgumentNullException>(exception);
+                Assert.Equal("handlers", exception.ParamName);
+            }
+        }
+
+        [Fact]
+        public void CreateClient_WithInnerHandlerReference()
+        {
+            DelegatingHandler[] handlers = new DelegatingHandler[1];
+            handlers[0] = new RetryHandler(this.testHttpMessageHandler);
+            // Creation should ignore the InnerHandler on RetryHandler
+            HttpClient client = ServiceNowClientFactory.Create(handlers: handlers, this.domain);
+            Assert.NotNull(client);
+            Assert.IsType<HttpClientHandler>(handlers[0].InnerHandler);
+        }
+
+        [Fact]
+        public void CreatePipelineWithFeatureFlags_Should_Set_FeatureFlag_For_Default_Handlers()
+        {
+            FeatureFlag expectedFlag = FeatureFlag.AuthHandler | FeatureFlag.CompressionHandler | FeatureFlag.RetryHandler | FeatureFlag.RedirectHandler;
+            string expectedFlagHeaderValue = Enum.Format(typeof(FeatureFlag), expectedFlag, "x");
+            var handlers = ServiceNowClientFactory.CreateDefaultHandlers(null);
+            var pipelineWithHandlers = ServiceNowClientFactory.CreatePipelineWithFeatureFlags(handlers);
+
+            Assert.NotNull(pipelineWithHandlers.Pipeline);
+            Assert.True(pipelineWithHandlers.FeatureFlags.HasFlag(expectedFlag));
+        }
+
+        [Fact]
+        public void CreatePipelineWithFeatureFlags_Should_Set_FeatureFlag_For_Speficied_Handlers()
+        {
+            FeatureFlag expectedFlag = FeatureFlag.AuthHandler | FeatureFlag.CompressionHandler | FeatureFlag.RetryHandler;
+            var handlers = ServiceNowClientFactory.CreateDefaultHandlers(null);
+            handlers.RemoveAt(3);
+            var pipelineWithHandlers = ServiceNowClientFactory.CreatePipelineWithFeatureFlags(handlers);
+
+            Assert.NotNull(pipelineWithHandlers.Pipeline);
+            Assert.True(pipelineWithHandlers.FeatureFlags.HasFlag(expectedFlag));
+        }
     }
 }
