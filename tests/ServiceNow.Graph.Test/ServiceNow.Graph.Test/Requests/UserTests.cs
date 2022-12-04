@@ -10,7 +10,7 @@ namespace ServiceNow.Graph.Test.ServiceNow.Graph.Test.Requests
     {
         private ClientCredentialProvider CredentialProvider { get; }
         private ServiceNowClient Client { get; }
-
+        /*
         public UserTests()
         {
             var directoryInfo = System.IO.Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
@@ -43,6 +43,6 @@ namespace ServiceNow.Graph.Test.ServiceNow.Graph.Test.Requests
                 }
                 nextpagerequest = np.NextPageRequest;
             }
-        }
+        }*/
     }
 }
