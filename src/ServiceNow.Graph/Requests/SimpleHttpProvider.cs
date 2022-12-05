@@ -134,7 +134,7 @@ namespace ServiceNow.Graph.Requests
                     error.ClientRequestId = clientRequestId.FirstOrDefault();
                 }
 
-                if (response.Content?.Headers.ContentType.MediaType != "application/json")
+                if (response.Content?.Headers.ContentType?.MediaType != "application/json")
                     throw new ServiceException(error, response.Headers, response.StatusCode);
 
                 var rawResponseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
