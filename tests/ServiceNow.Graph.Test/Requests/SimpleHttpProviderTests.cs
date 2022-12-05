@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using ServiceNow.Graph.Exceptions;
 using ServiceNow.Graph.Requests;
 using ServiceNow.Graph.Test.Mocks;
@@ -235,6 +237,113 @@ namespace ServiceNow.Graph.Test.Requests
                 Assert.Equal(
                     string.Format(ErrorConstants.Messages.TooManyRedirectsFormatString, "5"),
                     exception.Error.ErrorDetail.DetailedMessage);
+            }
+        }
+
+        [Fact]
+        public async Task SendAsync_ThrowsServiceExceptionWithEmptyMessageOnHTTPNotFoundWithoutErrorBody()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, "https://localhost"))
+            using (var stringContent = new StringContent("test"))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                httpResponseMessage.Content = stringContent;
+                httpResponseMessage.StatusCode = HttpStatusCode.NotFound;
+
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+                this.serializer.Setup(
+                        mySerializer => mySerializer.DeserializeObject<ErrorResponse>(
+                            It.IsAny<Stream>()))
+                    .Returns((ErrorResponse)null);
+
+                ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await this.simpleHttpProvider.SendAsync(httpRequestMessage));
+                Assert.Equal(ErrorConstants.Codes.ItemNotFound, exception.Error.ErrorDetail.Message);
+                Assert.True(string.IsNullOrEmpty(exception.Error.ErrorDetail.DetailedMessage));
+            }
+        }
+
+        [Fact]
+        public async Task SendAsync_ThrowsServiceExceptionWithMessageOnHTTPNotFoundWithBody()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost"))
+            using (var stringContent = new StringContent("test"))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                httpResponseMessage.Content = stringContent;
+                httpResponseMessage.StatusCode = HttpStatusCode.InternalServerError;
+
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+                var expectedError = new ErrorResponse
+                {
+                    Error = new Error
+                    {
+                        ErrorDetail = new ErrorDetail
+                        {
+                            Message = ErrorConstants.Codes.ItemNotFound,
+                            DetailedMessage = "Error Message"
+                        }
+                    }
+                };
+
+                this.serializer.Setup(mySerializer => mySerializer.DeserializeObject<ErrorResponse>(It.IsAny<Stream>())).Returns(expectedError);
+
+                ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await this.simpleHttpProvider.SendAsync(httpRequestMessage));
+                Assert.Equal(expectedError.Error.ErrorDetail.Message, exception.Error.ErrorDetail.Message);
+                Assert.Equal(expectedError.Error.ErrorDetail.DetailedMessage, exception.Error.ErrorDetail.DetailedMessage);
+            }
+        }
+
+        [Fact]
+        public async Task SendAsync_CopyClientRequestIdHeader_AddClientRequestIdToError()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost"))
+            using (var stringContent = new StringContent("test"))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                httpResponseMessage.Content = stringContent;
+
+                const string clientRequestId = "3c9c5bc6-42d2-49ac-a99c-49c10513339a";
+
+                httpResponseMessage.StatusCode = HttpStatusCode.BadRequest;
+                httpResponseMessage.Headers.Add(Constants.Headers.ClientRequestId, clientRequestId);
+                httpResponseMessage.RequestMessage = httpRequestMessage;
+
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+
+                ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await this.simpleHttpProvider.SendAsync(httpRequestMessage));
+                Assert.NotNull(exception.Error);
+                Assert.Equal(clientRequestId, exception.Error.ClientRequestId);
+            }
+        }
+
+        /// <summary>
+        /// Testing that ErrorResponse can't be deserialized and causes the GeneralException 
+        /// code to be thrown in a ServiceException. We are testing whether we can
+        /// get the response body.
+        /// </summary>
+        [Fact]
+        public async Task SendAsync_AddRawResponseToErrorWithErrorResponseDeserializeException()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost"))
+            using (var stringContent = new StringContent(JsonErrorResponseBody))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                httpResponseMessage.Content = stringContent;
+                httpResponseMessage.Content.Headers.ContentType.MediaType = "application/json";
+
+                httpResponseMessage.StatusCode = HttpStatusCode.BadRequest;
+                httpResponseMessage.RequestMessage = httpRequestMessage;
+
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+
+                ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await this.simpleHttpProvider.SendAsync(httpRequestMessage));
+
+                // Assert that we creating an GeneralException error.
+                Assert.Same(ErrorConstants.Codes.GeneralException, exception.Error.ErrorDetail.Message);
+                Assert.Same(ErrorConstants.Messages.UnexpectedExceptionResponse, exception.Error.ErrorDetail.DetailedMessage);
+
+                // Assert that we get the expected response body.
+                Assert.Equal(JsonErrorResponseBody, exception.RawResponseBody);
             }
         }
     }
