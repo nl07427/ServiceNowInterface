@@ -87,6 +87,7 @@ namespace ServiceNow.Graph.Test.Requests.Middleware
             Assert.Same(response, expectedResponse);
             Assert.Same(httpRequestMessage, response.RequestMessage);
         }
+
         [Fact]
         public async void AuthHandler_ShouldRetryUnauthorizedGetRequest()
         {
@@ -166,6 +167,86 @@ namespace ServiceNow.Graph.Test.Requests.Middleware
             Assert.NotSame(response, unauthorizedResponse);
             Assert.NotNull(response.RequestMessage.Content);
             Assert.Equal("Hello World!", response.RequestMessage.Content.ReadAsStringAsync().Result);
+        }
+
+        [Fact]
+        public async void AuthHandler_ShouldRetryUnauthorizedPatchRequestWithBufferContent()
+        {
+            var httpRequestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "http://example.com/bar");
+            httpRequestMessage.Content = new StringContent("Hello World!");
+
+            var unauthorizedResponse = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            var okResponse = new HttpResponseMessage(HttpStatusCode.OK);
+
+            testHttpMessageHandler.SetHttpResponse(unauthorizedResponse, okResponse);
+
+            var response = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
+
+            Assert.NotSame(httpRequestMessage, response.RequestMessage);
+            Assert.Same(okResponse, response);
+            Assert.NotSame(unauthorizedResponse, response);
+            Assert.NotNull(response.RequestMessage.Content);
+            Assert.Equal("Hello World!", response.RequestMessage.Content.ReadAsStringAsync().Result);
+        }
+
+        [Fact]
+        public async void AuthHandler_ShouldNotRetryUnauthorizedPutRequestWithStreamContent()
+        {
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, "http://example.com/bar");
+            httpRequestMessage.Content = new StringContent("Jambo");
+            httpRequestMessage.Content.Headers.ContentLength = -1;
+
+            var unauthorizedResponse = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            var okResponse = new HttpResponseMessage(HttpStatusCode.OK);
+
+            testHttpMessageHandler.SetHttpResponse(unauthorizedResponse, okResponse);
+
+            var response = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
+
+            Assert.Same(response.RequestMessage, httpRequestMessage);
+            Assert.NotSame(response, okResponse);
+            Assert.Same(response, unauthorizedResponse);
+            Assert.NotNull(response.RequestMessage.Content);
+            Assert.Equal(response.RequestMessage.Content.Headers.ContentLength, -1);
+        }
+
+        [Fact]
+        public async void AuthHandler_ShouldNotRetryUnauthorizedPatchRequestWithStreamContent()
+        {
+            var httpRequestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "http://example.com/bar");
+            httpRequestMessage.Content = new StringContent("Jambo");
+            httpRequestMessage.Content.Headers.ContentLength = -1;
+
+            var unauthorizedResponse = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            var okResponse = new HttpResponseMessage(HttpStatusCode.OK);
+
+            testHttpMessageHandler.SetHttpResponse(unauthorizedResponse, okResponse);
+
+            var response = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
+
+            Assert.Same(response.RequestMessage, httpRequestMessage);
+            Assert.NotSame(response, okResponse);
+            Assert.Same(response, unauthorizedResponse);
+            Assert.NotNull(response.RequestMessage.Content);
+            Assert.Equal(response.RequestMessage.Content.Headers.ContentLength, -1);
+        }
+
+        [Fact]
+        public async void AuthHandler_ShouldReturnUnauthorizedRequestWithDefaultMaxRetryExceeded()
+        {
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, "http://example.com/bar");
+            httpRequestMessage.Content = new StringContent("Hello Mars!");
+
+            var unauthorizedResponse = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            var expectedResponse = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+
+            testHttpMessageHandler.SetHttpResponse(unauthorizedResponse, expectedResponse);
+
+            var response = await invoker.SendAsync(httpRequestMessage, new CancellationToken());
+
+            Assert.NotSame(httpRequestMessage, response.RequestMessage);
+            Assert.Same(expectedResponse, response);
+            Assert.Equal("Hello Mars!", response.RequestMessage.Content.ReadAsStringAsync().Result);
         }
     }
 }
