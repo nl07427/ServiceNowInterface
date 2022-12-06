@@ -48,7 +48,13 @@ namespace ServiceNow.Graph.Requests.Middleware
             // Decompress response content when Content-Encoding: gzip header is present.
             if (ShouldDecompressContent(response))
             {
-                response.Content = new StreamContent(new GZipStream(await response.Content.ReadAsStreamAsync(), CompressionMode.Decompress));
+                StreamContent streamContent = new StreamContent(new GZipStream(await response.Content.ReadAsStreamAsync(), CompressionMode.Decompress));
+                // Copy Content Headers to the destination stream content
+                foreach (var httpContentHeader in response.Content.Headers)
+                {
+                    streamContent.Headers.TryAddWithoutValidation(httpContentHeader.Key, httpContentHeader.Value);
+                }
+                response.Content = streamContent;
             }
 
             return response;
