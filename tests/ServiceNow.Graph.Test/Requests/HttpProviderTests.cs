@@ -11,6 +11,8 @@ using ServiceNow.Graph.Serialization;
 using ServiceNow.Graph.Test.Mocks;
 using Xunit;
 using ServiceNow.Graph.Requests.Middleware.Options;
+using Moq;
+using System.IO;
 
 namespace ServiceNow.Graph.Test.Requests
 {
@@ -193,6 +195,117 @@ namespace ServiceNow.Graph.Test.Requests
                 ClientRequestId = "client-request-id"
             };
             httpRequestMessage.Properties.Add(nameof(ServiceNowRequestContext), requestContext);
+        }
+
+        [Fact]
+        public async Task SendAsync_CopyClientRequestIdHeader_AddClientRequestIdToError()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost"))
+            using (var stringContent = new StringContent("test"))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                httpResponseMessage.Content = stringContent;
+
+                const string clientRequestId = "3c9c5bc6-42d2-49ac-a99c-49c10513339a";
+
+                httpResponseMessage.StatusCode = HttpStatusCode.BadRequest;
+                httpResponseMessage.Headers.Add(Constants.Headers.ClientRequestId, clientRequestId);
+                httpResponseMessage.RequestMessage = httpRequestMessage;
+
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+                this.AddGraphRequestContextToRequest(httpRequestMessage);
+
+                this.serializer.Setup(
+                   serializer => serializer.DeserializeObject<Error>(It.IsAny<Stream>()))
+                   .Returns(new Error());
+
+                ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await this.httpProvider.SendAsync(httpRequestMessage));
+                Assert.NotNull(exception.Error);
+                Assert.Equal(clientRequestId, exception.Error.ClientRequestId);
+            }
+        }
+
+        /// <summary>
+        /// Testing that ErrorResponse can't be deserialized and causes the GeneralException 
+        /// code to be thrown in a ServiceException. We are testing whether we can
+        /// get the response body.
+        /// </summary>
+        [Fact]
+        public async Task SendAsync_AddRawResponseToErrorWithErrorResponseDeserializeException()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost"))
+            using (var stringContent = new StringContent(jsonErrorResponseBody))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                httpResponseMessage.Content = stringContent;
+                httpResponseMessage.Content.Headers.ContentType.MediaType = "application/json";
+
+                httpResponseMessage.StatusCode = HttpStatusCode.BadRequest;
+                httpResponseMessage.RequestMessage = httpRequestMessage;
+
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+                this.AddGraphRequestContextToRequest(httpRequestMessage);
+
+                this.serializer.Setup(
+                   serializer => serializer.DeserializeObject<Error>(It.IsAny<Stream>()))
+                   .Returns((Error)null);
+
+                ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await this.httpProvider.SendAsync(httpRequestMessage));
+
+                // Assert that we creating an GeneralException error.
+                Assert.Same(ErrorConstants.Codes.GeneralException, exception.Error.ErrorDetail.Message);
+                Assert.Same(ErrorConstants.Messages.UnexpectedExceptionResponse, exception.Error.ErrorDetail.DetailedMessage);
+
+                // Assert that we get the expected response body.
+                Assert.Equal(jsonErrorResponseBody, exception.RawResponseBody);
+            }
+        }
+
+        [Fact]
+        public async Task SendAsync_DoesNotThrowNullReferenceExceptionWhenHeaderContentTypeIsNull()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost"))
+            using (var stringContent = new StringContent(""))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                httpResponseMessage.Content = stringContent;
+                httpResponseMessage.Content.Headers.ContentType = null;
+
+                httpResponseMessage.StatusCode = HttpStatusCode.BadRequest;
+                httpResponseMessage.RequestMessage = httpRequestMessage;
+
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+
+
+                this.serializer.Setup(
+                   serializer => serializer.DeserializeObject<Error>(It.IsAny<Stream>()))
+                   .Returns((Error)null);
+
+                ServiceException exception = await Assert.ThrowsAsync<ServiceException>(async () => await this.httpProvider.SendAsync(httpRequestMessage));
+
+                // Assert that we creating an GeneralException error.
+                Assert.Same(ErrorConstants.Codes.GeneralException, exception.Error.ErrorDetail.Message);
+                Assert.Same(ErrorConstants.Messages.UnexpectedExceptionResponse, exception.Error.ErrorDetail.DetailedMessage);
+            }
+        }
+
+        [Fact]
+        public async Task OverallTimeout_RequestAlreadySent()
+        {
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost"))
+            using (var httpResponseMessage = new HttpResponseMessage())
+            {
+                this.testHttpMessageHandler.AddResponseMapping(httpRequestMessage.RequestUri.ToString(), httpResponseMessage);
+                this.AddGraphRequestContextToRequest(httpRequestMessage);
+                var returnedResponseMessage = await this.httpProvider.SendAsync(httpRequestMessage);
+            }
+
+            ServiceException serviceException = Assert.Throws<ServiceException>(() => this.httpProvider.OverallTimeout = new TimeSpan(0, 0, 30));
+            Assert.Equal(ErrorConstants.Codes.NotAllowed, serviceException.Error.ErrorDetail.Message);
+            Assert.Equal(
+                ErrorConstants.Messages.OverallTimeoutCannotBeSet,
+                serviceException.Error.ErrorDetail.DetailedMessage);
+            Assert.IsType<InvalidOperationException>(serviceException.InnerException);
         }
     }
 }
