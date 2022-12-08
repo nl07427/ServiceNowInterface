@@ -1,6 +1,7 @@
 ﻿using ServiceNow.Graph.Exceptions;
 using ServiceNow.Graph.Models;
 using ServiceNow.Graph.Serialization;
+using ServiceNow.Graph.Test.TestModels;
 using Xunit;
 
 namespace ServiceNow.Graph.Test.Serialization
@@ -39,7 +40,7 @@ namespace ServiceNow.Graph.Test.Serialization
             var serializer = new Serializer();
 
             var referenceLink = serializer.DeserializeObject<ReferenceLink>(json);
-            
+
             Assert.Null(referenceLink.Link);
             Assert.Null(referenceLink.Value);
         }
@@ -65,6 +66,34 @@ namespace ServiceNow.Graph.Test.Serialization
             var referenceLink = serializer.DeserializeObject<ReferenceLink>(json);
 
             Assert.Equal("testValue", referenceLink.ToString());
+        }
+
+        [Fact]
+        public void ReferenceLink_SerializeObject()
+        {
+            var referenceLink = new ReferenceLink
+            {
+                Link = "testLink",
+                Value = "testValue"
+            };
+            var serializer = new Serializer();
+            var expectedJson = "\"testValue\"";
+
+            var json = serializer.SerializeObject(referenceLink);
+
+            Assert.Equal(expectedJson, json);
+        }
+
+        [Fact]
+        public void ReferenceLink_SerializeInvalidObject()
+        {
+            var referenceLink = new WrongTypeWithReferenceLinkConverter();
+            var serializer = new Serializer();
+
+            ServiceException exception = Assert.Throws<ServiceException>(() => serializer.SerializeObject(referenceLink));
+
+            Assert.Equal(ErrorConstants.Codes.InvalidArgument, exception.Error.ErrorDetail.Message);
+            Assert.Equal(ErrorConstants.Messages.InvalidTypeForReferenceLinkConverter, exception.Error.ErrorDetail.DetailedMessage);
         }
     }
 }
