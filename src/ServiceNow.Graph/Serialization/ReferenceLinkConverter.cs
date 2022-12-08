@@ -49,7 +49,7 @@ namespace ServiceNow.Graph.Serialization
 
                 return referenceLink;
             }
-            catch (JsonSerializationException serializationException)
+            catch (JsonReaderException serializationException)
             {
                 throw new ServiceException(
                     new Error
@@ -57,7 +57,7 @@ namespace ServiceNow.Graph.Serialization
                         ErrorDetail = new ErrorDetail()
                         {
                             Message = ErrorConstants.Codes.GeneralException,
-                            DetailedMessage = ErrorConstants.Messages.UnableToDeserializeDate
+                            DetailedMessage = ErrorConstants.Messages.UnableToDeserializeReferenceLink
                         }
                     },
                     serializationException);
