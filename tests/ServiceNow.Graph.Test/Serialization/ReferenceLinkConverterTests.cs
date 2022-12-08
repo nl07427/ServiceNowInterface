@@ -1,6 +1,5 @@
 ﻿using ServiceNow.Graph.Exceptions;
 using ServiceNow.Graph.Models;
-using ServiceNow.Graph.Models.Helpers;
 using ServiceNow.Graph.Serialization;
 using Xunit;
 
@@ -24,12 +23,48 @@ namespace ServiceNow.Graph.Test.Serialization
         [Fact]
         public void ReferenceLink_DeserializeInvalidType()
         {
-            var json = "{\"link\":\"testLink\", value\":\"testValue\"}";
+            var json = "{\"link\":\"testLink\", value\":\"testValue\"";
             var serializer = new Serializer();
+
             ServiceException exception = Assert.Throws<ServiceException>(() => serializer.DeserializeObject<ReferenceLink>(json));
+
             Assert.Equal(ErrorConstants.Codes.GeneralException, exception.Error.ErrorDetail.Message);
-            // todo: FIX 
-            Assert.Equal(ErrorConstants.Messages.UnableToDeserializeDuration, exception.Error.ErrorDetail.DetailedMessage);
+            Assert.Equal(ErrorConstants.Messages.UnableToDeserializeReferenceLink, exception.Error.ErrorDetail.DetailedMessage);
+        }
+
+        [Fact]
+        public void ReferenceLink_DeserializeEmptyLink()
+        {
+            var json = "{}";
+            var serializer = new Serializer();
+
+            var referenceLink = serializer.DeserializeObject<ReferenceLink>(json);
+            
+            Assert.Null(referenceLink.Link);
+            Assert.Null(referenceLink.Value);
+        }
+
+        [Fact]
+        public void ReferenceLink_DeserializeObjectWithLinkAndValue()
+        {
+            var json = "{\"link\":\"testLink\", \"value\":\"testValue\"}";
+            var serializer = new Serializer();
+
+            var referenceLink = serializer.DeserializeObject<ReferenceLink>(json);
+
+            Assert.Equal("testLink", referenceLink.Link);
+            Assert.Equal("testValue", referenceLink.Value);
+        }
+
+        [Fact]
+        public void ReferenceLink_DeserializeString()
+        {
+            var json = "\"testValue\"";
+            var serializer = new Serializer();
+
+            var referenceLink = serializer.DeserializeObject<ReferenceLink>(json);
+
+            Assert.Equal("testValue", referenceLink.ToString());
         }
     }
 }
