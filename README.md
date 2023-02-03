@@ -26,5 +26,5 @@ The connector supports CRUD operations on:
 
 ## Installation and documentation
 
-
+See the [project wiki pages](https://github.com/nl07427/ServiceNowInterface/wiki).
 
