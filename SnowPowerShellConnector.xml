@@ -5886,7 +5886,7 @@
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowBusinessUnit">
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="business_unit_filter" />
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,parent" />
         </ListingCommand>
         <CommandSequence>
           <Item Command="Get-SnowBusinessUnit" Order="1" />
@@ -6398,7 +6398,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowConfigurationItem">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,duplicateof" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="cmdb_ci_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -6530,7 +6530,7 @@
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowBuilding">
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="building_filter" />
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,contact,location" />
         </ListingCommand>
         <CommandSequence>
           <Item Command="Get-SnowBuilding" Order="1" />
@@ -6956,7 +6956,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowDepartment">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,parent" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="cmn_department_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -7399,7 +7399,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowLocation">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,parent,primarylocation" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="cmn_location_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -7995,7 +7995,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowCompany">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,parent" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="core_company_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -9556,7 +9556,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowVariable">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,sys_name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,sys_name,publishedref" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="item_option_new_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -10458,7 +10458,7 @@
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowCatalogItem">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,name" />
+                        Value="sys_id,sys_updated_on,name,publishedref" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sc_cat_item_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -14832,7 +14832,7 @@
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowUser">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,name,sys_class_name" />
+                        Value="sys_id,sys_updated_on,name,sys_class_name,company,costcenter,department,location,manager" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sys_user_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -15201,7 +15201,7 @@
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowGroup">
           <SetParameter Param="Select" Source="FixedValue" DataType="String"
-                        Value="sys_id,sys_updated_on,name" />
+                        Value="sys_id,sys_updated_on,name,costcenter,parent" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sys_user_group_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -15349,7 +15349,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowRoleHasUser">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,user,role,includedinrole" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sys_user_has_role_filter" />
         </ListingCommand>
         <CommandSequence>
@@ -15512,7 +15512,7 @@
       <!-- Configuration items for readable types -->
       <ReadConfiguration>
         <ListingCommand Command="Get-SnowRole">
-          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name" />
+          <SetParameter Param="Select" Source="FixedValue" DataType="String" Value="sys_id,sys_updated_on,name,assignableby" />
           <SetParameter Param="Filter" Source="ConnectionParameter" DataType="String" Value="sys_user_role_filter" />
         </ListingCommand>
         <CommandSequence>
