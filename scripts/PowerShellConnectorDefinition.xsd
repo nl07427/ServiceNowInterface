@@ -1,0 +1,435 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="PowershellConnectorDefinition">
+    <xs:annotation>
+      <xs:documentation>Connector Definition</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PluginAssemblies">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Assembly" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="Path" type="xs:string"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ConnectionParameters" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ConnectionParameter" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="Name" type="xs:string" use="required"/>
+                  <xs:attribute name="Description" type="xs:string" use="optional"/>
+                  <xs:attribute name="IsSensibleData" type="xs:string" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Initialization">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="CustomCommands" nillable="true">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="CustomCommand" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="Name" type="xs:string" use="required"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="PredefinedCommands" nillable="true">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Command" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="Name" type="xs:string" use="required"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="EnvironmentInitialization">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="Connect" nillable="true">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="CommandSequence">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Item" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="SetParameter" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="Param" type="xs:string" use="required"/>
+                                          <xs:attribute name="Source" use="required">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="ConnectionParameter"/>
+                                                <xs:enumeration value="FixedValue"/>
+                                                <xs:enumeration value="GlobalVariable"/>
+                                                <xs:enumeration value="SwitchParameter"/>
+                                                <xs:enumeration value="FixedArray"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                          <xs:attribute name="Value" type="xs:string" use="required"/>
+                                          <xs:attribute name="DataType" use="optional" default="String">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="String"/>
+                                                <xs:enumeration value="Int"/>
+                                                <xs:enumeration value="Bool"/>
+                                                <xs:enumeration value="DateTime"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                          <xs:attribute name="ConversionMethod" type="xs:string" use="optional"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="Command" type="xs:string" use="required"/>
+                                    <xs:attribute name="Order" type="xs:integer" use="required"/>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Disconnect" nillable="true">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="CommandSequence" nillable="true" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Item" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="SetParameter" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="Param" type="xs:string" use="required"/>
+                                          <xs:attribute name="Source" use="required">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="ConnectionParameter"/>
+                                                <xs:enumeration value="FixedValue"/>
+                                                <xs:enumeration value="GlobalVariable"/>
+                                                <xs:enumeration value="SwitchParameter"/>
+                                                <xs:enumeration value="FixedArray"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                          <xs:attribute name="Value" type="xs:string" use="required"/>
+                                          <xs:attribute name="DataType" use="optional" default="String">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="String"/>
+                                                <xs:enumeration value="Int"/>
+                                                <xs:enumeration value="Bool"/>
+                                                <xs:enumeration value="DateTime"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                          <xs:attribute name="ConversionMethod" type="xs:string" use="optional"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="Command" type="xs:string" use="required"/>
+                                    <xs:attribute name="Order" type="xs:integer" use="required"/>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Schema">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Class" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Properties">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Property" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:all>
+                                <xs:element name="ReturnBindings" nillable="true" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Bind" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="CommandResultOf" type="xs:string" use="required"/>
+                                          <xs:attribute name="Path" type="xs:string" use="required"/>
+                                          <xs:attribute name="Converter" type="xs:string" use="optional"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="CommandMappings" nillable="true" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Map" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="ToCommand" type="xs:string" use="required"/>
+                                          <xs:attribute name="Parameter" type="xs:string" use="optional"/>
+                                          <xs:attribute name="UseOldValue" type="xs:boolean" use="optional"/>
+                                          <xs:attribute name="Converter" type="xs:string" use="optional"/>
+                                          <xs:attribute name="ModType" use="optional">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="Remove"/>
+                                                <xs:enumeration value="Replace"/>
+                                                <xs:enumeration value="Add"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="ModifiedBy" nillable="true" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="ModBy" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="Command" type="xs:string" use="required"/>
+                                          <xs:attribute name="Method" type="xs:string" use="optional"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="ReferenceTargets" nillable="true" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="ReferenceTarget" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="Class" type="xs:string" use="required"/>
+                                          <xs:attribute name="Property" type="xs:string" use="required"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:all>
+                              <xs:attribute name="Name" type="xs:string" use="required"/>
+                              <xs:attribute name="DataType" default="String">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="String"/>
+                                    <xs:enumeration value="Bool"/>
+                                    <xs:enumeration value="Int"/>
+                                    <xs:enumeration value="DateTime"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                              <xs:attribute name="IsDisplay" type="xs:boolean"/>
+                              <xs:attribute name="IsMandatory" type="xs:boolean"/>
+                              <xs:attribute name="IsUniqueKey" type="xs:boolean"/>
+                              <xs:attribute name="IsMultivalue" type="xs:boolean" use="optional"/>
+                              <xs:attribute name="IsRevision" type="xs:boolean" use="optional"/>
+                              <xs:attribute name="IsSecret" type="xs:boolean" use="optional"/>
+                              <xs:attribute name="AccessConstraint" use="optional" default="None">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="None"/>
+                                    <xs:enumeration value="ReadOnly"/>
+                                    <xs:enumeration value="ReadAndInsertOnly"/>
+                                    <xs:enumeration value="WriteOnly"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                              <xs:attribute name="IsAutoFill" type="xs:boolean" use="optional"/>
+                              <xs:attribute name="IsObsolete" type="xs:boolean" use="optional"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ReadConfiguration">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="ListingCommand">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="SetParameter" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:attribute name="Param" type="xs:string" use="required"/>
+                                    <xs:attribute name="Source" use="required">
+                                      <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                          <xs:enumeration value="ConnectionParameter"/>
+                                          <xs:enumeration value="FixedValue"/>
+                                          <xs:enumeration value="GlobalVariable"/>
+                                          <xs:enumeration value="SwitchParameter"/>
+                                          <xs:enumeration value="FixedArray"/>
+                                        </xs:restriction>
+                                      </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="Value" type="xs:string" use="required"/>
+                                    <xs:attribute name="DataType" use="optional" default="String">
+                                      <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                          <xs:enumeration value="String"/>
+                                          <xs:enumeration value="Int"/>
+                                          <xs:enumeration value="Bool"/>
+                                          <xs:enumeration value="DateTime"/>
+                                        </xs:restriction>
+                                      </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="ConversionMethod" type="xs:string" use="optional"/>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="Command" type="xs:string" use="required"/>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="CommandSequence" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Item" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="SetParameter" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="Param" type="xs:string" use="required"/>
+                                          <xs:attribute name="Source" use="required">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="ConnectionParameter"/>
+                                                <xs:enumeration value="FixedValue"/>
+                                                <xs:enumeration value="GlobalVariable"/>
+                                                <xs:enumeration value="SwitchParameter"/>
+                                                <xs:enumeration value="FixedArray"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                          <xs:attribute name="Value" type="xs:string" use="required"/>
+                                          <xs:attribute name="DataType" use="optional" default="String">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="String"/>
+                                                <xs:enumeration value="Int"/>
+                                                <xs:enumeration value="Bool"/>
+                                                <xs:enumeration value="DateTime"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                          <xs:attribute name="ConversionMethod" type="xs:string" use="optional"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="Command" type="xs:string" use="required"/>
+                                    <xs:attribute name="Order" type="xs:integer" use="required"/>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:all>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="MethodConfiguration" nillable="true" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Method" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="CommandSequence">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Item" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="SetParameter" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                                              <xs:complexType>
+                                                <xs:attribute name="Param" type="xs:string" use="required"/>
+                                                <xs:attribute name="Source" use="required">
+                                                  <xs:simpleType>
+                                                    <xs:restriction base="xs:string">
+                                                      <xs:enumeration value="ConnectionParameter"/>
+                                                      <xs:enumeration value="FixedValue"/>
+                                                      <xs:enumeration value="GlobalVariable"/>
+                                                      <xs:enumeration value="SwitchParameter"/>
+                                                      <xs:enumeration value="FixedArray"/>
+                                                    </xs:restriction>
+                                                  </xs:simpleType>
+                                                </xs:attribute>
+                                                <xs:attribute name="Value" type="xs:string" use="required"/>
+                                                <xs:attribute name="DataType" use="optional" default="String">
+                                                  <xs:simpleType>
+                                                    <xs:restriction base="xs:string">
+                                                      <xs:enumeration value="String"/>
+                                                      <xs:enumeration value="Int"/>
+                                                      <xs:enumeration value="Bool"/>
+                                                      <xs:enumeration value="DateTime"/>
+                                                    </xs:restriction>
+                                                  </xs:simpleType>
+                                                </xs:attribute>
+                                                <xs:attribute name="ConversionMethod" type="xs:string" use="optional"/>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                          <xs:attribute name="Command" type="xs:string" use="required"/>
+                                          <xs:attribute name="Order" type="xs:integer" use="required"/>
+                                          <xs:attribute name="Condition" use="optional" default="None">
+                                            <xs:simpleType>
+                                              <xs:restriction base="xs:string">
+                                                <xs:enumeration value="None"/>
+                                                <xs:enumeration value="ModificationExists"/>
+                                              </xs:restriction>
+                                            </xs:simpleType>
+                                          </xs:attribute>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="Name" type="xs:string" use="required"/>
+                              <xs:attribute name="IsObsolete" type="xs:boolean" use="optional"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="Name" type="xs:string" use="required"/>
+                  <xs:attribute name="IsObsolete" type="xs:boolean" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="Id" type="xs:string" use="required"/>
+      <xs:attribute name="Version" type="xs:string" use="required"/>
+      <xs:attribute name="Description" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
